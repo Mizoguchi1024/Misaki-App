@@ -2,7 +2,8 @@ import { Button, ColorPicker, Dropdown, Input, message, theme } from 'antd'
 import { Sender } from '@ant-design/x'
 import MisakiLogo from '../assets/misaki-logo-symbol.svg?react'
 import { useEffect, useRef, useState } from 'react'
-import { useUserStore } from '@renderer/stores/userStore'
+import { useUserStore } from '@renderer/store/userStore'
+import api from '@renderer/api'
 
 export default function Home(): React.JSX.Element {
   const { profile, loginInfo, isLoggedIn, logout } = useUserStore()
@@ -78,6 +79,11 @@ export default function Home(): React.JSX.Element {
                 </Dropdown>
               </>
             )
+          }}
+          onSubmit={() => {
+            api.get('/test').catch(() => {
+              messageApi.error('请求失败')
+            })
           }}
         />
       </div>
