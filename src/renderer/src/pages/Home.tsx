@@ -45,14 +45,20 @@ export default function Home(): React.JSX.Element {
       {contextHolder}
       <div className="flex flex-col justify-center items-center h-full">
         <div className="flex items-center gap-2 mb-24">
-          <ColorPicker value={color} onChange={setColor} disabledAlpha arrow={false}>
+          <ColorPicker
+            value={color}
+            onChange={setColor}
+            disabledAlpha
+            arrow={false}
+            disabled={!isLoggedIn}
+          >
             <MisakiLogo className="h-28 ml-24" fill={colorPrimary} />
           </ColorPicker>
           <span ref={spanRef} className="text-8xl font-semibold absolute invisible whitespace-pre">
             {title + 'iiii' || ' '}
           </span>
           <Input
-            readOnly={isLoggedIn}
+            readOnly={!isLoggedIn}
             spellCheck="false"
             maxLength={8}
             defaultValue="Misaki"

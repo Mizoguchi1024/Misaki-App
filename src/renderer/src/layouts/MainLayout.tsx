@@ -1,30 +1,34 @@
-import { Layout, Menu, theme, MenuProps, Button } from 'antd'
+import { Layout, Menu, theme, MenuProps, Button, Dropdown, Avatar } from 'antd'
 import { useState } from 'react'
-import { Outlet, useNavigate } from 'react-router-dom'
+import { Outlet, useLocation, useNavigate } from 'react-router-dom'
 import {
   CodeOutlined,
+  DatabaseOutlined,
   FolderOutlined,
   FormOutlined,
   HeartOutlined,
   MessageOutlined,
   SearchOutlined,
-  StarOutlined
+  StarOutlined,
+  UserOutlined
 } from '@ant-design/icons'
 import TermsModal from '@renderer/components/TermsModal'
 import PolicyModal from '@renderer/components/PolicyModal'
+import { useUserStore } from '@renderer/store/userStore'
 
 const { Header, Content, Footer, Sider } = Layout
 
 export default function MainLayout(): React.JSX.Element {
   const [collapsed, setCollapsed] = useState(false)
   const navigate = useNavigate()
+  // const location = useLocation()
   const {
     token: { colorBgContainer }
   } = theme.useToken()
-
+  const { profile, loginInfo, isLoggedIn, logout } = useUserStore()
   const items: MenuProps['items'] = [
     {
-      key: '1',
+      key: '/misaki',
       label: 'Misaki',
       icon: <HeartOutlined />
     },
@@ -32,22 +36,27 @@ export default function MainLayout(): React.JSX.Element {
       type: 'divider'
     },
     {
-      key: '2',
+      key: '/',
       label: '新建会话',
       icon: <FormOutlined />
     },
     {
-      key: '3',
+      key: '/search',
       label: '搜索会话',
       icon: <SearchOutlined />
     },
     {
-      key: '4',
+      key: '/mcp-server',
+      label: 'MCP服务',
+      icon: <DatabaseOutlined />
+    },
+    {
+      key: '/code-interpreter',
       label: '快捷指令',
       icon: <CodeOutlined />
     },
     {
-      key: '5',
+      key: '6',
       label: '文件处理',
       icon: <FolderOutlined />
     },
@@ -59,8 +68,8 @@ export default function MainLayout(): React.JSX.Element {
       label: '项目',
       icon: <StarOutlined />,
       children: [
-        { key: '6', label: '项目 1' },
-        { key: '7', label: '项目 2' }
+        { key: '7', label: '项目 1' },
+        { key: '8', label: '项目 2' }
       ]
     },
     {
@@ -68,8 +77,8 @@ export default function MainLayout(): React.JSX.Element {
       label: '会话',
       icon: <MessageOutlined />,
       children: [
-        { key: '8', label: '会话 1' },
-        { key: '9', label: '会话 2' }
+        { key: '9', label: '会话 1' },
+        { key: '10', label: '会话 2' }
       ]
     }
   ]
@@ -102,17 +111,35 @@ export default function MainLayout(): React.JSX.Element {
         onCollapse={(value) => setCollapsed(value)}
         theme="light"
       >
-        <Menu theme="light" defaultSelectedKeys={['1']} mode="inline" items={items} />
+        <Menu
+          theme="light"
+          selectedKeys={[location.pathname]}
+          onClick={(e) => navigate(e.key)}
+          mode="inline"
+          items={items}
+        />
       </Sider>
       <Layout>
         <Header
           className="flex items-center justify-end gap-4"
           style={{ background: colorBgContainer }}
         >
-          <Button type="primary" onClick={() => navigate('/login', { viewTransition: true })}>
-            登录
-          </Button>
-          <Button onClick={() => navigate('/register', { viewTransition: true })}>注册</Button>
+          {!isLoggedIn && (
+            <>
+              <Button type="primary" onClick={() => navigate('/login', { viewTransition: true })}>
+                登录
+              </Button>
+              <Button onClick={() => navigate('/register', { viewTransition: true })}>注册</Button>
+            </>
+          )}
+          {isLoggedIn && (
+            <Dropdown menu={{ items }} placement="bottomLeft" trigger={['click']}>
+              <Button size="large" color="default" variant="filled">
+                <Avatar size="small" icon={<UserOutlined />} />
+                Mizoguchi
+              </Button>
+            </Dropdown>
+          )}
         </Header>
         <Content>
           <Outlet />
