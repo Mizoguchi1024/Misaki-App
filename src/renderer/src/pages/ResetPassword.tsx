@@ -19,10 +19,11 @@ export default function ResetPassword(): React.JSX.Element {
   return (
     <>
       <div className="flex flex-col items-center justify-center gap-16 h-full">
-        <h1 className="text-4xl select-none">重置密码</h1>
+        <h1 className="text-4xl select-none">更改 Misaki 账户密码</h1>
         <Form
           name="basic"
           size={'large'}
+          variant={'filled'}
           onFinish={onFinish}
           onFinishFailed={onFinishFailed}
           autoComplete="off"
@@ -34,7 +35,7 @@ export default function ResetPassword(): React.JSX.Element {
           >
             <Space.Compact className="w-full">
               <Input prefix={<MailOutlined />} placeholder="电子邮箱" />
-              <Button>发送验证码</Button>
+              <Button color="primary" variant="filled">发送验证码</Button>
             </Space.Compact>
           </Form.Item>
 
@@ -54,7 +55,7 @@ export default function ResetPassword(): React.JSX.Element {
 
           <Form.Item label={null}>
             <Button type="primary" block htmlType="submit">
-              重置密码
+              更改
             </Button>
           </Form.Item>
         </Form>

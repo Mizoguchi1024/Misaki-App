@@ -35,7 +35,7 @@ export const useUserStore = create<UserState>()(
     (set) => ({
       profile: null,
       loginInfo: null,
-      isLoggedIn: true,
+      isLoggedIn: false,
 
       setProfile: (profile) => set({ profile }),
       setLoginInfo: (loginInfo) =>

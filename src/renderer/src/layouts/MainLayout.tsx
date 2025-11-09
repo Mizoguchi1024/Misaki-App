@@ -1,40 +1,29 @@
 import { Layout, Menu, theme, MenuProps, Button, Dropdown, Avatar } from 'antd'
 import { useState } from 'react'
-import { Outlet, useLocation, useNavigate } from 'react-router-dom'
+import { Outlet, useNavigate } from 'react-router-dom'
+import MisakiLogo from '../assets/misaki-logo-symbol.svg?react'
 import {
   CodeOutlined,
   DatabaseOutlined,
   FolderOutlined,
   FormOutlined,
-  HeartOutlined,
   MessageOutlined,
   SearchOutlined,
   StarOutlined,
   UserOutlined
 } from '@ant-design/icons'
-import TermsModal from '@renderer/components/TermsModal'
-import PolicyModal from '@renderer/components/PolicyModal'
 import { useUserStore } from '@renderer/store/userStore'
 
-const { Header, Content, Footer, Sider } = Layout
+const { Header, Content, Sider } = Layout
 
 export default function MainLayout(): React.JSX.Element {
   const [collapsed, setCollapsed] = useState(false)
   const navigate = useNavigate()
-  // const location = useLocation()
   const {
-    token: { colorBgContainer }
+    token: { colorBgContainer, colorPrimary }
   } = theme.useToken()
   const { profile, loginInfo, isLoggedIn, logout } = useUserStore()
   const items: MenuProps['items'] = [
-    {
-      key: '/misaki',
-      label: 'Misaki',
-      icon: <HeartOutlined />
-    },
-    {
-      type: 'divider'
-    },
     {
       key: '/',
       label: '新建会话',
@@ -83,76 +72,55 @@ export default function MainLayout(): React.JSX.Element {
     }
   ]
 
-  const [isTermsModalOpen, setIsTermsModalOpen] = useState(false)
-
-  const showTermsModal = (): void => {
-    setIsTermsModalOpen(true)
-  }
-
-  const handleTermsCancel = (): void => {
-    setIsTermsModalOpen(false)
-  }
-
-  const [isPolicyModalOpen, setIsPolicyModalOpen] = useState(false)
-
-  const showPolicyModal = (): void => {
-    setIsPolicyModalOpen(true)
-  }
-
-  const handlePolicyCancel = (): void => {
-    setIsPolicyModalOpen(false)
-  }
-
   return (
     <Layout className="h-screen">
-      <Sider
-        collapsible
-        collapsed={collapsed}
-        onCollapse={(value) => setCollapsed(value)}
-        theme="light"
+      <Header
+        className="flex items-center justify-between"
+        style={{ background: colorBgContainer, paddingInline: '1.8rem' }}
       >
-        <Menu
-          theme="light"
-          selectedKeys={[location.pathname]}
-          onClick={(e) => navigate(e.key)}
-          mode="inline"
-          items={items}
-        />
-      </Sider>
+        <Button type="text" size="large" style={{ padding: '0 0.6rem' }}>
+          <div className="flex items-center gap-2">
+            <MisakiLogo className="w-10 h-10" fill={colorPrimary} />
+            <span className="text-2xl font-semibold select-none">Misaki</span>
+          </div>
+        </Button>
+        {!isLoggedIn && (
+          <div className="flex items-center gap-4">
+            <Button type="primary" onClick={() => navigate('/login', { viewTransition: true })}>
+              登录
+            </Button>
+            <Button onClick={() => navigate('/register', { viewTransition: true })}>注册</Button>
+          </div>
+        )}
+        {isLoggedIn && (
+          <Dropdown menu={{ items }} placement="bottomLeft" trigger={['click']}>
+            <Button size="large" color="default" variant="filled">
+              <Avatar size="small" icon={<UserOutlined />} />
+              Mizoguchi
+            </Button>
+          </Dropdown>
+        )}
+      </Header>
+
       <Layout>
-        <Header
-          className="flex items-center justify-end gap-4"
-          style={{ background: colorBgContainer }}
+        <Sider
+          collapsible
+          collapsed={collapsed}
+          onCollapse={(value) => setCollapsed(value)}
+          theme="light"
         >
-          {!isLoggedIn && (
-            <>
-              <Button type="primary" onClick={() => navigate('/login', { viewTransition: true })}>
-                登录
-              </Button>
-              <Button onClick={() => navigate('/register', { viewTransition: true })}>注册</Button>
-            </>
-          )}
-          {isLoggedIn && (
-            <Dropdown menu={{ items }} placement="bottomLeft" trigger={['click']}>
-              <Button size="large" color="default" variant="filled">
-                <Avatar size="small" icon={<UserOutlined />} />
-                Mizoguchi
-              </Button>
-            </Dropdown>
-          )}
-        </Header>
+          <Menu
+            className="select-none"
+            theme="light"
+            selectedKeys={[location.pathname]}
+            onClick={(e) => navigate(e.key)}
+            mode="inline"
+            items={items}
+          />
+        </Sider>
         <Content>
           <Outlet />
         </Content>
-        <Footer className="text-center select-none">
-          <span>向 AI 助理 Misaki 发送消息即表示，你同意我们的</span>
-          <a onClick={showTermsModal}>条款</a>
-          <span>并已阅读我们的</span>
-          <a onClick={showPolicyModal}>隐私政策</a>
-          <span>。</span>
-          <TermsModal open={isTermsModalOpen} onCancel={handleTermsCancel} />
-          <PolicyModal open={isPolicyModalOpen} onCancel={handlePolicyCancel} />
-        </Footer>
       </Layout>
     </Layout>
   )
