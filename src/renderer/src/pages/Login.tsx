@@ -48,7 +48,9 @@ export default function Login(): React.JSX.Element {
 
           <Form.Item<FieldType> name="remember" valuePropName="checked">
             <div className="flex justify-between items-center">
-              <Checkbox className="select-none">记住我</Checkbox>
+              <div className="ml-2">
+                <Checkbox className="select-none">记住我</Checkbox>
+              </div>
               <Button
                 type="link"
                 onClick={() => {

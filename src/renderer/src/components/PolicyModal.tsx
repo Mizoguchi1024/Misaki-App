@@ -15,7 +15,7 @@ export default function PolicyModal({ open, onCancel }: PolicyModalProps): React
       onCancel={onCancel}
       className="select-none"
     >
-      <div className="max-h-120 overflow-y-auto">
+      <div className="max-h-120 overflow-y-auto" style={{ scrollbarWidth: 'none' }}>
         <p>
           我们 Misaki（与我们的关联方合称为&quot;Misaki&quot;或&quot;我们&quot;）尊重您的隐私，
           并坚定地致力于妥善保管我们从您那里获得的信息或所获得的有关您的信息。

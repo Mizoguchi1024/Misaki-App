@@ -15,7 +15,7 @@ export default function TermsModal({ open, onCancel }: TermsModalProps): React.J
       onCancel={onCancel}
       className="select-none"
     >
-      <div className="max-h-120 overflow-y-auto">
+      <div className="max-h-120 overflow-y-auto" style={{ scrollbarWidth: 'none' }}>
         <p className="text-xl">
           <b>感谢您使用 Misaki！</b>
         </p>

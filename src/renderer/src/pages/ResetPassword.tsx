@@ -35,7 +35,9 @@ export default function ResetPassword(): React.JSX.Element {
           >
             <Space.Compact className="w-full">
               <Input prefix={<MailOutlined />} placeholder="电子邮箱" />
-              <Button color="primary" variant="filled">发送验证码</Button>
+              <Button color="primary" variant="filled">
+                发送验证码
+              </Button>
             </Space.Compact>
           </Form.Item>
 

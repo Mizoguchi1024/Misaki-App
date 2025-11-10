@@ -105,11 +105,16 @@ export default function Home(): React.JSX.Element {
             placeholder="需要我帮你做什么？"
             footer={() => {
               return (
-                <>
+                <div className="flex gap-2">
+                  <Button color="default" variant="filled">
+                    生成快捷指令
+                  </Button>
                   <Dropdown menu={{ items }}>
-                    <Button>MCP · 3</Button>
+                    <Button color="default" variant="filled">
+                      MCP · 3
+                    </Button>
                   </Dropdown>
-                </>
+                </div>
               )
             }}
             onSubmit={() => {

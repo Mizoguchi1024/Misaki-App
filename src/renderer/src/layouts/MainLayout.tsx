@@ -78,7 +78,12 @@ export default function MainLayout(): React.JSX.Element {
         className="flex items-center justify-between"
         style={{ background: colorBgContainer, paddingInline: '1.8rem' }}
       >
-        <Button type="text" size="large" style={{ padding: '0 0.6rem' }}>
+        <Button
+          type="text"
+          size="large"
+          style={{ padding: '0 0.6rem' }}
+          onClick={() => navigate('/misaki', { viewTransition: true })}
+        >
           <div className="flex items-center gap-2">
             <MisakiLogo className="w-10 h-10" fill={colorPrimary} />
             <span className="text-2xl font-semibold select-none">Misaki</span>
@@ -113,7 +118,7 @@ export default function MainLayout(): React.JSX.Element {
             className="select-none"
             theme="light"
             selectedKeys={[location.pathname]}
-            onClick={(e) => navigate(e.key)}
+            onClick={(e) => navigate(e.key, { viewTransition: true })}
             mode="inline"
             items={items}
           />
