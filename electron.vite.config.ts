@@ -17,6 +17,14 @@ export default defineConfig({
         '@renderer': resolve('src/renderer/src')
       }
     },
-    plugins: [react(), tailwindcss(), svgr()]
+    plugins: [
+      react({
+        babel: {
+          plugins: ['babel-plugin-react-compiler']
+        }
+      }),
+      tailwindcss(),
+      svgr()
+    ]
   }
 })

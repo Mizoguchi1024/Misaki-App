@@ -1,6 +1,6 @@
 import { Layout, Menu, theme, MenuProps, Button, Dropdown, Avatar } from 'antd'
 import { useState } from 'react'
-import { Outlet, useNavigate } from 'react-router-dom'
+import { Outlet, useLocation, useNavigate } from 'react-router-dom'
 import MisakiLogo from '../assets/misaki-logo-symbol.svg?react'
 import {
   CodeOutlined,
@@ -18,6 +18,7 @@ const { Header, Content, Sider } = Layout
 
 export default function MainLayout(): React.JSX.Element {
   const [collapsed, setCollapsed] = useState(false)
+  const location = useLocation()
   const navigate = useNavigate()
   const {
     token: { colorBgContainer, colorPrimary }
