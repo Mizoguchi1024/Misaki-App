@@ -9,6 +9,7 @@ import McpServer from './pages/McpServer'
 import Search from './pages/Search'
 import CodeInterpreter from './pages/CodeInterpreter'
 import Misaki from './pages/Misaki'
+import NotFound from './pages/NotFound'
 
 export const router = createBrowserRouter([
   {
@@ -26,7 +27,8 @@ export const router = createBrowserRouter([
     children: [
       { path: '/login', element: <Login /> },
       { path: '/register', element: <Register /> },
-      { path: '/reset-password', element: <ResetPassword /> }
+      { path: '/reset-password', element: <ResetPassword /> },
+      { path: '*', element: <NotFound /> }
     ]
   }
 ])

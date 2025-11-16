@@ -9,7 +9,7 @@ export default function AuthLayout(): React.JSX.Element {
   const {
     token: { colorBgContainer, colorPrimary }
   } = theme.useToken()
-  const navigator = useNavigate()
+  const navigate = useNavigate()
   return (
     <Layout className="h-screen">
       <Header
@@ -24,7 +24,7 @@ export default function AuthLayout(): React.JSX.Element {
         </Button>
         <Button
           onClick={() => {
-            navigator(-1)
+            navigate(-1)
           }}
         >
           返回
