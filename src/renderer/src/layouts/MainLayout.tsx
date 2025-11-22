@@ -41,7 +41,7 @@ export default function MainLayout(): React.JSX.Element {
       icon: <DatabaseOutlined />
     },
     {
-      key: '/code-interpreter',
+      key: '/script',
       label: '快捷指令',
       icon: <CodeOutlined />
     },

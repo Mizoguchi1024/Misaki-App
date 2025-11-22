@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useRef } from 'react'
 
 interface BoxProps extends React.HTMLAttributes<HTMLDivElement> {
   children?: React.ReactNode
@@ -9,11 +9,40 @@ export default function GlassBox({
   className = '',
   ...rest
 }: BoxProps): React.JSX.Element {
+  const ref = useRef<HTMLDivElement>(null)
+
+  const handleMouseMove = (e: React.MouseEvent): void => {
+    const div = ref.current
+    if (!div) return
+
+    const rect = div.getBoundingClientRect()
+    const x = e.clientX - rect.left
+    const y = e.clientY - rect.top
+
+    div.style.setProperty('--x', `${x}px`)
+    div.style.setProperty('--y', `${y}px`)
+  }
+
   return (
     <div
-      className={`flex flex-col items-center justify-center px-12 py-10 rounded-4xl backdrop-blur-md bg-linear-to-br from-white/8 to-white/16 border-white/20 border shadow-md shadow-neutral-500/50 ${className}`}
+      ref={ref}
+      onMouseMove={handleMouseMove}
+      className={`group overflow-hidden flex flex-col items-center justify-center px-12 py-10 rounded-4xl backdrop-blur-md bg-white/10 border-white/20 border shadow-lg shadow-neutral-500/50 ${className}`}
       {...rest}
     >
+      <div
+        className="
+          pointer-events-none absolute -translate-x-1/2 -translate-y-1/2
+          w-[500px] h-[500px] rounded-full
+          bg-white/5 blur-3xl opacity-0
+          transition-opacity duration-400
+          group-hover:opacity-100
+        "
+        style={{
+          left: 'var(--x)',
+          top: 'var(--y)'
+        }}
+      />
       {children}
     </div>
   )
