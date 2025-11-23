@@ -17,7 +17,7 @@ interface SettingStore extends UserSettingVo {
 }
 
 const defaultSettings: UserSettingVo = {
-  appearance: 2,
+  appearance: 1,
   language: 0,
   ttsAutoplay: 0,
   fontSize: 14,

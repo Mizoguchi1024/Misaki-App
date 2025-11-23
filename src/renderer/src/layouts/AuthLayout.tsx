@@ -14,10 +14,10 @@ export default function AuthLayout(): React.JSX.Element {
     <Layout className="h-screen">
       <Header
         className="flex justify-between items-center"
-        style={{ background: colorBgContainer, paddingInline: '1.8rem' }}
+        style={{ background: colorBgContainer, paddingInline: '2rem' }}
       >
         <Button type="text" size="large" style={{ padding: '0 0.6rem' }}>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1">
             <MisakiLogo className="w-10 h-10" fill={colorPrimary} />
             <span className="text-2xl font-semibold select-none">Misaki</span>
           </div>

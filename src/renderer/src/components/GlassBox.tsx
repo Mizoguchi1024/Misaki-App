@@ -31,8 +31,9 @@ export default function GlassBox({
       ref={ref}
       onMouseMove={handleMouseMove}
       className={`group overflow-hidden flex flex-col items-center justify-center
-        px-12 py-10 rounded-4xl backdrop-blur-lg bg-white/42 border-white/20
-         dark:bg-black/42 dark:border-black/20 border shadow-lg shadow-neutral-500/50
+        px-12 py-10 rounded-4xl backdrop-blur-xl bg-white/70 border-white
+         dark:bg-white/10 dark:border-white/16 border-2
+         shadow-2xl shadow-black/20 dark:shadow-none
          ${appearance === 2 ? 'dark' : ''}
          ${className}`}
       {...rest}
@@ -41,7 +42,7 @@ export default function GlassBox({
         className="
           pointer-events-none absolute -translate-x-1/2 -translate-y-1/2
           w-[500px] h-[500px] rounded-full
-          bg-white/5 blur-3xl opacity-0
+          bg-black/4 dark:bg-white/8 blur-3xl opacity-0
           transition-opacity duration-400
           group-hover:opacity-100
         "

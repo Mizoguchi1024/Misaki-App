@@ -23,9 +23,9 @@ export default function Login(): React.JSX.Element {
   const navigator = useNavigate()
   return (
     <>
-      <div className="bg-[url(../assets/background.jpg)] bg-cover flex items-center justify-center h-full">
+      <div className="flex items-center justify-center h-full">
         <GlassBox className="gap-12">
-          <h1 className="text-4xl select-none">{t('loginTitle')}</h1>
+          <h1 className="text-4xl font-medium select-none">{t('loginTitle')}</h1>
           <Form
             name="basic"
             initialValues={{ remember: true }}

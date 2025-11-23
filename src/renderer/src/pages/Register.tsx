@@ -21,7 +21,7 @@ export default function Register(): React.JSX.Element {
     <>
       <div className="flex flex-col items-center justify-center gap-16 h-full">
         <GlassBox className="gap-12">
-          <h1 className="text-4xl select-none">创建你的 Misaki 账户</h1>
+          <h1 className="text-4xl font-medium select-none">创建你的 Misaki 账户</h1>
           <Form
             name="basic"
             size={'large'}

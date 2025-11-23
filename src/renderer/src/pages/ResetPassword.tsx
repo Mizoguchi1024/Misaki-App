@@ -21,7 +21,7 @@ export default function ResetPassword(): React.JSX.Element {
     <>
       <div className="flex items-center justify-center h-full">
         <GlassBox className="gap-12">
-          <h1 className="text-4xl select-none">更改 Misaki 账户密码</h1>
+          <h1 className="text-4xl font-medium select-none">更改 Misaki 账户密码</h1>
           <Form
             name="basic"
             size={'large'}

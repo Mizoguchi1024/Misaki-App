@@ -67,7 +67,7 @@ export default function Home(): React.JSX.Element {
       {contextHolder}
       <div className="flex flex-col h-full">
         <div className="flex flex-col flex-1 justify-center items-center">
-          <div className="flex items-center gap-2 mb-24">
+          <div className="flex items-center gap-1 mb-24">
             <ColorPicker
               value={color}
               onChange={setColor}

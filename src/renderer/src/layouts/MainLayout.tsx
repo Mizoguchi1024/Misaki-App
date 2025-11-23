@@ -77,7 +77,7 @@ export default function MainLayout(): React.JSX.Element {
     <Layout className="h-screen">
       <Header
         className="flex items-center justify-between"
-        style={{ background: colorBgContainer, paddingInline: '1.8rem' }}
+        style={{ background: colorBgContainer, paddingInline: '2rem' }}
       >
         <Button
           type="text"
@@ -85,7 +85,7 @@ export default function MainLayout(): React.JSX.Element {
           style={{ padding: '0 0.6rem' }}
           onClick={() => navigate('/misaki', { viewTransition: true })}
         >
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1">
             <MisakiLogo className="w-10 h-10" fill={colorPrimary} />
             <span className="text-2xl font-semibold select-none">Misaki</span>
           </div>
