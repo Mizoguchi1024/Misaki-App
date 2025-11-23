@@ -1,3 +1,4 @@
+import { useSettingStore } from '@renderer/store/settingStore'
 import React, { useRef } from 'react'
 
 interface BoxProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -10,6 +11,8 @@ export default function GlassBox({
   ...rest
 }: BoxProps): React.JSX.Element {
   const ref = useRef<HTMLDivElement>(null)
+
+  const { appearance } = useSettingStore()
 
   const handleMouseMove = (e: React.MouseEvent): void => {
     const div = ref.current
@@ -27,7 +30,11 @@ export default function GlassBox({
     <div
       ref={ref}
       onMouseMove={handleMouseMove}
-      className={`group overflow-hidden flex flex-col items-center justify-center px-12 py-10 rounded-4xl backdrop-blur-md bg-white/10 border-white/20 border shadow-lg shadow-neutral-500/50 ${className}`}
+      className={`group overflow-hidden flex flex-col items-center justify-center
+        px-12 py-10 rounded-4xl backdrop-blur-lg bg-white/42 border-white/20
+         dark:bg-black/42 dark:border-black/20 border shadow-lg shadow-neutral-500/50
+         ${appearance === 2 ? 'dark' : ''}
+         ${className}`}
       {...rest}
     >
       <div

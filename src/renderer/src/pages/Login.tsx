@@ -2,6 +2,7 @@ import { LockOutlined, MailOutlined } from '@ant-design/icons'
 import GlassBox from '@renderer/components/GlassBox'
 import { Button, Checkbox, Form, FormProps, Input } from 'antd'
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 
 type FieldType = {
   email?: string
@@ -18,12 +19,13 @@ const onFinishFailed: FormProps<FieldType>['onFinishFailed'] = (errorInfo) => {
 }
 
 export default function Login(): React.JSX.Element {
+  const { t } = useTranslation('common')
   const navigator = useNavigate()
   return (
     <>
-      <div className="flex items-center justify-center h-full">
+      <div className="bg-[url(../assets/background.jpg)] bg-cover flex items-center justify-center h-full">
         <GlassBox className="gap-12">
-          <h1 className="text-4xl select-none">登录你的 Misaki 账户</h1>
+          <h1 className="text-4xl select-none">{t('loginTitle')}</h1>
           <Form
             name="basic"
             initialValues={{ remember: true }}

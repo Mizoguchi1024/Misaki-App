@@ -2,3 +2,5 @@
 
 @import url(antd/dist/reset.css) layer(reset);
 @import 'tailwindcss';
+
+@custom-variant dark (&:where(.dark, .dark *));
