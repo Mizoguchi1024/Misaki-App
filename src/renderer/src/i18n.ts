@@ -12,7 +12,7 @@ i18n
       loadPath: '/locales/{{lng}}/{{ns}}.json'
     },
     interpolation: {
-      escapeValue: false,
+      escapeValue: false
     }
   })
 
