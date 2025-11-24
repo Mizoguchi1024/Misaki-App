@@ -12,7 +12,7 @@ export default function GlassBox({
 }: BoxProps): React.JSX.Element {
   const ref = useRef<HTMLDivElement>(null)
 
-  const { appearance } = useSettingStore()
+  const { setting } = useSettingStore()
 
   const handleMouseMove = (e: React.MouseEvent): void => {
     const div = ref.current
@@ -34,7 +34,7 @@ export default function GlassBox({
         px-12 py-10 rounded-4xl backdrop-blur-xl bg-white/70 border-white
          dark:bg-white/10 dark:border-white/16 border-2
          shadow-2xl shadow-black/20 dark:shadow-none
-         ${appearance === 2 ? 'dark' : ''}
+         ${setting?.appearance === 2 ? 'dark' : ''}
          ${className}`}
       {...rest}
     >
@@ -43,7 +43,7 @@ export default function GlassBox({
           pointer-events-none absolute -translate-x-1/2 -translate-y-1/2
           w-[500px] h-[500px] rounded-full
           bg-black/4 dark:bg-white/8 blur-3xl opacity-0
-          transition-opacity duration-400
+          transition-opacity duration-250
           group-hover:opacity-100
         "
         style={{

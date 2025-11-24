@@ -9,11 +9,11 @@ export default function App({ children }: { children?: React.ReactNode }): React
   return (
     <ConfigProvider
       theme={{
-        algorithm: setting.appearance === 1 ? theme.defaultAlgorithm : theme.darkAlgorithm, // defaultAlgorithm | darkAlgorithm
+        algorithm: setting?.appearance === 1 ? theme.defaultAlgorithm : theme.darkAlgorithm, // defaultAlgorithm | darkAlgorithm
         token: {
-          fontSize: 14,
-          colorPrimary: '#3142ef',
-          borderRadius: 12
+          fontSize: setting?.fontSize,
+          colorPrimary: setting?.colorPrimary,
+          borderRadius: setting?.borderRadius
         },
         components: {
           Menu: {
