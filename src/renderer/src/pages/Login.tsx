@@ -56,7 +56,7 @@ export default function Login(): React.JSX.Element {
                   <Checkbox className="select-none">记住我</Checkbox>
                 </div>
                 <Button
-                  type="link"
+                  color="primary" variant="text"
                   onClick={() => {
                     navigator('/reset-password', { viewTransition: true })
                   }}
