@@ -11,8 +11,10 @@ export interface UserSettingVo {
   backgroundImagePath: string
 }
 
-interface SettingStore extends UserSettingVo {
-  setSetting: <K extends keyof UserSettingVo>(key: K, value: UserSettingVo[K]) => void
+interface SettingStore {
+  setting: UserSettingVo | null
+
+  setSetting: (setting: UserSettingVo) => void
   reset: () => void
 }
 
@@ -29,9 +31,9 @@ const defaultSettings: UserSettingVo = {
 export const useSettingStore = create<SettingStore>()(
   persist(
     (set) => ({
-      ...defaultSettings,
-      setSetting: (key, value) => set(() => ({ [key]: value })),
-      reset: () => set(() => ({ ...defaultSettings }))
+      setting: defaultSettings,
+      setSetting: (setting) => set({ setting }),
+      reset: () => set(() => ({ setting: defaultSettings }))
     }),
     {
       name: 'user-setting-store'

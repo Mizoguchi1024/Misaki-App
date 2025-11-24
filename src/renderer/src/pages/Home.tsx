@@ -114,6 +114,9 @@ export default function Home(): React.JSX.Element {
                       MCP · 3
                     </Button>
                   </Dropdown>
+                  <Button color="default" variant="filled">
+                    表情包
+                  </Button>
                 </div>
               )
             }}
