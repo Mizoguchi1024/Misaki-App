@@ -1,9 +1,11 @@
 import GlassBox from '@renderer/components/GlassBox'
 import { Button, theme, Typography } from 'antd'
+import { useTranslation } from 'react-i18next'
 import { useLocation, useNavigate } from 'react-router-dom'
 
 export default function NotFound(): React.JSX.Element {
   const navigate = useNavigate()
+  const { t } = useTranslation('notFound')
   const location = useLocation()
   const {
     token: { colorPrimary }
@@ -13,10 +15,11 @@ export default function NotFound(): React.JSX.Element {
       <GlassBox className="gap-8">
         <div>
           <Typography.Title className="select-none">
-            <span style={{ color: colorPrimary }}>404</span> 找不到页面
+            <span style={{ color: colorPrimary }}>404&nbsp;</span>
+            <span>{t('notFound')}</span>
           </Typography.Title>
           <Typography.Title level={3} className="select-none text-center">
-            路径：{location.pathname}
+            {t('path')} {location.pathname}
           </Typography.Title>
         </div>
         <div className="w-60">
@@ -26,7 +29,7 @@ export default function NotFound(): React.JSX.Element {
             block
             onClick={() => navigate('/', { viewTransition: true })}
           >
-            首页
+            {t('home')}
           </Button>
         </div>
       </GlassBox>

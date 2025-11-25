@@ -2,10 +2,12 @@ import { Button, Layout, theme } from 'antd'
 import { Outlet } from 'react-router-dom'
 import MisakiLogo from '../assets/misaki-logo-symbol.svg?react'
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 
 const { Header, Content, Footer } = Layout
 
 export default function AuthLayout(): React.JSX.Element {
+  const { t } = useTranslation('authLayout')
   const {
     token: { colorBgContainer, colorPrimary }
   } = theme.useToken()
@@ -27,7 +29,7 @@ export default function AuthLayout(): React.JSX.Element {
             navigate(-1)
           }}
         >
-          返回
+          {t('back')}
         </Button>
       </Header>
       <Content>

@@ -73,7 +73,7 @@ export default function Login(): React.JSX.Element {
                     navigator('/reset-password', { viewTransition: true })
                   }}
                 >
-                  {t('forgetPassword')}
+                  {t('forgotPassword')}
                 </Button>
               </div>
             </Form.Item>

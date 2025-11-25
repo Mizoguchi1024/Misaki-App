@@ -1,10 +1,11 @@
 {
-    "loginTitle": "Misakiアカウントにログイン",
+    "loginTitle": "Misaki にログイン",
     "email": "メールアドレス",
     "emailRequiredMessage": "メールアドレスを入力してください",
+    "emailTypeMessage": "正しいメールアドレス形式を入力してください",
     "password": "パスワード",
     "passwordRequiredMessage": "パスワードを入力してください",
     "login": "ログイン",
     "rememberMe": "ログイン状態を保持する",
-    "forgetPassword": "パスワードをお忘れですか？"
+    "forgotPassword": "パスワードをお忘れ"
 }

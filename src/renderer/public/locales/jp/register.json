@@ -1,10 +1,11 @@
 {
-    "registerTitle": "创建你的 Misaki 账户",
-    "email": "电子邮箱",
-    "emailRequiredMessage": "请输入邮箱",
-    "sendVerifyCode": "发送验证码",
-    "password": "密码",
-    "passwordRequiredMessage": "请输入密码",
-    "verifyCodeRequiredMessage": "请输入验证码",
-    "register": "注册"
+    "registerTitle": "Misaki アカウントを作成",
+    "email": "メールアドレス",
+    "emailRequiredMessage": "メールアドレスを入力してください",
+    "emailTypeMessage": "正しいメールアドレス形式を入力してください",
+    "sendVerifyCode": "認証コードを送信",
+    "password": "パスワード",
+    "passwordRequiredMessage": "パスワードを入力してください",
+    "verifyCodeRequiredMessage": "認証コードを入力してください",
+    "register": "登録"
 }
