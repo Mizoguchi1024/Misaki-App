@@ -1,9 +1,7 @@
 import axios from 'axios'
 
-const config = await fetch('config.json').then((res) => res.json())
-
 const api = axios.create({
-  baseURL: config.API_BASE_URL,
+  baseURL: 'http://localhost:8080/api',
   timeout: 5000
 })
 

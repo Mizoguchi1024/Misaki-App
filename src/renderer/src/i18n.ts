@@ -7,7 +7,7 @@ i18n
   .use(initReactI18next)
   .init({
     fallbackLng: 'zh',
-    lng: 'jp',
+    lng: 'zh',
     backend: {
       loadPath: '/locales/{{lng}}/{{ns}}.json'
     },
