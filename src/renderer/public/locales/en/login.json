@@ -1,0 +1,10 @@
+{
+    "loginTitle": "Login your Misaki account",
+    "email": "email",
+    "emailRequiredMessage": "Please enter your email",
+    "password": "password",
+    "passwordRequiredMessage": "Please enter your password",
+    "login": "login",
+    "rememberMe": "remember me",
+    "forgetPassword": "forget password"
+}

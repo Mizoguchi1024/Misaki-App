@@ -19,7 +19,7 @@ const onFinishFailed: FormProps<FieldType>['onFinishFailed'] = (errorInfo) => {
 }
 
 export default function Login(): React.JSX.Element {
-  const { t } = useTranslation('common')
+  const { t } = useTranslation('login')
   const navigator = useNavigate()
   return (
     <>
@@ -38,37 +38,38 @@ export default function Login(): React.JSX.Element {
           >
             <Form.Item<FieldType>
               name="email"
-              rules={[{ required: true, message: '请输入您的邮箱' }]}
+              rules={[{ required: true, message: t('emailRequiredMessage') }]}
             >
-              <Input prefix={<MailOutlined />} placeholder="电子邮箱" />
+              <Input prefix={<MailOutlined />} placeholder={t('email')} />
             </Form.Item>
 
             <Form.Item<FieldType>
               name="password"
-              rules={[{ required: true, message: '请输入您的密码' }]}
+              rules={[{ required: true, message: t('passwordRequiredMessage') }]}
             >
-              <Input.Password prefix={<LockOutlined />} placeholder="密码" />
+              <Input.Password prefix={<LockOutlined />} placeholder={t('password')} />
             </Form.Item>
 
             <Form.Item<FieldType> name="remember" valuePropName="checked">
               <div className="flex justify-between items-center">
                 <div className="ml-2">
-                  <Checkbox className="select-none">记住我</Checkbox>
+                  <Checkbox className="select-none">{t('rememberMe')}</Checkbox>
                 </div>
                 <Button
-                  color="primary" variant="text"
+                  color="primary"
+                  variant="text"
                   onClick={() => {
                     navigator('/reset-password', { viewTransition: true })
                   }}
                 >
-                  忘记密码
+                  {t('forgetPassword')}
                 </Button>
               </div>
             </Form.Item>
 
             <Form.Item label={null} style={{ margin: '0' }}>
               <Button type="primary" block htmlType="submit">
-                登录
+                {t('login')}
               </Button>
             </Form.Item>
           </Form>

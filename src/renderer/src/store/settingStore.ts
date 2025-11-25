@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
-export interface UserSettingVo {
+export interface UserSettingResponse {
   appearance: number
   language: number
   ttsAutoplay: number
@@ -12,13 +12,13 @@ export interface UserSettingVo {
 }
 
 interface SettingStore {
-  setting: UserSettingVo | null
+  setting: UserSettingResponse | null
 
-  setSetting: (setting: UserSettingVo) => void
+  setSetting: (setting: UserSettingResponse) => void
   reset: () => void
 }
 
-const defaultSettings: UserSettingVo = {
+const defaultSettings: UserSettingResponse = {
   appearance: 1,
   language: 0,
   ttsAutoplay: 0,

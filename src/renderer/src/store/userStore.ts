@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
-export interface UserProfileVo {
+export interface UserProfileResponse {
   email?: string
   username?: string
   gender?: number
@@ -12,20 +12,20 @@ export interface UserProfileVo {
   createTime?: string
 }
 
-export interface LoginVo {
+export interface LoginResponse {
   token?: string
   authRole?: number
 }
 
 interface UserState {
-  profile: UserProfileVo | null
-  loginInfo: LoginVo | null
+  profile: UserProfileResponse | null
+  loginInfo: LoginResponse | null
 
   isLoggedIn: boolean
 
-  setProfile: (profile: UserProfileVo) => void
-  setLoginInfo: (loginInfo: LoginVo) => void
-  updateProfile: (partial: Partial<UserProfileVo>) => void
+  setProfile: (profile: UserProfileResponse) => void
+  setLoginInfo: (loginInfo: LoginResponse) => void
+  updateProfile: (partial: Partial<UserProfileResponse>) => void
   logout: () => void
   reset: () => void
 }

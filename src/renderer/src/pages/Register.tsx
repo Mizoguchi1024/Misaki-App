@@ -1,6 +1,7 @@
 import { LockOutlined, MailOutlined } from '@ant-design/icons'
 import GlassBox from '@renderer/components/GlassBox'
 import { Button, Form, FormProps, Input, Space } from 'antd'
+import { useTranslation } from 'react-i18next'
 
 type FieldType = {
   email?: string
@@ -17,11 +18,12 @@ const onFinishFailed: FormProps<FieldType>['onFinishFailed'] = (errorInfo) => {
 }
 
 export default function Register(): React.JSX.Element {
+  const { t } = useTranslation('register')
   return (
     <>
       <div className="flex flex-col items-center justify-center gap-16 h-full">
         <GlassBox className="gap-12">
-          <h1 className="text-4xl font-medium select-none">创建你的 Misaki 账户</h1>
+          <h1 className="text-4xl font-medium select-none">{t('registerTitle')}</h1>
           <Form
             name="basic"
             size={'large'}
@@ -33,33 +35,33 @@ export default function Register(): React.JSX.Element {
           >
             <Form.Item<FieldType>
               name="email"
-              rules={[{ required: true, message: '请输入您的邮箱' }]}
+              rules={[{ required: true, message: t('emailRequiredMessage') }]}
             >
               <Space.Compact className="w-full">
-                <Input prefix={<MailOutlined />} placeholder="电子邮箱" />
+                <Input prefix={<MailOutlined />} placeholder={t('email')} />
                 <Button color="primary" variant="filled">
-                  发送验证码
+                  {t('sendVerifyCode')}
                 </Button>
               </Space.Compact>
             </Form.Item>
 
             <Form.Item<FieldType>
               name="password"
-              rules={[{ required: true, message: '请输入您的密码' }]}
+              rules={[{ required: true, message: t('passwordRequiredMessage') }]}
             >
-              <Input.Password prefix={<LockOutlined />} placeholder="密码" />
+              <Input.Password prefix={<LockOutlined />} placeholder={t('password')} />
             </Form.Item>
 
             <Form.Item<FieldType>
               name="verifyCode"
-              rules={[{ required: true, message: '请输入验证码' }]}
+              rules={[{ required: true, message: t('verifyCodeRequiredMessage') }]}
             >
               <Input.OTP />
             </Form.Item>
 
             <Form.Item label={null} style={{ margin: '0' }}>
               <Button type="primary" block htmlType="submit">
-                注册
+                {t('register')}
               </Button>
             </Form.Item>
           </Form>
