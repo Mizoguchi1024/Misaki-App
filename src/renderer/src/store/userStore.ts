@@ -1,7 +1,12 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
+import { LoginResponse } from '@renderer/types/api/auth'
+import { UserProfileResponse } from '@renderer/types/api/user'
 
-export interface UserProfileResponse {
+interface UserStore {
+  token?: string
+  userRole?: number
+
   email?: string
   username?: string
   gender?: number
@@ -10,68 +15,62 @@ export interface UserProfileResponse {
   occupation?: string
   detail?: string
   createTime?: string
-}
 
-export interface LoginResponse {
-  token?: string
-  authRole?: number
-}
-
-interface UserState {
-  profile: UserProfileResponse | null
-  loginInfo: LoginResponse | null
-
-  isLoggedIn: boolean
-
-  setProfile: (profile: UserProfileResponse) => void
   setLoginInfo: (loginInfo: LoginResponse) => void
+  setProfile: (profile: UserProfileResponse) => void
   updateProfile: (partial: Partial<UserProfileResponse>) => void
   logout: () => void
-  reset: () => void
 }
 
-export const useUserStore = create<UserState>()(
+export const useUserStore = create<UserStore>()(
   persist(
     (set) => ({
-      profile: null,
-      loginInfo: null,
-      isLoggedIn: false,
-
-      setProfile: (profile) => set({ profile }),
       setLoginInfo: (loginInfo) =>
-        set({
-          loginInfo,
-          isLoggedIn: !!loginInfo?.token
-        }),
+        set(() => ({
+          token: loginInfo?.token,
+          userRole: loginInfo?.userRole
+        })),
+
+      setProfile: (profile) =>
+        set(() => ({
+          email: profile?.email,
+          username: profile?.username,
+          gender: profile?.gender,
+          birthday: profile?.birthday,
+          avatarUrl: profile?.avatarUrl,
+          occupation: profile?.occupation,
+          detail: profile?.detail,
+          createTime: profile?.createTime
+        })),
 
       updateProfile: (partial) =>
         set((state) => ({
-          profile: state.profile ? { ...state.profile, ...partial } : partial
+          email: partial.email ?? state.email,
+          username: partial.username ?? state.username,
+          gender: partial.gender ?? state.gender,
+          birthday: partial.birthday ?? state.birthday,
+          avatarUrl: partial.avatarUrl ?? state.avatarUrl,
+          occupation: partial.occupation ?? state.occupation,
+          detail: partial.detail ?? state.detail,
+          createTime: partial.createTime ?? state.createTime
         })),
 
       logout: () =>
-        set({
-          profile: null,
-          loginInfo: null,
-          isLoggedIn: false
-        }),
-
-      reset: () => {
-        set({
-          profile: null,
-          loginInfo: null,
-          isLoggedIn: false
-        })
-        localStorage.removeItem('user-storage')
-      }
+        set(() => ({
+          token: null as any,
+          userRole: null as any,
+          email: null as any,
+          username: null as any,
+          gender: null as any,
+          birthday: null as any,
+          avatarUrl: null as any,
+          occupation: null as any,
+          detail: null as any,
+          createTime: null as any
+        }))
     }),
     {
-      name: 'user-storage',
-      partialize: (state) => ({
-        profile: state.profile,
-        loginInfo: state.loginInfo,
-        isLoggedIn: state.isLoggedIn
-      })
+      name: 'user-storage'
     }
   )
 )

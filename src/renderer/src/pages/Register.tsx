@@ -35,7 +35,10 @@ export default function Register(): React.JSX.Element {
           >
             <Form.Item<FieldType>
               name="email"
-              rules={[{ required: true, message: t('emailRequiredMessage') }]}
+              rules={[
+                { type: 'email', message: t('emailTypeMessage') },
+                { required: true, message: t('emailRequiredMessage') }
+              ]}
             >
               <Space.Compact className="w-full">
                 <Input prefix={<MailOutlined />} placeholder={t('email')} />

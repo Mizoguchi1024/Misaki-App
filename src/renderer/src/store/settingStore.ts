@@ -1,7 +1,8 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
+import { UserSettingResponse } from '@renderer/types/api/user'
 
-export interface UserSettingResponse {
+interface SettingStore {
   appearance: number
   language: number
   ttsAutoplay: number
@@ -9,12 +10,8 @@ export interface UserSettingResponse {
   colorPrimary: string
   borderRadius: number
   backgroundImagePath: string
-}
 
-interface SettingStore {
-  setting: UserSettingResponse | null
-
-  setSetting: (setting: UserSettingResponse) => void
+  setSetting: (s: UserSettingResponse) => void
   reset: () => void
 }
 
@@ -31,9 +28,35 @@ const defaultSettings: UserSettingResponse = {
 export const useSettingStore = create<SettingStore>()(
   persist(
     (set) => ({
-      setting: defaultSettings,
-      setSetting: (setting) => set({ setting }),
-      reset: () => set(() => ({ setting: defaultSettings }))
+      appearance: defaultSettings.appearance,
+      language: defaultSettings.language,
+      ttsAutoplay: defaultSettings.ttsAutoplay,
+      fontSize: defaultSettings.fontSize,
+      colorPrimary: defaultSettings.colorPrimary,
+      borderRadius: defaultSettings.borderRadius,
+      backgroundImagePath: defaultSettings.backgroundImagePath,
+
+      setSetting: (s: UserSettingResponse) =>
+        set(() => ({
+          appearance: s.appearance ?? defaultSettings.appearance,
+          language: s.language ?? defaultSettings.language,
+          ttsAutoplay: s.ttsAutoplay ?? defaultSettings.ttsAutoplay,
+          fontSize: s.fontSize ?? defaultSettings.fontSize,
+          colorPrimary: s.colorPrimary ?? defaultSettings.colorPrimary,
+          borderRadius: s.borderRadius ?? defaultSettings.borderRadius,
+          backgroundImagePath: s.backgroundImagePath ?? defaultSettings.backgroundImagePath
+        })),
+
+      reset: () =>
+        set(() => ({
+          appearance: defaultSettings.appearance,
+          language: defaultSettings.language,
+          ttsAutoplay: defaultSettings.ttsAutoplay,
+          fontSize: defaultSettings.fontSize,
+          colorPrimary: defaultSettings.colorPrimary,
+          borderRadius: defaultSettings.borderRadius,
+          backgroundImagePath: defaultSettings.backgroundImagePath
+        }))
     }),
     {
       name: 'user-setting-store'

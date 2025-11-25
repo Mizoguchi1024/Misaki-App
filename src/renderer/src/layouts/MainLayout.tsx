@@ -23,7 +23,7 @@ export default function MainLayout(): React.JSX.Element {
   const {
     token: { colorBgContainer, colorPrimary }
   } = theme.useToken()
-  const { profile, loginInfo, isLoggedIn, logout } = useUserStore()
+  const { token } = useUserStore()
   const items: MenuProps['items'] = [
     {
       key: '/',
@@ -90,7 +90,7 @@ export default function MainLayout(): React.JSX.Element {
             <span className="text-2xl font-semibold select-none">Misaki</span>
           </div>
         </Button>
-        {!isLoggedIn && (
+        {token == null && (
           <div className="flex items-center gap-4">
             <Button type="primary" onClick={() => navigate('/login', { viewTransition: true })}>
               登录
@@ -98,7 +98,7 @@ export default function MainLayout(): React.JSX.Element {
             <Button onClick={() => navigate('/register', { viewTransition: true })}>注册</Button>
           </div>
         )}
-        {isLoggedIn && (
+        {token != null && (
           <Dropdown menu={{ items }} placement="bottomLeft" trigger={['click']}>
             <Button size="large" color="default" variant="filled">
               <Avatar size="small" icon={<UserOutlined />} />

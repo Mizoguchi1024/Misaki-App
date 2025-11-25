@@ -1,8 +1,9 @@
 import { LockOutlined, MailOutlined } from '@ant-design/icons'
 import GlassBox from '@renderer/components/GlassBox'
-import { Button, Checkbox, Form, FormProps, Input } from 'antd'
+import { Button, Checkbox, Form, Input, message } from 'antd'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { login } from '@renderer/api/auth'
 
 type FieldType = {
   email?: string
@@ -10,19 +11,23 @@ type FieldType = {
   remember?: boolean
 }
 
-const onFinish: FormProps<FieldType>['onFinish'] = (values) => {
-  console.log('Success:', values)
-}
-
-const onFinishFailed: FormProps<FieldType>['onFinishFailed'] = (errorInfo) => {
-  console.log('Failed:', errorInfo)
-}
-
 export default function Login(): React.JSX.Element {
+  const [messageApi, contextHolder] = message.useMessage()
   const { t } = useTranslation('login')
   const navigator = useNavigate()
+
+  const onFinish = async (values) => {
+    try {
+      const res = await login({ email: values.email, password: values.password })
+      console.log(res)
+    } catch (e) {
+      messageApi.error('请求失败')
+    }
+  }
+
   return (
     <>
+      {contextHolder}
       <div className="flex items-center justify-center h-full">
         <GlassBox className="gap-12">
           <h1 className="text-4xl font-medium select-none">{t('loginTitle')}</h1>
@@ -32,13 +37,19 @@ export default function Login(): React.JSX.Element {
             size={'large'}
             variant={'filled'}
             onFinish={onFinish}
-            onFinishFailed={onFinishFailed}
+            onFinishFailed={(errorInfo) => {
+              console.log('Failed:', errorInfo)
+            }}
             autoComplete="off"
             className="w-100"
           >
             <Form.Item<FieldType>
               name="email"
-              rules={[{ required: true, message: t('emailRequiredMessage') }]}
+              validateTrigger="onBlur"
+              rules={[
+                { type: 'email', message: t('emailTypeMessage') },
+                { required: true, message: t('emailRequiredMessage') }
+              ]}
             >
               <Input prefix={<MailOutlined />} placeholder={t('email')} />
             </Form.Item>

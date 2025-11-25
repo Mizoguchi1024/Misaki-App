@@ -4,16 +4,16 @@ import 'dayjs/locale/zh-cn'
 import { useSettingStore } from './store/settingStore'
 
 export default function App({ children }: { children?: React.ReactNode }): React.JSX.Element {
-  const { setting } = useSettingStore()
+  const { appearance, fontSize, colorPrimary, borderRadius } = useSettingStore()
 
   return (
     <ConfigProvider
       theme={{
-        algorithm: setting?.appearance === 1 ? theme.defaultAlgorithm : theme.darkAlgorithm, // defaultAlgorithm | darkAlgorithm
+        algorithm: appearance === 1 ? theme.defaultAlgorithm : theme.darkAlgorithm, // defaultAlgorithm | darkAlgorithm
         token: {
-          fontSize: setting?.fontSize,
-          colorPrimary: setting?.colorPrimary,
-          borderRadius: setting?.borderRadius
+          fontSize: fontSize,
+          colorPrimary: colorPrimary,
+          borderRadius: borderRadius
         },
         components: {
           Menu: {

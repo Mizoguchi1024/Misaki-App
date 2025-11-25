@@ -8,7 +8,7 @@ import TermsModal from '@renderer/components/TermsModal'
 import PolicyModal from '@renderer/components/PolicyModal'
 
 export default function Home(): React.JSX.Element {
-  const { profile, loginInfo, isLoggedIn, logout } = useUserStore()
+  const { token } = useUserStore()
   const [title, setTitle] = useState('Misaki')
   const [width, setWidth] = useState(10)
   const spanRef = useRef<HTMLSpanElement>(null)
@@ -73,7 +73,7 @@ export default function Home(): React.JSX.Element {
               onChange={setColor}
               disabledAlpha
               arrow={false}
-              disabled={!isLoggedIn}
+              disabled={token == null}
             >
               <MisakiLogo className="h-28 ml-24" fill={colorPrimary} />
             </ColorPicker>
@@ -84,7 +84,7 @@ export default function Home(): React.JSX.Element {
               {title + 'iiii' || ' '}
             </span>
             <Input
-              readOnly={!isLoggedIn}
+              readOnly={token == null}
               spellCheck="false"
               maxLength={8}
               defaultValue="Misaki"
@@ -103,6 +103,7 @@ export default function Home(): React.JSX.Element {
           <Sender
             style={{ width: '75%' }}
             placeholder="需要我帮你做什么？"
+            disabled={token == null}
             footer={() => {
               return (
                 <div className="flex gap-2">
