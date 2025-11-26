@@ -4,6 +4,7 @@ import { getProfile } from '@renderer/api/user'
 import GlassBox from '@renderer/components/GlassBox'
 import { useUserStore } from '@renderer/store/userStore'
 import { Button, Form, FormProps, Input, message, Space } from 'antd'
+import { AxiosError } from 'axios'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 
@@ -24,15 +25,15 @@ export default function Register(): React.JSX.Element {
   const [form] = Form.useForm<FieldType>()
   const { t } = useTranslation('register')
 
-  const onSendVerifyCode = async () => {
+  const handleSendVerifyCode = async (): Promise<void> => {
     try {
       const { email } = await form.validateFields(['email'])
       await sendVerifyCode(email)
       messageApi.success(t('sendVerifyCodeSuccess'))
     } catch (err) {
-      if ((err as any)?.errorFields) return
-      const serverMsg = (err as any)?.response?.data?.message || (err as Error).message
-      messageApi.error(serverMsg)
+      if (err instanceof AxiosError) {
+        messageApi.error(err?.response?.data?.message)
+      }
     }
   }
 
@@ -45,12 +46,13 @@ export default function Register(): React.JSX.Element {
       })
       messageApi.success(t('registerSuccess'))
       const loginRes = await login({ email: values.email, password: values.password })
-      setAuthInfo(loginRes.data.data)
+      setAuthInfo(loginRes.data)
       const profileRes = await getProfile()
-      setProfile(profileRes.data.data)
+      setProfile(profileRes.data)
       navigator('/', { viewTransition: true })
     } catch (err) {
-      const serverMsg = err?.response?.data?.message || err?.message
+      const serverMsg =
+        (err as AxiosError<{ message: string }>)?.response?.data?.message || (err as Error)?.message
       messageApi.error(serverMsg)
     }
   }
@@ -81,7 +83,7 @@ export default function Register(): React.JSX.Element {
             >
               <Space.Compact className="w-full">
                 <Input prefix={<MailOutlined />} placeholder={t('email')} />
-                <Button color="primary" variant="filled" onClick={onSendVerifyCode}>
+                <Button color="primary" variant="filled" onClick={handleSendVerifyCode}>
                   {t('sendVerifyCode')}
                 </Button>
               </Space.Compact>

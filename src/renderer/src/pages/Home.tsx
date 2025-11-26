@@ -6,6 +6,7 @@ import { useUserStore } from '@renderer/store/userStore'
 import api from '@renderer/api'
 import TermsModal from '@renderer/components/TermsModal'
 import PolicyModal from '@renderer/components/PolicyModal'
+import { AggregationColor } from 'antd/es/color-picker/color'
 
 export default function Home(): React.JSX.Element {
   const { token } = useUserStore()
@@ -62,6 +63,10 @@ export default function Home(): React.JSX.Element {
     setIsPolicyModalOpen(false)
   }
 
+  function handleColorChange(value: AggregationColor): void {
+    setColor(value.toHexString())
+  }
+
   return (
     <>
       {contextHolder}
@@ -70,7 +75,7 @@ export default function Home(): React.JSX.Element {
           <div className="flex items-center gap-1 mb-24">
             <ColorPicker
               value={color}
-              onChange={setColor}
+              onChange={handleColorChange}
               disabledAlpha
               arrow={false}
               disabled={token == null}

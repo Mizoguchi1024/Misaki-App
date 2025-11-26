@@ -57,16 +57,16 @@ export const useUserStore = create<UserStore>()(
 
       logout: () =>
         set(() => ({
-          token: null as any,
-          authRole: null as any,
-          email: null as any,
-          username: null as any,
-          gender: null as any,
-          birthday: null as any,
-          avatarUrl: null as any,
-          occupation: null as any,
-          detail: null as any,
-          createTime: null as any
+          token: undefined,
+          authRole: undefined,
+          email: undefined,
+          username: undefined,
+          gender: undefined,
+          birthday: undefined,
+          avatarUrl: undefined,
+          occupation: undefined,
+          detail: undefined,
+          createTime: undefined
         }))
     }),
     {

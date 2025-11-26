@@ -2,6 +2,7 @@ import { LockOutlined, MailOutlined } from '@ant-design/icons'
 import { resetPassword, sendVerifyCode } from '@renderer/api/auth'
 import GlassBox from '@renderer/components/GlassBox'
 import { Button, Form, FormProps, Input, message, Space } from 'antd'
+import { AxiosError } from 'axios'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 
@@ -21,15 +22,15 @@ export default function ResetPassword(): React.JSX.Element {
   const [form] = Form.useForm<FieldType>()
   const { t } = useTranslation('resetPassword')
 
-  const onSendVerifyCode = async () => {
+  const onSendVerifyCode = async (): Promise<void> => {
     try {
       const { email } = await form.validateFields(['email'])
       await sendVerifyCode(email)
       messageApi.success(t('sendVerifyCodeSuccess'))
     } catch (err) {
-      if ((err as any)?.errorFields) return
-      const serverMsg = (err as any)?.response?.data?.message || (err as Error).message
-      messageApi.error(serverMsg)
+      if (err instanceof AxiosError) {
+        messageApi.error(err?.response?.data?.message)
+      }
     }
   }
 
@@ -43,7 +44,8 @@ export default function ResetPassword(): React.JSX.Element {
       messageApi.success(t('resetSuccess'))
       navigator('/', { viewTransition: true })
     } catch (err) {
-      const serverMsg = err?.response?.data?.message || err?.message
+      const serverMsg =
+        (err as AxiosError<{ message: string }>)?.response?.data?.message || (err as Error)?.message
       messageApi.error(serverMsg)
     }
   }

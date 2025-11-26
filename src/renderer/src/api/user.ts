@@ -7,12 +7,14 @@ import {
   UserFrontResponse
 } from '@renderer/types/api/user'
 
-export const getProfile = () => api.get<ApiResponse<UserFrontResponse>>('/front/users')
+export const getProfile = (): Promise<ApiResponse<UserFrontResponse>> =>
+  api.get<ApiResponse<UserFrontResponse>>('/front/users').then((res) => res.data)
 
-export const updateProfile = (data: UpdateUserFrontRequest) =>
-  api.put<ApiResponse<void>>('/front/users', data)
+export const updateProfile = (data: UpdateUserFrontRequest): Promise<ApiResponse<void>> =>
+  api.put<ApiResponse<void>>('/front/users', data).then((res) => res.data)
 
-export const getSetting = () => api.get<ApiResponse<SettingFrontResponse>>('/front/users/settings')
+export const getSetting = (): Promise<ApiResponse<SettingFrontResponse>> =>
+  api.get<ApiResponse<SettingFrontResponse>>('/front/users/settings').then((res) => res.data)
 
-export const updateSetting = (data: UpdateSettingFrontRequest) =>
-  api.put<ApiResponse<void>>('/front/users/settings', data)
+export const updateSetting = (data: UpdateSettingFrontRequest): Promise<ApiResponse<void>> =>
+  api.put<ApiResponse<void>>('/front/users/settings', data).then((res) => res.data)

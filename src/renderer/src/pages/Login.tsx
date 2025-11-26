@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next'
 import { login } from '@renderer/api/auth'
 import { useUserStore } from '@renderer/store/userStore'
 import { getProfile } from '@renderer/api/user'
+import { AxiosError } from 'axios'
 
 type FieldType = {
   email: string
@@ -22,13 +23,14 @@ export default function Login(): React.JSX.Element {
   const onFinish: FormProps<FieldType>['onFinish'] = async (values) => {
     try {
       const loginRes = await login({ email: values.email, password: values.password })
-      setAuthInfo(loginRes.data.data)
+      setAuthInfo(loginRes.data)
       const profileRes = await getProfile()
-      setProfile(profileRes.data.data)
+      setProfile(profileRes.data)
       messageApi.success(t('loginSuccess'))
       navigator('/', { viewTransition: true })
     } catch (err) {
-      const serverMsg = err?.response?.data?.message || err?.message
+      const serverMsg =
+        (err as AxiosError<{ message: string }>)?.response?.data?.message || (err as Error)?.message
       messageApi.error(serverMsg)
     }
   }
