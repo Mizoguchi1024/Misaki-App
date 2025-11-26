@@ -50,10 +50,10 @@ export default function Login(): React.JSX.Element {
             }}
             autoComplete="off"
             className="w-100"
+            validateTrigger="onSubmit"
           >
             <Form.Item<FieldType>
               name="email"
-              validateTrigger="onBlur"
               rules={[
                 { type: 'email', message: t('emailTypeMessage') },
                 { required: true, message: t('emailRequiredMessage') }
@@ -63,7 +63,11 @@ export default function Login(): React.JSX.Element {
             </Form.Item>
             <Form.Item<FieldType>
               name="password"
-              rules={[{ required: true, message: t('passwordRequiredMessage') }]}
+              rules={[
+                { required: true, message: t('passwordRequiredMessage') },
+                { min: 6, message: t('passwordTypeMessage') },
+                { max: 20, message: t('passwordTypeMessage') }
+              ]}
             >
               <Input.Password prefix={<LockOutlined />} placeholder={t('password')} />
             </Form.Item>

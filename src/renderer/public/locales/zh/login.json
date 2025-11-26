@@ -5,6 +5,7 @@
     "emailTypeMessage": "请输入正确的邮箱格式",
     "password": "密码",
     "passwordRequiredMessage": "请输入密码",
+    "passwordTypeMessage": "密码长度须在6-20个字符之间",
     "login": "登录",
     "rememberMe": "记住我",
     "forgotPassword": "忘记密码",

@@ -6,6 +6,7 @@
     "sendVerifyCode": "发送验证码",
     "password": "密码",
     "passwordRequiredMessage": "请输入密码",
+    "passwordTypeMessage": "密码长度须在6-20个字符之间",
     "verifyCodeRequiredMessage": "请输入验证码",
     "register": "注册",
     "registerSuccess": "注册成功"

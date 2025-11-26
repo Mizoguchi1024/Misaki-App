@@ -63,6 +63,7 @@ export default function ResetPassword(): React.JSX.Element {
             onFinishFailed={onFinishFailed}
             autoComplete="off"
             className="w-100"
+            validateTrigger="onSubmit"
           >
             <Form.Item<FieldType>
               name="email"
@@ -81,7 +82,11 @@ export default function ResetPassword(): React.JSX.Element {
 
             <Form.Item<FieldType>
               name="password"
-              rules={[{ required: true, message: t('passwordRequiredMessage') }]}
+              rules={[
+                { required: true, message: t('passwordRequiredMessage') },
+                { min: 6, message: t('passwordTypeMessage') },
+                { max: 20, message: t('passwordTypeMessage') }
+              ]}
             >
               <Input.Password prefix={<LockOutlined />} placeholder={t('password')} />
             </Form.Item>
