@@ -23,7 +23,7 @@ export default function Login(): React.JSX.Element {
     try {
       const loginRes = await login({ email: values.email, password: values.password })
       setAuthInfo(loginRes.data.data)
-      const profileRes = await getProfile(null)
+      const profileRes = await getProfile()
       setProfile(profileRes.data.data)
       messageApi.success(t('loginSuccess'))
       navigator('/', { viewTransition: true })

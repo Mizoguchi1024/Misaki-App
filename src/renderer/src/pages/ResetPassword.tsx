@@ -1,5 +1,5 @@
 import { LockOutlined, MailOutlined } from '@ant-design/icons'
-import { resetPassword } from '@renderer/api/auth'
+import { resetPassword, sendVerifyCode } from '@renderer/api/auth'
 import GlassBox from '@renderer/components/GlassBox'
 import { Button, Form, FormProps, Input, message, Space } from 'antd'
 import { useTranslation } from 'react-i18next'
@@ -18,7 +18,20 @@ const onFinishFailed: FormProps<FieldType>['onFinishFailed'] = (errorInfo) => {
 export default function ResetPassword(): React.JSX.Element {
   const [messageApi, contextHolder] = message.useMessage()
   const navigator = useNavigate()
+  const [form] = Form.useForm<FieldType>()
   const { t } = useTranslation('resetPassword')
+
+  const onSendVerifyCode = async () => {
+    try {
+      const { email } = await form.validateFields(['email'])
+      await sendVerifyCode(email)
+      messageApi.success(t('sendVerifyCodeSuccess'))
+    } catch (err) {
+      if ((err as any)?.errorFields) return
+      const serverMsg = (err as any)?.response?.data?.message || (err as Error).message
+      messageApi.error(serverMsg)
+    }
+  }
 
   const onFinish: FormProps<FieldType>['onFinish'] = async (values) => {
     try {
@@ -42,6 +55,7 @@ export default function ResetPassword(): React.JSX.Element {
         <GlassBox className="gap-12">
           <h1 className="text-4xl font-medium select-none">{t('resetPasswordTitle')}</h1>
           <Form
+            form={form}
             name="basic"
             size={'large'}
             variant={'filled'}
@@ -59,7 +73,7 @@ export default function ResetPassword(): React.JSX.Element {
             >
               <Space.Compact className="w-full">
                 <Input prefix={<MailOutlined />} placeholder={t('email')} />
-                <Button color="primary" variant="filled">
+                <Button color="primary" variant="filled" onClick={onSendVerifyCode}>
                   {t('sendVerifyCode')}
                 </Button>
               </Space.Compact>

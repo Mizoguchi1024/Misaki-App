@@ -15,3 +15,5 @@ export const register = (data: RegisterRequest) =>
 
 export const resetPassword = (data: ResetPasswordRequest) =>
   api.post<ApiResponse<void>>('/auth/reset-password', data)
+
+export const sendVerifyCode = (email: string) => api.get<ApiResponse<void>>(`/auth/verify/${email}`)

@@ -1,5 +1,5 @@
 import { LockOutlined, MailOutlined } from '@ant-design/icons'
-import { login, register } from '@renderer/api/auth'
+import { login, register, sendVerifyCode } from '@renderer/api/auth'
 import { getProfile } from '@renderer/api/user'
 import GlassBox from '@renderer/components/GlassBox'
 import { useUserStore } from '@renderer/store/userStore'
@@ -21,7 +21,20 @@ export default function Register(): React.JSX.Element {
   const [messageApi, contextHolder] = message.useMessage()
   const { setAuthInfo, setProfile } = useUserStore()
   const navigator = useNavigate()
+  const [form] = Form.useForm<FieldType>()
   const { t } = useTranslation('register')
+
+  const onSendVerifyCode = async () => {
+    try {
+      const { email } = await form.validateFields(['email'])
+      await sendVerifyCode(email)
+      messageApi.success(t('sendVerifyCodeSuccess'))
+    } catch (err) {
+      if ((err as any)?.errorFields) return
+      const serverMsg = (err as any)?.response?.data?.message || (err as Error).message
+      messageApi.error(serverMsg)
+    }
+  }
 
   const onFinish: FormProps<FieldType>['onFinish'] = async (values) => {
     try {
@@ -33,7 +46,7 @@ export default function Register(): React.JSX.Element {
       messageApi.success(t('registerSuccess'))
       const loginRes = await login({ email: values.email, password: values.password })
       setAuthInfo(loginRes.data.data)
-      const profileRes = await getProfile(null)
+      const profileRes = await getProfile()
       setProfile(profileRes.data.data)
       navigator('/', { viewTransition: true })
     } catch (err) {
@@ -49,6 +62,7 @@ export default function Register(): React.JSX.Element {
         <GlassBox className="gap-12">
           <h1 className="text-4xl font-medium select-none">{t('registerTitle')}</h1>
           <Form
+            form={form}
             name="basic"
             size={'large'}
             variant={'filled'}
@@ -66,7 +80,7 @@ export default function Register(): React.JSX.Element {
             >
               <Space.Compact className="w-full">
                 <Input prefix={<MailOutlined />} placeholder={t('email')} />
-                <Button color="primary" variant="filled">
+                <Button color="primary" variant="filled" onClick={onSendVerifyCode}>
                   {t('sendVerifyCode')}
                 </Button>
               </Space.Compact>
