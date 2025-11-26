@@ -7,14 +7,81 @@ import {
   DatabaseOutlined,
   FolderOutlined,
   FormOutlined,
+  InfoCircleOutlined,
   MessageOutlined,
+  QuestionCircleOutlined,
   SearchOutlined,
+  SettingOutlined,
   StarOutlined,
   UserOutlined
 } from '@ant-design/icons'
 import { useUserStore } from '@renderer/store/userStore'
+import SettingModal from '@renderer/components/SettingModal'
+import AboutModal from '@renderer/components/AboutModal'
 
 const { Header, Content, Sider } = Layout
+
+const helpList: MenuProps['items'] = [
+  {
+    key: '/setting',
+    label: '设置',
+    icon: <SettingOutlined />
+  },
+  {
+    key: '/about',
+    label: '关于',
+    icon: <InfoCircleOutlined />
+  }
+]
+
+const items: MenuProps['items'] = [
+  {
+    key: '/',
+    label: '新建会话',
+    icon: <FormOutlined />
+  },
+  {
+    key: '/search',
+    label: '搜索会话',
+    icon: <SearchOutlined />
+  },
+  {
+    key: '/mcp-server',
+    label: 'MCP服务',
+    icon: <DatabaseOutlined />
+  },
+  {
+    key: '/script',
+    label: '快捷指令',
+    icon: <CodeOutlined />
+  },
+  {
+    key: '6',
+    label: '文件处理',
+    icon: <FolderOutlined />
+  },
+  {
+    type: 'divider'
+  },
+  {
+    key: 'sub1',
+    label: '项目',
+    icon: <StarOutlined />,
+    children: [
+      { key: '7', label: '项目 1' },
+      { key: '8', label: '项目 2' }
+    ]
+  },
+  {
+    key: 'sub2',
+    label: '会话',
+    icon: <MessageOutlined />,
+    children: [
+      { key: '9', label: '会话 1' },
+      { key: '10', label: '会话 2' }
+    ]
+  }
+]
 
 export default function MainLayout(): React.JSX.Element {
   const [collapsed, setCollapsed] = useState(false)
@@ -24,54 +91,28 @@ export default function MainLayout(): React.JSX.Element {
     token: { colorBgContainer, colorPrimary }
   } = theme.useToken()
   const { token } = useUserStore()
-  const items: MenuProps['items'] = [
-    {
-      key: '/',
-      label: '新建会话',
-      icon: <FormOutlined />
-    },
-    {
-      key: '/search',
-      label: '搜索会话',
-      icon: <SearchOutlined />
-    },
-    {
-      key: '/mcp-server',
-      label: 'MCP服务',
-      icon: <DatabaseOutlined />
-    },
-    {
-      key: '/script',
-      label: '快捷指令',
-      icon: <CodeOutlined />
-    },
-    {
-      key: '6',
-      label: '文件处理',
-      icon: <FolderOutlined />
-    },
-    {
-      type: 'divider'
-    },
-    {
-      key: 'sub1',
-      label: '项目',
-      icon: <StarOutlined />,
-      children: [
-        { key: '7', label: '项目 1' },
-        { key: '8', label: '项目 2' }
-      ]
-    },
-    {
-      key: 'sub2',
-      label: '会话',
-      icon: <MessageOutlined />,
-      children: [
-        { key: '9', label: '会话 1' },
-        { key: '10', label: '会话 2' }
-      ]
+
+  const [isSettingModalOpen, setIsSettingModalOpen] = useState(false)
+  const [isAboutModalOpen, setIsAboutModalOpen] = useState(false)
+
+  const handleSettingModalCancel = (): void => {
+    setIsSettingModalOpen(false)
+  }
+
+  const handleAboutModalCancel = (): void => {
+    setIsAboutModalOpen(false)
+  }
+
+  const onClick: MenuProps['onClick'] = ({ key }) => {
+    switch (key) {
+      case '/setting':
+        setIsSettingModalOpen(true)
+        break
+      case '/about':
+        setIsAboutModalOpen(true)
+        break
     }
-  ]
+  }
 
   return (
     <Layout className="h-screen">
@@ -92,6 +133,20 @@ export default function MainLayout(): React.JSX.Element {
         </Button>
         {token == null && (
           <div className="flex items-center gap-4">
+            <Dropdown
+              menu={{ items: helpList, onClick }}
+              placement="bottomLeft"
+              trigger={['click']}
+            >
+              <Button
+                color="default"
+                variant="filled"
+                shape="circle"
+                icon={<QuestionCircleOutlined />}
+              ></Button>
+            </Dropdown>
+            <SettingModal open={isSettingModalOpen} onCancel={handleSettingModalCancel} />
+            <AboutModal open={isAboutModalOpen} onCancel={handleAboutModalCancel} />
             <Button type="primary" onClick={() => navigate('/login', { viewTransition: true })}>
               登录
             </Button>
@@ -107,7 +162,6 @@ export default function MainLayout(): React.JSX.Element {
           </Dropdown>
         )}
       </Header>
-
       <Layout>
         <Sider
           collapsible

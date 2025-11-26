@@ -7,5 +7,6 @@
     "password": "パスワード",
     "passwordRequiredMessage": "パスワードを入力してください",
     "verifyCodeRequiredMessage": "認証コードを入力してください",
-    "register": "登録"
+    "register": "登録",
+    "registerSuccess": "登録成功しました"
 }

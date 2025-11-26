@@ -7,5 +7,6 @@
     "passwordRequiredMessage": "パスワードを入力してください",
     "login": "ログイン",
     "rememberMe": "ログイン状態を保持する",
-    "forgotPassword": "パスワードをお忘れ"
+    "forgotPassword": "パスワードをお忘れ",
+    "loginSuccess": "ログイン成功しました"
 }

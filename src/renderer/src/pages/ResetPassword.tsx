@@ -1,16 +1,14 @@
 import { LockOutlined, MailOutlined } from '@ant-design/icons'
+import { resetPassword } from '@renderer/api/auth'
 import GlassBox from '@renderer/components/GlassBox'
-import { Button, Form, FormProps, Input, Space } from 'antd'
+import { Button, Form, FormProps, Input, message, Space } from 'antd'
 import { useTranslation } from 'react-i18next'
+import { useNavigate } from 'react-router-dom'
 
 type FieldType = {
-  email?: string
-  password?: string
-  verifyCode?: string
-}
-
-const onFinish: FormProps<FieldType>['onFinish'] = (values) => {
-  console.log('Success:', values)
+  email: string
+  password: string
+  verifyCode: string
 }
 
 const onFinishFailed: FormProps<FieldType>['onFinishFailed'] = (errorInfo) => {
@@ -18,9 +16,28 @@ const onFinishFailed: FormProps<FieldType>['onFinishFailed'] = (errorInfo) => {
 }
 
 export default function ResetPassword(): React.JSX.Element {
+  const [messageApi, contextHolder] = message.useMessage()
+  const navigator = useNavigate()
   const { t } = useTranslation('resetPassword')
+
+  const onFinish: FormProps<FieldType>['onFinish'] = async (values) => {
+    try {
+      await resetPassword({
+        email: values.email,
+        password: values.password,
+        verifyCode: values.verifyCode
+      })
+      messageApi.success(t('resetSuccess'))
+      navigator('/', { viewTransition: true })
+    } catch (err) {
+      const serverMsg = err?.response?.data?.message || err?.message
+      messageApi.error(serverMsg)
+    }
+  }
+
   return (
     <>
+      {contextHolder}
       <div className="flex items-center justify-center h-full">
         <GlassBox className="gap-12">
           <h1 className="text-4xl font-medium select-none">{t('resetPasswordTitle')}</h1>

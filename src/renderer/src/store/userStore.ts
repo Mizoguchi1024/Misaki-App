@@ -1,11 +1,11 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { LoginResponse } from '@renderer/types/api/auth'
-import { UserProfileResponse } from '@renderer/types/api/user'
+import { UserFrontResponse } from '@renderer/types/api/user'
 
 interface UserStore {
   token?: string
-  userRole?: number
+  authRole?: number
 
   email?: string
   username?: string
@@ -16,19 +16,19 @@ interface UserStore {
   detail?: string
   createTime?: string
 
-  setLoginInfo: (loginInfo: LoginResponse) => void
-  setProfile: (profile: UserProfileResponse) => void
-  updateProfile: (partial: Partial<UserProfileResponse>) => void
+  setAuthInfo: (authInfo: LoginResponse) => void
+  setProfile: (profile: UserFrontResponse) => void
+  updateProfile: (partial: Partial<UserFrontResponse>) => void
   logout: () => void
 }
 
 export const useUserStore = create<UserStore>()(
   persist(
     (set) => ({
-      setLoginInfo: (loginInfo) =>
+      setAuthInfo: (authInfo) =>
         set(() => ({
-          token: loginInfo?.token,
-          userRole: loginInfo?.userRole
+          token: authInfo?.token,
+          authRole: authInfo?.authRole
         })),
 
       setProfile: (profile) =>
@@ -58,7 +58,7 @@ export const useUserStore = create<UserStore>()(
       logout: () =>
         set(() => ({
           token: null as any,
-          userRole: null as any,
+          authRole: null as any,
           email: null as any,
           username: null as any,
           gender: null as any,

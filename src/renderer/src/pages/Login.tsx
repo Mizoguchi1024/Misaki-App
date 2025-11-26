@@ -1,27 +1,35 @@
 import { LockOutlined, MailOutlined } from '@ant-design/icons'
 import GlassBox from '@renderer/components/GlassBox'
-import { Button, Checkbox, Form, Input, message } from 'antd'
+import { Button, Checkbox, Form, FormProps, Input, message } from 'antd'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { login } from '@renderer/api/auth'
+import { useUserStore } from '@renderer/store/userStore'
+import { getProfile } from '@renderer/api/user'
 
 type FieldType = {
-  email?: string
-  password?: string
-  remember?: boolean
+  email: string
+  password: string
+  remember: boolean
 }
 
 export default function Login(): React.JSX.Element {
+  const { setAuthInfo, setProfile } = useUserStore()
   const [messageApi, contextHolder] = message.useMessage()
   const { t } = useTranslation('login')
   const navigator = useNavigate()
 
-  const onFinish = async (values) => {
+  const onFinish: FormProps<FieldType>['onFinish'] = async (values) => {
     try {
-      const res = await login({ email: values.email, password: values.password })
-      console.log(res)
-    } catch (e) {
-      messageApi.error('请求失败')
+      const loginRes = await login({ email: values.email, password: values.password })
+      setAuthInfo(loginRes.data.data)
+      const profileRes = await getProfile(null)
+      setProfile(profileRes.data.data)
+      messageApi.success(t('loginSuccess'))
+      navigator('/', { viewTransition: true })
+    } catch (err) {
+      const serverMsg = err?.response?.data?.message || err?.message
+      messageApi.error(serverMsg)
     }
   }
 
@@ -53,14 +61,12 @@ export default function Login(): React.JSX.Element {
             >
               <Input prefix={<MailOutlined />} placeholder={t('email')} />
             </Form.Item>
-
             <Form.Item<FieldType>
               name="password"
               rules={[{ required: true, message: t('passwordRequiredMessage') }]}
             >
               <Input.Password prefix={<LockOutlined />} placeholder={t('password')} />
             </Form.Item>
-
             <Form.Item<FieldType> name="remember" valuePropName="checked">
               <div className="flex justify-between items-center">
                 <div className="ml-2">
@@ -77,7 +83,6 @@ export default function Login(): React.JSX.Element {
                 </Button>
               </div>
             </Form.Item>
-
             <Form.Item label={null} style={{ margin: '0' }}>
               <Button type="primary" block htmlType="submit">
                 {t('login')}

@@ -5,10 +5,16 @@ export interface LoginRequest {
 
 export interface LoginResponse {
   token: string
-  userRole: number
+  authRole: number
 }
 
-export interface registerRequest {
+export interface RegisterRequest {
+  email: string
+  password: string
+  verifyCode: string
+}
+
+export interface ResetPasswordRequest {
   email: string
   password: string
   verifyCode: string

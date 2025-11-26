@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import { UserSettingResponse } from '@renderer/types/api/user'
+import { SettingFrontResponse } from '@renderer/types/api/user'
 
 interface SettingStore {
   appearance: number
@@ -11,11 +11,11 @@ interface SettingStore {
   borderRadius: number
   backgroundImagePath: string
 
-  setSetting: (s: UserSettingResponse) => void
+  setSetting: (s: SettingFrontResponse) => void
   reset: () => void
 }
 
-const defaultSettings: UserSettingResponse = {
+const defaultSettings: SettingFrontResponse = {
   appearance: 1,
   language: 0,
   ttsAutoplay: 0,
@@ -36,7 +36,7 @@ export const useSettingStore = create<SettingStore>()(
       borderRadius: defaultSettings.borderRadius,
       backgroundImagePath: defaultSettings.backgroundImagePath,
 
-      setSetting: (s: UserSettingResponse) =>
+      setSetting: (s: SettingFrontResponse) =>
         set(() => ({
           appearance: s.appearance ?? defaultSettings.appearance,
           language: s.language ?? defaultSettings.language,

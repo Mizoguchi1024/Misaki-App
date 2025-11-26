@@ -7,5 +7,6 @@
     "password": "Password",
     "passwordRequiredMessage": "Please enter your password",
     "verifyCodeRequiredMessage": "Please enter the verify code",
-    "register": "Create account"
+    "register": "Create account",
+    "registerSuccess": "Register success"
 }

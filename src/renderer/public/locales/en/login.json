@@ -7,5 +7,6 @@
     "passwordRequiredMessage": "Please enter your password",
     "login": "Sign in",
     "rememberMe": "Remember me",
-    "forgotPassword": "Forgot password"
+    "forgotPassword": "Forgot password",
+    "loginSuccess": "Login success"
 }
