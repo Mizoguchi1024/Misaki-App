@@ -12,17 +12,17 @@ export default function NotFound(): React.JSX.Element {
   } = theme.useToken()
   return (
     <div className="h-full flex items-center justify-center">
-      <GlassBox className="gap-8">
+      <GlassBox className="gap-8 w-2/5">
         <div>
-          <Typography.Title className="select-none">
-            <span style={{ color: colorPrimary }}>404&nbsp;</span>
-            <span>{t('notFound')}</span>
+          <Typography.Title className="select-none text-center" style={{ color: colorPrimary }}>
+            404
           </Typography.Title>
-          <Typography.Title level={3} className="select-none text-center">
+          <Typography.Title className="select-none text-center">{t('notFound')}</Typography.Title>
+          <Typography.Title level={4} type="secondary" className="select-none text-center">
             {t('path')} {location.pathname}
           </Typography.Title>
         </div>
-        <div className="w-60">
+        <div className="w-52">
           <Button
             type="primary"
             size="large"

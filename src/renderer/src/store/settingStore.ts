@@ -3,8 +3,10 @@ import { persist } from 'zustand/middleware'
 import { SettingFrontResponse } from '@renderer/types/api/user'
 
 interface SettingStore {
+  baseUrl: string
+
   appearance: number
-  language: number
+  language: LanguageEnum
   ttsAutoplay: number
   fontSize: number
   colorPrimary: string
@@ -15,7 +17,8 @@ interface SettingStore {
   reset: () => void
 }
 
-const defaultSettings: SettingFrontResponse = {
+const defaultSettings = {
+  baseUrl: 'http://localhost:8080/api',
   appearance: 1,
   language: 0,
   ttsAutoplay: 0,
@@ -25,9 +28,28 @@ const defaultSettings: SettingFrontResponse = {
   backgroundImagePath: ''
 }
 
+export enum LanguageEnum {
+  ZH = 0,
+  EN = 1,
+  JP = 2
+}
+
+export const LanguageI18nMap = {
+  [LanguageEnum.ZH]: 'zh',
+  [LanguageEnum.EN]: 'en',
+  [LanguageEnum.JP]: 'jp'
+}
+
+export const LanguageMap = {
+  [LanguageEnum.ZH]: '中文',
+  [LanguageEnum.EN]: 'English',
+  [LanguageEnum.JP]: '日本語'
+}
+
 export const useSettingStore = create<SettingStore>()(
   persist(
     (set) => ({
+      baseUrl: defaultSettings.baseUrl,
       appearance: defaultSettings.appearance,
       language: defaultSettings.language,
       ttsAutoplay: defaultSettings.ttsAutoplay,
