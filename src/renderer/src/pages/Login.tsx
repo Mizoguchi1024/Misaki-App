@@ -1,12 +1,13 @@
 import { LockOutlined, MailOutlined } from '@ant-design/icons'
 import GlassBox from '@renderer/components/GlassBox'
-import { Button, Checkbox, Form, FormProps, Input, message } from 'antd'
+import { Button, Checkbox, Form, FormProps, Input } from 'antd'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { login } from '@renderer/api/auth'
 import { useUserStore } from '@renderer/store/userStore'
 import { getProfile } from '@renderer/api/user'
 import { AxiosError } from 'axios'
+import { messageApi } from '@renderer/messageManager'
 
 type FieldType = {
   email: string
@@ -16,28 +17,26 @@ type FieldType = {
 
 export default function Login(): React.JSX.Element {
   const { setAuthInfo, setProfile } = useUserStore()
-  const [messageApi, contextHolder] = message.useMessage()
   const { t } = useTranslation('login')
   const navigator = useNavigate()
 
   const onFinish: FormProps<FieldType>['onFinish'] = async (values) => {
     try {
       const loginRes = await login({ email: values.email, password: values.password })
-      setAuthInfo(loginRes.data)
+      setAuthInfo(loginRes)
       const profileRes = await getProfile()
-      setProfile(profileRes.data)
-      messageApi.success(t('loginSuccess'))
+      setProfile(profileRes)
+      messageApi?.success(t('loginSuccess'))
       navigator('/', { viewTransition: true })
     } catch (err) {
       const serverMsg =
         (err as AxiosError<{ message: string }>)?.response?.data?.message || (err as Error)?.message
-      messageApi.error(serverMsg)
+      messageApi?.error(serverMsg)
     }
   }
 
   return (
     <>
-      {contextHolder}
       <div className="flex items-center justify-center h-full">
         <GlassBox className="gap-12">
           <h1 className="text-4xl font-medium select-none">{t('loginTitle')}</h1>

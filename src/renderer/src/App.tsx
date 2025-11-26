@@ -1,10 +1,13 @@
-import { ConfigProvider, theme } from 'antd'
-import zhCN from 'antd/locale/zh_CN'
+import { ConfigProvider, message, theme } from 'antd'
 import 'dayjs/locale/zh-cn'
-import { useSettingStore } from './store/settingStore'
+import { LanguageAntdMap, useSettingStore } from './store/settingStore'
+import { setMessageApi } from './messageManager'
 
 export default function App({ children }: { children?: React.ReactNode }): React.JSX.Element {
-  const { appearance, fontSize, colorPrimary, borderRadius } = useSettingStore()
+  const { appearance, fontSize, colorPrimary, borderRadius, language } = useSettingStore()
+  const [messageApi, contextHolder] = message.useMessage()
+
+  setMessageApi(messageApi)
 
   return (
     <ConfigProvider
@@ -21,8 +24,9 @@ export default function App({ children }: { children?: React.ReactNode }): React
           }
         }
       }}
-      locale={zhCN}
+      locale={LanguageAntdMap[language]}
     >
+      {contextHolder}
       {children}
     </ConfigProvider>
   )

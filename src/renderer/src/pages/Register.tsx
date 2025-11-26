@@ -2,8 +2,9 @@ import { LockOutlined, MailOutlined } from '@ant-design/icons'
 import { login, register, sendVerifyCode } from '@renderer/api/auth'
 import { getProfile } from '@renderer/api/user'
 import GlassBox from '@renderer/components/GlassBox'
+import { messageApi } from '@renderer/messageManager'
 import { useUserStore } from '@renderer/store/userStore'
-import { Button, Form, FormProps, Input, message, Space } from 'antd'
+import { Button, Form, FormProps, Input, Space } from 'antd'
 import { AxiosError } from 'axios'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
@@ -19,7 +20,6 @@ const onFinishFailed: FormProps<FieldType>['onFinishFailed'] = (errorInfo) => {
 }
 
 export default function Register(): React.JSX.Element {
-  const [messageApi, contextHolder] = message.useMessage()
   const { setAuthInfo, setProfile } = useUserStore()
   const navigator = useNavigate()
   const [form] = Form.useForm<FieldType>()
@@ -29,10 +29,10 @@ export default function Register(): React.JSX.Element {
     try {
       const { email } = await form.validateFields(['email'])
       await sendVerifyCode(email)
-      messageApi.success(t('sendVerifyCodeSuccess'))
+      messageApi?.success(t('sendVerifyCodeSuccess'))
     } catch (err) {
       if (err instanceof AxiosError) {
-        messageApi.error(err?.response?.data?.message)
+        messageApi?.error(err?.response?.data?.message)
       }
     }
   }
@@ -44,22 +44,21 @@ export default function Register(): React.JSX.Element {
         password: values.password,
         verifyCode: values.verifyCode
       })
-      messageApi.success(t('registerSuccess'))
+      messageApi?.success(t('registerSuccess'))
       const loginRes = await login({ email: values.email, password: values.password })
-      setAuthInfo(loginRes.data)
+      setAuthInfo(loginRes)
       const profileRes = await getProfile()
-      setProfile(profileRes.data)
+      setProfile(profileRes)
       navigator('/', { viewTransition: true })
     } catch (err) {
       const serverMsg =
         (err as AxiosError<{ message: string }>)?.response?.data?.message || (err as Error)?.message
-      messageApi.error(serverMsg)
+      messageApi?.error(serverMsg)
     }
   }
 
   return (
     <>
-      {contextHolder}
       <div className="flex flex-col items-center justify-center gap-16 h-full">
         <GlassBox className="gap-12">
           <h1 className="text-4xl font-medium select-none">{t('registerTitle')}</h1>

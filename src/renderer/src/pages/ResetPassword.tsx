@@ -1,7 +1,8 @@
 import { LockOutlined, MailOutlined } from '@ant-design/icons'
 import { resetPassword, sendVerifyCode } from '@renderer/api/auth'
 import GlassBox from '@renderer/components/GlassBox'
-import { Button, Form, FormProps, Input, message, Space } from 'antd'
+import { messageApi } from '@renderer/messageManager'
+import { Button, Form, FormProps, Input, Space } from 'antd'
 import { AxiosError } from 'axios'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
@@ -17,7 +18,6 @@ const onFinishFailed: FormProps<FieldType>['onFinishFailed'] = (errorInfo) => {
 }
 
 export default function ResetPassword(): React.JSX.Element {
-  const [messageApi, contextHolder] = message.useMessage()
   const navigator = useNavigate()
   const [form] = Form.useForm<FieldType>()
   const { t } = useTranslation('resetPassword')
@@ -26,10 +26,10 @@ export default function ResetPassword(): React.JSX.Element {
     try {
       const { email } = await form.validateFields(['email'])
       await sendVerifyCode(email)
-      messageApi.success(t('sendVerifyCodeSuccess'))
+      messageApi?.success(t('sendVerifyCodeSuccess'))
     } catch (err) {
       if (err instanceof AxiosError) {
-        messageApi.error(err?.response?.data?.message)
+        messageApi?.error(err?.response?.data?.message)
       }
     }
   }
@@ -41,18 +41,17 @@ export default function ResetPassword(): React.JSX.Element {
         password: values.password,
         verifyCode: values.verifyCode
       })
-      messageApi.success(t('resetSuccess'))
+      messageApi?.success(t('resetSuccess'))
       navigator('/', { viewTransition: true })
     } catch (err) {
       const serverMsg =
         (err as AxiosError<{ message: string }>)?.response?.data?.message || (err as Error)?.message
-      messageApi.error(serverMsg)
+      messageApi?.error(serverMsg)
     }
   }
 
   return (
     <>
-      {contextHolder}
       <div className="flex items-center justify-center h-full">
         <GlassBox className="gap-12">
           <h1 className="text-4xl font-medium select-none">{t('resetPasswordTitle')}</h1>

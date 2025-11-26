@@ -1,6 +1,9 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { SettingFrontResponse } from '@renderer/types/api/user'
+import zh_CN from 'antd/locale/zh_CN'
+import en_US from 'antd/locale/en_US'
+import ja_JP from 'antd/locale/ja_JP'
 
 interface SettingStore {
   baseUrl: string
@@ -38,6 +41,11 @@ export const LanguageI18nMap = {
   [LanguageEnum.ZH]: 'zh',
   [LanguageEnum.EN]: 'en',
   [LanguageEnum.JP]: 'jp'
+}
+export const LanguageAntdMap = {
+  [LanguageEnum.ZH]: zh_CN,
+  [LanguageEnum.EN]: en_US,
+  [LanguageEnum.JP]: ja_JP
 }
 
 export const LanguageMap = {

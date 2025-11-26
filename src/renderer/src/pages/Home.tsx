@@ -1,4 +1,4 @@
-import { Button, ColorPicker, Dropdown, Input, message, theme } from 'antd'
+import { Button, ColorPicker, Dropdown, Input, theme } from 'antd'
 import { Sender } from '@ant-design/x'
 import MisakiLogo from '../assets/misaki-logo-symbol.svg?react'
 import { useEffect, useRef, useState } from 'react'
@@ -7,13 +7,13 @@ import api from '@renderer/api'
 import TermsModal from '@renderer/components/TermsModal'
 import PolicyModal from '@renderer/components/PolicyModal'
 import { AggregationColor } from 'antd/es/color-picker/color'
+import { messageApi } from '@renderer/messageManager'
 
 export default function Home(): React.JSX.Element {
   const { token } = useUserStore()
   const [title, setTitle] = useState('Misaki')
   const [width, setWidth] = useState(10)
   const spanRef = useRef<HTMLSpanElement>(null)
-  const [messageApi, contextHolder] = message.useMessage()
   const {
     token: { colorPrimary }
   } = theme.useToken()
@@ -29,7 +29,7 @@ export default function Home(): React.JSX.Element {
 
   function handleTitleBlur(): void {
     submitTitle()
-    messageApi.success('标题已更新')
+    messageApi?.success('标题已更新')
   }
 
   function submitTitle(): void {
@@ -69,7 +69,6 @@ export default function Home(): React.JSX.Element {
 
   return (
     <>
-      {contextHolder}
       <div className="flex flex-col h-full">
         <div className="flex flex-col flex-1 justify-center items-center">
           <div className="flex items-center gap-1 mb-24">
@@ -128,7 +127,7 @@ export default function Home(): React.JSX.Element {
             }}
             onSubmit={() => {
               api.get('/test').catch(() => {
-                messageApi.error('请求失败')
+                messageApi?.error('请求失败')
               })
             }}
           />
