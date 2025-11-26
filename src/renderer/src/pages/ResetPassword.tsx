@@ -2,6 +2,7 @@ import { LockOutlined, MailOutlined } from '@ant-design/icons'
 import { resetPassword, sendVerifyCode } from '@renderer/api/auth'
 import GlassBox from '@renderer/components/GlassBox'
 import { messageApi } from '@renderer/messageManager'
+import { useUserStore } from '@renderer/store/userStore'
 import { Button, Form, FormProps, Input, Space } from 'antd'
 import { AxiosError } from 'axios'
 import { useTranslation } from 'react-i18next'
@@ -19,6 +20,7 @@ const onFinishFailed: FormProps<FieldType>['onFinishFailed'] = (errorInfo) => {
 
 export default function ResetPassword(): React.JSX.Element {
   const navigator = useNavigate()
+  const { logout } = useUserStore()
   const [form] = Form.useForm<FieldType>()
   const { t } = useTranslation('resetPassword')
 
@@ -41,6 +43,7 @@ export default function ResetPassword(): React.JSX.Element {
         password: values.password,
         verifyCode: values.verifyCode
       })
+      logout()
       messageApi?.success(t('resetSuccess'))
       navigator('/', { viewTransition: true })
     } catch (err) {
