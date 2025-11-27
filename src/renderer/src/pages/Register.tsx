@@ -1,6 +1,6 @@
 import { LockOutlined, MailOutlined } from '@ant-design/icons'
 import { login, register, sendVerifyCode } from '@renderer/api/auth'
-import { getProfile } from '@renderer/api/user'
+import { getProfile } from '@renderer/api/front/user'
 import GlassBox from '@renderer/components/GlassBox'
 import { messageApi } from '@renderer/messageManager'
 import { useUserStore } from '@renderer/store/userStore'

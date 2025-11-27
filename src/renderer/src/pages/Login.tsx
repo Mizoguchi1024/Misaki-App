@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { login } from '@renderer/api/auth'
 import { useUserStore } from '@renderer/store/userStore'
-import { getProfile } from '@renderer/api/user'
+import { getProfile } from '@renderer/api/front/user'
 import { AxiosError } from 'axios'
 import { messageApi } from '@renderer/messageManager'
 
