@@ -5,10 +5,11 @@ import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { login } from '@renderer/api/auth'
 import { useUserStore } from '@renderer/store/userStore'
-import { getProfile } from '@renderer/api/front/user'
+import { getProfile, getSettings } from '@renderer/api/front/user'
 import { AxiosError } from 'axios'
 import { messageApi } from '@renderer/messageManager'
 import { useState } from 'react'
+import { useSettingsStore } from '@renderer/store/settingsStore'
 
 type FieldType = {
   email: string
@@ -18,6 +19,7 @@ type FieldType = {
 
 export default function Login(): React.JSX.Element {
   const { setAuthInfo, setProfile, setRememberMe } = useUserStore()
+  const { setSettings } = useSettingsStore()
   const [finishLoading, setFinishLoading] = useState(false)
   const { t } = useTranslation('login')
   const navigator = useNavigate()
@@ -26,11 +28,13 @@ export default function Login(): React.JSX.Element {
     try {
       setFinishLoading(true)
       const loginRes = await login({ email: values.email, password: values.password })
-      setAuthInfo(loginRes)
+      setAuthInfo(loginRes.data)
       setRememberMe(values.remember)
-      const profileRes = await getProfile()
-      setProfile(profileRes)
       messageApi?.success(t('loginSuccess'))
+      const profileRes = await getProfile()
+      setProfile(profileRes.data)
+      const settingsRes = await getSettings()
+      setSettings(settingsRes.data)
       navigator('/', { viewTransition: true })
     } catch (err) {
       const apiError = err as AxiosError<{ message: string }>

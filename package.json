@@ -26,6 +26,7 @@
     "@electron-toolkit/preload": "^3.0.2",
     "@electron-toolkit/utils": "^4.0.0",
     "@tailwindcss/vite": "^4.1.16",
+    "animejs": "^4.2.2",
     "antd": "^6.0.0",
     "axios": "^1.13.2",
     "electron-updater": "^6.3.9",

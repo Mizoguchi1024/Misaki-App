@@ -1,8 +1,9 @@
 import { InfoCircleOutlined, LockOutlined, MailOutlined } from '@ant-design/icons'
 import { login, register, sendVerifyCode } from '@renderer/api/auth'
-import { getProfile } from '@renderer/api/front/user'
+import { getProfile, getSettings } from '@renderer/api/front/user'
 import GlassBox from '@renderer/components/GlassBox'
 import { messageApi } from '@renderer/messageManager'
+import { useSettingsStore } from '@renderer/store/settingsStore'
 import { useUserStore } from '@renderer/store/userStore'
 import { Button, Form, FormProps, Input, Space, Tooltip } from 'antd'
 import { AxiosError } from 'axios'
@@ -22,6 +23,7 @@ const onFinishFailed: FormProps<FieldType>['onFinishFailed'] = (errorInfo) => {
 
 export default function Register(): React.JSX.Element {
   const { setAuthInfo, setProfile } = useUserStore()
+  const { setSettings } = useSettingsStore()
   const navigator = useNavigate()
   const [form] = Form.useForm<FieldType>()
   const [sendVerifyCodeLoading, setSendVerifyCodeLoading] = useState(false)
@@ -63,9 +65,11 @@ export default function Register(): React.JSX.Element {
       })
       messageApi?.success(t('registerSuccess'))
       const loginRes = await login({ email: values.email, password: values.password })
-      setAuthInfo(loginRes)
+      setAuthInfo(loginRes.data)
       const profileRes = await getProfile()
-      setProfile(profileRes)
+      setProfile(profileRes.data)
+      const settingsRes = await getSettings()
+      setSettings(settingsRes.data)
       navigator('/', { viewTransition: true })
     } catch (err) {
       const apiError = err as AxiosError<{ message: string }>
