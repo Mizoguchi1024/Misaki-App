@@ -1,5 +1,5 @@
 {
-    "registerTitle": "Sign up for Misaki",
+    "title": "Sign up for Misaki",
     "email": "Email",
     "emailRequiredMessage": "Please enter your email",
     "emailTypeMessage": "Please enter the correct email format",

@@ -7,6 +7,8 @@ interface UserStore {
   token?: string
   authRole?: number
 
+  rememberMe?: boolean
+
   email?: string
   username?: string
   gender?: number
@@ -17,6 +19,7 @@ interface UserStore {
   createTime?: string
 
   setAuthInfo: (authInfo: LoginResponse) => void
+  setRememberMe: (rememberMe: boolean) => void
   setProfile: (profile: UserFrontResponse) => void
   updateProfile: (partial: Partial<UserFrontResponse>) => void
   logout: () => void
@@ -25,10 +28,17 @@ interface UserStore {
 export const useUserStore = create<UserStore>()(
   persist(
     (set) => ({
+      rememberMe: false,
+
       setAuthInfo: (authInfo) =>
         set(() => ({
           token: authInfo?.token,
           authRole: authInfo?.authRole
+        })),
+
+      setRememberMe: (rememberMe) =>
+        set(() => ({
+          rememberMe: rememberMe
         })),
 
       setProfile: (profile) =>
@@ -59,6 +69,7 @@ export const useUserStore = create<UserStore>()(
         set(() => ({
           token: undefined,
           authRole: undefined,
+          rememberMe: false,
           email: undefined,
           username: undefined,
           gender: undefined,
@@ -70,7 +81,12 @@ export const useUserStore = create<UserStore>()(
         }))
     }),
     {
-      name: 'user-storage'
+      name: 'user-storage',
+      onRehydrateStorage: () => (persistedState) => {
+        if (persistedState && persistedState.rememberMe === false) {
+          useUserStore.getState().logout()
+        }
+      }
     }
   )
 )

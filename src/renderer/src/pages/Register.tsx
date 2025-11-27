@@ -24,28 +24,38 @@ export default function Register(): React.JSX.Element {
   const { setAuthInfo, setProfile } = useUserStore()
   const navigator = useNavigate()
   const [form] = Form.useForm<FieldType>()
-  const [loading, setLoading] = useState(false)
+  const [sendVerifyCodeLoading, setSendVerifyCodeLoading] = useState(false)
+  const [finishLoading, setFinishLoading] = useState(false)
   const { t } = useTranslation('register')
 
   const handleSendVerifyCode = async (): Promise<void> => {
     try {
       const { email } = await form.validateFields(['email'])
-      setLoading(true)
+      setSendVerifyCodeLoading(true)
       await sendVerifyCode(email)
       messageApi?.success(t('sendVerifyCodeSuccess'))
       setTimeout(() => {
-        setLoading(false)
+        setSendVerifyCodeLoading(false)
       }, 1000)
     } catch (err) {
       if (err instanceof AxiosError) {
-        messageApi?.error(err?.message)
+        const apiError = err as AxiosError<{ message: string }>
+        if (apiError.response) {
+          messageApi?.error(apiError.response.data?.message)
+          setTimeout(() => {
+            setSendVerifyCodeLoading(false)
+          }, 1000)
+        } else {
+          messageApi?.error(err.message)
+          setSendVerifyCodeLoading(false)
+        }
       }
-      setLoading(false)
     }
   }
 
   const onFinish: FormProps<FieldType>['onFinish'] = async (values) => {
     try {
+      setFinishLoading(true)
       await register({
         email: values.email,
         password: values.password,
@@ -58,9 +68,16 @@ export default function Register(): React.JSX.Element {
       setProfile(profileRes)
       navigator('/', { viewTransition: true })
     } catch (err) {
-      const serverMsg =
-        (err as AxiosError<{ message: string }>)?.response?.data?.message || (err as Error)?.message
-      messageApi?.error(serverMsg)
+      const apiError = err as AxiosError<{ message: string }>
+      if (apiError.response) {
+        messageApi?.error(apiError.response.data?.message)
+        setTimeout(() => {
+          setFinishLoading(false)
+        }, 1000)
+      } else {
+        messageApi?.error((err as Error).message)
+        setFinishLoading(false)
+      }
     }
   }
 
@@ -68,7 +85,7 @@ export default function Register(): React.JSX.Element {
     <>
       <div className="flex flex-col items-center justify-center gap-16 h-full">
         <GlassBox className="gap-12">
-          <h1 className="text-4xl font-medium select-none">{t('registerTitle')}</h1>
+          <h1 className="text-4xl font-medium select-none">{t('title')}</h1>
           <Form
             form={form}
             name="basic"
@@ -92,7 +109,7 @@ export default function Register(): React.JSX.Element {
                 <Button
                   color="primary"
                   variant="filled"
-                  loading={loading}
+                  loading={sendVerifyCodeLoading}
                   onClick={handleSendVerifyCode}
                 >
                   {t('sendVerifyCode')}
@@ -119,7 +136,7 @@ export default function Register(): React.JSX.Element {
               <Input.OTP />
             </Form.Item>
             <Form.Item label={null} style={{ margin: '0' }}>
-              <Button type="primary" block htmlType="submit">
+              <Button type="primary" block htmlType="submit" loading={finishLoading}>
                 {t('register')}
               </Button>
             </Form.Item>

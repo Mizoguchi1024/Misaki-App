@@ -1,5 +1,5 @@
 {
-    "registerTitle": "创建你的 Misaki 账户",
+    "title": "创建你的 Misaki 账户",
     "email": "电子邮箱",
     "emailRequiredMessage": "请输入邮箱",
     "emailTypeMessage": "请输入正确的邮箱格式",

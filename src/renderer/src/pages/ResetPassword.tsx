@@ -23,28 +23,38 @@ export default function ResetPassword(): React.JSX.Element {
   const navigator = useNavigate()
   const { logout } = useUserStore()
   const [form] = Form.useForm<FieldType>()
-  const [loading, setLoading] = useState(false)
+  const [sendVerifyCodeLoading, setSendVerifyCodeLoading] = useState(false)
+  const [finishLoading, setFinishLoading] = useState(false)
   const { t } = useTranslation('resetPassword')
 
   const onSendVerifyCode = async (): Promise<void> => {
     try {
       const { email } = await form.validateFields(['email'])
-      setLoading(true)
+      setSendVerifyCodeLoading(true)
       await sendVerifyCode(email)
       messageApi?.success(t('sendVerifyCodeSuccess'))
       setTimeout(() => {
-        setLoading(false)
+        setSendVerifyCodeLoading(false)
       }, 1000)
     } catch (err) {
       if (err instanceof AxiosError) {
-        messageApi?.error(err?.message)
+        const apiError = err as AxiosError<{ message: string }>
+        if (apiError.response) {
+          messageApi?.error(apiError.response.data?.message)
+          setTimeout(() => {
+            setSendVerifyCodeLoading(false)
+          }, 1000)
+        } else {
+          messageApi?.error(err.message)
+          setSendVerifyCodeLoading(false)
+        }
       }
-      setLoading(false)
     }
   }
 
   const onFinish: FormProps<FieldType>['onFinish'] = async (values) => {
     try {
+      setFinishLoading(true)
       await resetPassword({
         email: values.email,
         password: values.password,
@@ -54,9 +64,16 @@ export default function ResetPassword(): React.JSX.Element {
       messageApi?.success(t('resetSuccess'))
       navigator('/', { viewTransition: true })
     } catch (err) {
-      const serverMsg =
-        (err as AxiosError<{ message: string }>)?.response?.data?.message || (err as Error)?.message
-      messageApi?.error(serverMsg)
+      const apiError = err as AxiosError<{ message: string }>
+      if (apiError.response) {
+        messageApi?.error(apiError.response.data?.message)
+        setTimeout(() => {
+          setFinishLoading(false)
+        }, 1000)
+      } else {
+        messageApi?.error((err as Error).message)
+        setFinishLoading(false)
+      }
     }
   }
 
@@ -64,7 +81,7 @@ export default function ResetPassword(): React.JSX.Element {
     <>
       <div className="flex items-center justify-center h-full">
         <GlassBox className="gap-12">
-          <h1 className="text-4xl font-medium select-none">{t('resetPasswordTitle')}</h1>
+          <h1 className="text-4xl font-medium select-none">{t('title')}</h1>
           <Form
             form={form}
             name="basic"
@@ -88,7 +105,7 @@ export default function ResetPassword(): React.JSX.Element {
                 <Button
                   color="primary"
                   variant="filled"
-                  loading={loading}
+                  loading={sendVerifyCodeLoading}
                   onClick={onSendVerifyCode}
                 >
                   {t('sendVerifyCode')}
@@ -118,7 +135,7 @@ export default function ResetPassword(): React.JSX.Element {
             </Form.Item>
 
             <Form.Item label={null} style={{ margin: '0' }}>
-              <Button type="primary" block htmlType="submit">
+              <Button type="primary" block htmlType="submit" loading={finishLoading}>
                 {t('reset')}
               </Button>
             </Form.Item>

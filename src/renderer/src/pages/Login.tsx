@@ -8,6 +8,7 @@ import { useUserStore } from '@renderer/store/userStore'
 import { getProfile } from '@renderer/api/front/user'
 import { AxiosError } from 'axios'
 import { messageApi } from '@renderer/messageManager'
+import { useState } from 'react'
 
 type FieldType = {
   email: string
@@ -16,22 +17,32 @@ type FieldType = {
 }
 
 export default function Login(): React.JSX.Element {
-  const { setAuthInfo, setProfile } = useUserStore()
+  const { setAuthInfo, setProfile, setRememberMe } = useUserStore()
+  const [finishLoading, setFinishLoading] = useState(false)
   const { t } = useTranslation('login')
   const navigator = useNavigate()
 
   const onFinish: FormProps<FieldType>['onFinish'] = async (values) => {
     try {
+      setFinishLoading(true)
       const loginRes = await login({ email: values.email, password: values.password })
       setAuthInfo(loginRes)
+      setRememberMe(values.remember)
       const profileRes = await getProfile()
       setProfile(profileRes)
       messageApi?.success(t('loginSuccess'))
       navigator('/', { viewTransition: true })
     } catch (err) {
-      const serverMsg =
-        (err as AxiosError<{ message: string }>)?.response?.data?.message || (err as Error)?.message
-      messageApi?.error(serverMsg)
+      const apiError = err as AxiosError<{ message: string }>
+      if (apiError.response) {
+        messageApi?.error(apiError.response.data?.message)
+        setTimeout(() => {
+          setFinishLoading(false)
+        }, 1000)
+      } else {
+        messageApi?.error((err as Error).message)
+        setFinishLoading(false)
+      }
     }
   }
 
@@ -39,7 +50,7 @@ export default function Login(): React.JSX.Element {
     <>
       <div className="flex items-center justify-center h-full">
         <GlassBox className="gap-12">
-          <h1 className="text-4xl font-medium select-none">{t('loginTitle')}</h1>
+          <h1 className="text-4xl font-medium select-none">{t('title')}</h1>
           <Form
             name="basic"
             initialValues={{ remember: true }}
@@ -89,7 +100,7 @@ export default function Login(): React.JSX.Element {
               </div>
             </Form.Item>
             <Form.Item label={null} style={{ margin: '0' }}>
-              <Button type="primary" block htmlType="submit">
+              <Button type="primary" block htmlType="submit" loading={finishLoading}>
                 {t('login')}
               </Button>
             </Form.Item>
