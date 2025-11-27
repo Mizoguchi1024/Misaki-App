@@ -1,3 +1,6 @@
 {
-    "title": "设置"
+    "title": "设置",
+    "system": "系统",
+    "user": "用户",
+    "other": "其他"
 }

@@ -7,7 +7,7 @@ interface AboutModalProps {
 }
 
 export default function AboutModal({ open, onCancel }: AboutModalProps): React.JSX.Element {
-  const { t } = useTranslation('about')
+  const { t } = useTranslation('aboutModal')
   return (
     <Modal
       title={t('title')}

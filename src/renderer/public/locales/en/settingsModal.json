@@ -1,3 +1,6 @@
 {
-    "title": "Settings"
+    "title": "Settings",
+    "system": "System",
+    "user": "User",
+    "other": "Other"
 }
