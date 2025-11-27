@@ -1,9 +1,9 @@
 import i18n from 'i18next'
 import { initReactI18next } from 'react-i18next'
 import HttpBackend from 'i18next-http-backend'
-import { LanguageI18nMap, useSettingStore } from './store/settingStore'
+import { LanguageI18nMap, useSettingsStore } from './store/settingsStore'
 
-const store = useSettingStore.getState()
+const store = useSettingsStore.getState()
 const language = LanguageI18nMap[store.language]
 
 i18n
@@ -20,7 +20,7 @@ i18n
     }
   })
 
-useSettingStore.subscribe((state) => {
+useSettingsStore.subscribe((state) => {
   i18n.changeLanguage(LanguageI18nMap[state.language])
 })
 

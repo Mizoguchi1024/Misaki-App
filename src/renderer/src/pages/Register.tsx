@@ -6,6 +6,7 @@ import { messageApi } from '@renderer/messageManager'
 import { useUserStore } from '@renderer/store/userStore'
 import { Button, Form, FormProps, Input, Space } from 'antd'
 import { AxiosError } from 'axios'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 
@@ -23,17 +24,23 @@ export default function Register(): React.JSX.Element {
   const { setAuthInfo, setProfile } = useUserStore()
   const navigator = useNavigate()
   const [form] = Form.useForm<FieldType>()
+  const [loading, setLoading] = useState(false)
   const { t } = useTranslation('register')
 
   const handleSendVerifyCode = async (): Promise<void> => {
     try {
       const { email } = await form.validateFields(['email'])
+      setLoading(true)
       await sendVerifyCode(email)
       messageApi?.success(t('sendVerifyCodeSuccess'))
+      setTimeout(() => {
+        setLoading(false)
+      }, 1000)
     } catch (err) {
       if (err instanceof AxiosError) {
-        messageApi?.error(err?.response?.data?.message)
+        messageApi?.error(err?.message)
       }
+      setLoading(false)
     }
   }
 
@@ -82,7 +89,12 @@ export default function Register(): React.JSX.Element {
             >
               <Space.Compact className="w-full">
                 <Input prefix={<MailOutlined />} placeholder={t('email')} />
-                <Button color="primary" variant="filled" onClick={handleSendVerifyCode}>
+                <Button
+                  color="primary"
+                  variant="filled"
+                  loading={loading}
+                  onClick={handleSendVerifyCode}
+                >
                   {t('sendVerifyCode')}
                 </Button>
               </Space.Compact>

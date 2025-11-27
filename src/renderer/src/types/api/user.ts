@@ -18,7 +18,7 @@ export interface UserFrontResponse {
   createTime: string
 }
 
-export interface UpdateSettingFrontRequest {
+export interface UpdateSettingsFrontRequest {
   appearance: number
   language: number
   ttsAutoplay: number
@@ -28,7 +28,7 @@ export interface UpdateSettingFrontRequest {
   backgroundImagePath: string
 }
 
-export interface SettingFrontResponse {
+export interface SettingsFrontResponse {
   appearance: number
   language: number
   ttsAutoplay: number

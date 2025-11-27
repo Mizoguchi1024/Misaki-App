@@ -1,9 +1,9 @@
 import axios from 'axios'
 import { useUserStore } from '@renderer/store/userStore'
-import { useSettingStore } from '@renderer/store/settingStore'
+import { useSettingsStore } from '@renderer/store/settingsStore'
 
 const api = axios.create({
-  baseURL: useSettingStore.getState().baseUrl,
+  baseURL: useSettingsStore.getState().baseUrl,
   timeout: 5000
 })
 

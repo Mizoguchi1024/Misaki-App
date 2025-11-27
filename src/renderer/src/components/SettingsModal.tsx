@@ -1,11 +1,11 @@
 import { Modal, Tabs } from 'antd'
 
-interface SettingModalProps {
+interface SettingsModalProps {
   open: boolean
   onCancel: () => void
 }
 
-export default function SettingModal({ open, onCancel }: SettingModalProps): React.JSX.Element {
+export default function SettingsModal({ open, onCancel }: SettingsModalProps): React.JSX.Element {
   return (
     <Modal
       title="设置"

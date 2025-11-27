@@ -5,31 +5,18 @@ import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { InfoCircleOutlined, QuestionCircleOutlined, SettingOutlined } from '@ant-design/icons'
 import { useState } from 'react'
-import SettingModal from '@renderer/components/SettingModal'
+import SettingsModal from '@renderer/components/SettingsModal'
 import AboutModal from '@renderer/components/AboutModal'
 
 const { Header, Content, Footer } = Layout
 
-const helpList: MenuProps['items'] = [
-  {
-    key: '/setting',
-    label: '设置',
-    icon: <SettingOutlined />
-  },
-  {
-    key: '/about',
-    label: '关于',
-    icon: <InfoCircleOutlined />
-  }
-]
-
 export default function AuthLayout(): React.JSX.Element {
   const { t } = useTranslation('authLayout')
-  const [isSettingModalOpen, setIsSettingModalOpen] = useState(false)
+  const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false)
   const [isAboutModalOpen, setIsAboutModalOpen] = useState(false)
 
-  const handleSettingModalCancel = (): void => {
-    setIsSettingModalOpen(false)
+  const handleSettingsModalCancel = (): void => {
+    setIsSettingsModalOpen(false)
   }
 
   const handleAboutModalCancel = (): void => {
@@ -43,14 +30,27 @@ export default function AuthLayout(): React.JSX.Element {
 
   const onClick: MenuProps['onClick'] = ({ key }) => {
     switch (key) {
-      case '/setting':
-        setIsSettingModalOpen(true)
+      case '/settings':
+        setIsSettingsModalOpen(true)
         break
       case '/about':
         setIsAboutModalOpen(true)
         break
     }
   }
+
+  const helpList: MenuProps['items'] = [
+    {
+      key: '/settings',
+      label: t('settings'),
+      icon: <SettingOutlined />
+    },
+    {
+      key: '/about',
+      label: t('about'),
+      icon: <InfoCircleOutlined />
+    }
+  ]
 
   return (
     <Layout className="h-screen">
@@ -73,7 +73,7 @@ export default function AuthLayout(): React.JSX.Element {
               icon={<QuestionCircleOutlined />}
             ></Button>
           </Dropdown>
-          <SettingModal open={isSettingModalOpen} onCancel={handleSettingModalCancel} />
+          <SettingsModal open={isSettingsModalOpen} onCancel={handleSettingsModalCancel} />
           <AboutModal open={isAboutModalOpen} onCancel={handleAboutModalCancel} />
           <Button
             onClick={() => {

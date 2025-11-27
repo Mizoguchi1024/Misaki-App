@@ -1,11 +1,11 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import { SettingFrontResponse } from '@renderer/types/api/user'
+import { SettingsFrontResponse } from '@renderer/types/api/user'
 import zh_CN from 'antd/locale/zh_CN'
 import en_US from 'antd/locale/en_US'
 import ja_JP from 'antd/locale/ja_JP'
 
-interface SettingStore {
+interface SettingsStore {
   baseUrl: string
 
   appearance: number
@@ -16,14 +16,14 @@ interface SettingStore {
   borderRadius: number
   backgroundImagePath: string
 
-  setSetting: (s: SettingFrontResponse) => void
+  setSettings: (s: SettingsFrontResponse) => void
   reset: () => void
 }
 
 const defaultSettings = {
   baseUrl: 'http://localhost:8080/api',
   appearance: 1,
-  language: 0,
+  language: 1,
   ttsAutoplay: 0,
   fontSize: 14,
   colorPrimary: '#3142ef',
@@ -54,7 +54,7 @@ export const LanguageMap = {
   [LanguageEnum.JP]: '日本語'
 }
 
-export const useSettingStore = create<SettingStore>()(
+export const useSettingsStore = create<SettingsStore>()(
   persist(
     (set) => ({
       baseUrl: defaultSettings.baseUrl,
@@ -66,7 +66,7 @@ export const useSettingStore = create<SettingStore>()(
       borderRadius: defaultSettings.borderRadius,
       backgroundImagePath: defaultSettings.backgroundImagePath,
 
-      setSetting: (s: SettingFrontResponse) =>
+      setSettings: (s: SettingsFrontResponse) =>
         set(() => ({
           appearance: s.appearance ?? defaultSettings.appearance,
           language: s.language ?? defaultSettings.language,
@@ -89,7 +89,7 @@ export const useSettingStore = create<SettingStore>()(
         }))
     }),
     {
-      name: 'user-setting-store'
+      name: 'user-settings-store'
     }
   )
 )

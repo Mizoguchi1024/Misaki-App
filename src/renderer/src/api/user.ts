@@ -1,7 +1,7 @@
 import api from './index'
 import {
-  SettingFrontResponse,
-  UpdateSettingFrontRequest,
+  SettingsFrontResponse,
+  UpdateSettingsFrontRequest,
   UpdateUserFrontRequest,
   UserFrontResponse
 } from '@renderer/types/api/user'
@@ -12,8 +12,8 @@ export const getProfile = (): Promise<UserFrontResponse> =>
 export const updateProfile = (data: UpdateUserFrontRequest): Promise<void> =>
   api.put<void>('/front/users/profiles', data).then((res) => res.data)
 
-export const getSetting = (): Promise<SettingFrontResponse> =>
-  api.get<SettingFrontResponse>('/front/users/settings').then((res) => res.data)
+export const getSettings = (): Promise<SettingsFrontResponse> =>
+  api.get<SettingsFrontResponse>('/front/users/settings').then((res) => res.data)
 
-export const updateSetting = (data: UpdateSettingFrontRequest): Promise<void> =>
+export const updateSettings = (data: UpdateSettingsFrontRequest): Promise<void> =>
   api.put<void>('/front/users/settings', data).then((res) => res.data)

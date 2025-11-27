@@ -1,4 +1,4 @@
-import { useSettingStore } from '@renderer/store/settingStore'
+import { useSettingsStore } from '@renderer/store/settingsStore'
 import React, { useRef } from 'react'
 
 interface BoxProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -12,7 +12,7 @@ export default function GlassBox({
 }: BoxProps): React.JSX.Element {
   const ref = useRef<HTMLDivElement>(null)
 
-  const { appearance } = useSettingStore()
+  const { appearance } = useSettingsStore()
 
   const handleMouseMove = (e: React.MouseEvent): void => {
     const div = ref.current

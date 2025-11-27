@@ -5,6 +5,7 @@ import { messageApi } from '@renderer/messageManager'
 import { useUserStore } from '@renderer/store/userStore'
 import { Button, Form, FormProps, Input, Space } from 'antd'
 import { AxiosError } from 'axios'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 
@@ -22,17 +23,23 @@ export default function ResetPassword(): React.JSX.Element {
   const navigator = useNavigate()
   const { logout } = useUserStore()
   const [form] = Form.useForm<FieldType>()
+  const [loading, setLoading] = useState(false)
   const { t } = useTranslation('resetPassword')
 
   const onSendVerifyCode = async (): Promise<void> => {
     try {
       const { email } = await form.validateFields(['email'])
+      setLoading(true)
       await sendVerifyCode(email)
       messageApi?.success(t('sendVerifyCodeSuccess'))
+      setTimeout(() => {
+        setLoading(false)
+      }, 1000)
     } catch (err) {
       if (err instanceof AxiosError) {
-        messageApi?.error(err?.response?.data?.message)
+        messageApi?.error(err?.message)
       }
+      setLoading(false)
     }
   }
 
@@ -78,7 +85,12 @@ export default function ResetPassword(): React.JSX.Element {
             >
               <Space.Compact className="w-full">
                 <Input prefix={<MailOutlined />} placeholder={t('email')} />
-                <Button color="primary" variant="filled" onClick={onSendVerifyCode}>
+                <Button
+                  color="primary"
+                  variant="filled"
+                  loading={loading}
+                  onClick={onSendVerifyCode}
+                >
                   {t('sendVerifyCode')}
                 </Button>
               </Space.Compact>
