@@ -1,10 +1,10 @@
-import { LockOutlined, MailOutlined } from '@ant-design/icons'
+import { InfoCircleOutlined, LockOutlined, MailOutlined } from '@ant-design/icons'
 import { login, register, sendVerifyCode } from '@renderer/api/auth'
 import { getProfile } from '@renderer/api/front/user'
 import GlassBox from '@renderer/components/GlassBox'
 import { messageApi } from '@renderer/messageManager'
 import { useUserStore } from '@renderer/store/userStore'
-import { Button, Form, FormProps, Input, Space } from 'antd'
+import { Button, Form, FormProps, Input, Space, Tooltip } from 'antd'
 import { AxiosError } from 'axios'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -105,7 +105,7 @@ export default function Register(): React.JSX.Element {
               ]}
             >
               <Space.Compact className="w-full">
-                <Input prefix={<MailOutlined />} placeholder={t('email')} />
+                <Input prefix={<MailOutlined />} placeholder={t('email')} allowClear />
                 <Button
                   color="primary"
                   variant="filled"
@@ -124,7 +124,16 @@ export default function Register(): React.JSX.Element {
                 { max: 20, message: t('passwordTypeMessage') }
               ]}
             >
-              <Input.Password prefix={<LockOutlined />} placeholder={t('password')} />
+              <Input.Password
+                placeholder={t('password')}
+                prefix={<LockOutlined />}
+                suffix={
+                  <Tooltip title={t('passwordTypeMessage')}>
+                    <InfoCircleOutlined style={{ color: 'rgba(0,0,0,.45)' }} />
+                  </Tooltip>
+                }
+                allowClear
+              />
             </Form.Item>
             <Form.Item<FieldType>
               name="verifyCode"
