@@ -1,4 +1,5 @@
 import { Modal } from 'antd'
+import { useTranslation } from 'react-i18next'
 
 interface AboutModalProps {
   open: boolean
@@ -6,9 +7,10 @@ interface AboutModalProps {
 }
 
 export default function AboutModal({ open, onCancel }: AboutModalProps): React.JSX.Element {
+  const { t } = useTranslation('about')
   return (
     <Modal
-      title="关于"
+      title={t('title')}
       centered
       footer={null}
       open={open}

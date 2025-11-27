@@ -1,4 +1,5 @@
 import { Modal, Tabs } from 'antd'
+import { useTranslation } from 'react-i18next'
 
 interface SettingsModalProps {
   open: boolean
@@ -6,9 +7,10 @@ interface SettingsModalProps {
 }
 
 export default function SettingsModal({ open, onCancel }: SettingsModalProps): React.JSX.Element {
+  const { t } = useTranslation('settings')
   return (
     <Modal
-      title="设置"
+      title={t('title')}
       centered
       footer={null}
       open={open}

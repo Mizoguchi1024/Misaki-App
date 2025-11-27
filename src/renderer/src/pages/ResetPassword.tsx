@@ -109,7 +109,10 @@ export default function ResetPassword(): React.JSX.Element {
 
             <Form.Item<FieldType>
               name="verifyCode"
-              rules={[{ required: true, message: t('verifyCodeRequiredMessage') }]}
+              rules={[
+                { required: true, message: t('verifyCodeRequiredMessage') },
+                { pattern: /^\d{6}$/, message: t('verifyCodeTypeMessage') }
+              ]}
             >
               <Input.OTP />
             </Form.Item>

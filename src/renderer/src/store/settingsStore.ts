@@ -23,7 +23,7 @@ interface SettingsStore {
 const defaultSettings = {
   baseUrl: 'http://localhost:8080/api',
   appearance: 1,
-  language: 1,
+  language: 0,
   ttsAutoplay: 0,
   fontSize: 14,
   colorPrimary: '#3142ef',
