@@ -8,9 +8,11 @@ import TermsModal from '@renderer/components/TermsModal'
 import PolicyModal from '@renderer/components/PolicyModal'
 import { AggregationColor } from 'antd/es/color-picker/color'
 import { messageApi } from '@renderer/messageManager'
+import { useTranslation } from 'react-i18next'
 
 export default function Home(): React.JSX.Element {
   const { token } = useUserStore()
+  const { t } = useTranslation('home')
   const [title, setTitle] = useState('Misaki')
   const [width, setWidth] = useState(10)
   const spanRef = useRef<HTMLSpanElement>(null)
@@ -29,7 +31,7 @@ export default function Home(): React.JSX.Element {
 
   function handleTitleBlur(): void {
     submitTitle()
-    messageApi?.success('标题已更新')
+    messageApi?.success(t('titleUpdated'))
   }
 
   function submitTitle(): void {
@@ -88,11 +90,11 @@ export default function Home(): React.JSX.Element {
               {title + 'iiii' || ' '}
             </span>
             <Input
-              readOnly={token == null}
               spellCheck="false"
               maxLength={8}
               defaultValue="Misaki"
               variant="borderless"
+              className={token == null ? 'cursor-default' : ''}
               style={{ width: width }}
               styles={{
                 input: {
@@ -102,42 +104,45 @@ export default function Home(): React.JSX.Element {
               }}
               onChange={(e) => setTitle(e.target.value)}
               onBlur={handleTitleBlur}
+              onMouseDown={(e) => {
+                if (token == null) e.preventDefault()
+              }}
             />
           </div>
           <Sender
             style={{ width: '75%' }}
-            placeholder="需要我帮你做什么？"
+            placeholder={token == null ? t('pleaseLoginFirst') : t('greetings')}
             disabled={token == null}
             footer={() => {
               return (
                 <div className="flex gap-2">
-                  <Button color="default" variant="filled">
-                    生成快捷指令
+                  <Button color="default" variant="filled" disabled={token == null}>
+                    {t('createScript')}
                   </Button>
-                  <Dropdown menu={{ items }}>
+                  <Dropdown menu={{ items }} disabled={token == null}>
                     <Button color="default" variant="filled">
                       MCP · 3
                     </Button>
                   </Dropdown>
-                  <Button color="default" variant="filled">
-                    表情包
+                  <Button color="default" variant="filled" disabled={token == null}>
+                    {t('meme')}
                   </Button>
                 </div>
               )
             }}
             onSubmit={() => {
               api.get('/test').catch(() => {
-                messageApi?.error('请求失败')
+                messageApi?.error(t('requestFailed'))
               })
             }}
           />
         </div>
         <div className="h-14 flex justify-center items-center select-none">
-          <span>向 AI 助理 Misaki 发送消息即表示，你同意我们的</span>
-          <a onClick={showTermsModal}>条款</a>
-          <span>并已阅读我们的</span>
-          <a onClick={showPolicyModal}>隐私政策</a>
-          <span>。</span>
+          <span>{t('footer.agreement')}</span>
+          <a onClick={showTermsModal}>{t('footer.terms')}</a>
+          <span>{t('footer.andRead')}</span>
+          <a onClick={showPolicyModal}>{t('footer.policy')}</a>
+          <span>{t('footer.period')}</span>
           <TermsModal open={isTermsModalOpen} onCancel={handleTermsCancel} />
           <PolicyModal open={isPolicyModalOpen} onCancel={handlePolicyCancel} />
         </div>
