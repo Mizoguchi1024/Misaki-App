@@ -1,6 +1,7 @@
 import axios from 'axios'
 import { useUserStore } from '@renderer/store/userStore'
 import { useSettingsStore } from '@renderer/store/settingsStore'
+import { messageApi } from '@renderer/messageManager'
 
 const api = axios.create({
   baseURL: useSettingsStore.getState().baseUrl,
@@ -19,6 +20,12 @@ api.interceptors.response.use(
   (res) => res,
   (err) => {
     console.error('API error:', err)
+    const serverMessage = err.response?.data?.message
+    if (serverMessage) {
+      messageApi?.error(serverMessage)
+    } else {
+      messageApi?.error((err as Error).message)
+    }
     return Promise.reject(err)
   }
 )

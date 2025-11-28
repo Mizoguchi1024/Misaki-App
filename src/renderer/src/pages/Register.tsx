@@ -6,7 +6,6 @@ import { messageApi } from '@renderer/messageManager'
 import { useSettingsStore } from '@renderer/store/settingsStore'
 import { useUserStore } from '@renderer/store/userStore'
 import { Button, Form, FormProps, Input, Space, Tooltip } from 'antd'
-import { AxiosError } from 'axios'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
@@ -36,22 +35,10 @@ export default function Register(): React.JSX.Element {
       setSendVerifyCodeLoading(true)
       await sendVerifyCode(email)
       messageApi?.success(t('sendVerifyCodeSuccess'))
+    } finally {
       setTimeout(() => {
         setSendVerifyCodeLoading(false)
       }, 1000)
-    } catch (err) {
-      if (err instanceof AxiosError) {
-        const apiError = err as AxiosError<{ message: string }>
-        if (apiError.response) {
-          messageApi?.error(apiError.response.data?.message)
-          setTimeout(() => {
-            setSendVerifyCodeLoading(false)
-          }, 1000)
-        } else {
-          messageApi?.error(err.message)
-          setSendVerifyCodeLoading(false)
-        }
-      }
     }
   }
 
@@ -70,18 +57,12 @@ export default function Register(): React.JSX.Element {
       setProfile(profileRes.data)
       const settingsRes = await getSettings()
       setSettings(settingsRes.data)
+      setFinishLoading(false)
       navigator('/', { viewTransition: true })
-    } catch (err) {
-      const apiError = err as AxiosError<{ message: string }>
-      if (apiError.response) {
-        messageApi?.error(apiError.response.data?.message)
-        setTimeout(() => {
-          setFinishLoading(false)
-        }, 1000)
-      } else {
-        messageApi?.error((err as Error).message)
+    } catch {
+      setTimeout(() => {
         setFinishLoading(false)
-      }
+      }, 1000)
     }
   }
 

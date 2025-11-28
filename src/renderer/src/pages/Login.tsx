@@ -6,7 +6,6 @@ import { useTranslation } from 'react-i18next'
 import { login } from '@renderer/api/auth'
 import { useUserStore } from '@renderer/store/userStore'
 import { getProfile, getSettings } from '@renderer/api/front/user'
-import { AxiosError } from 'axios'
 import { messageApi } from '@renderer/messageManager'
 import { useState } from 'react'
 import { useSettingsStore } from '@renderer/store/settingsStore'
@@ -35,18 +34,12 @@ export default function Login(): React.JSX.Element {
       setProfile(profileRes.data)
       const settingsRes = await getSettings()
       setSettings(settingsRes.data)
+      setFinishLoading(false)
       navigator('/', { viewTransition: true })
-    } catch (err) {
-      const apiError = err as AxiosError<{ message: string }>
-      if (apiError.response) {
-        messageApi?.error(apiError.response.data?.message)
-        setTimeout(() => {
-          setFinishLoading(false)
-        }, 1000)
-      } else {
-        messageApi?.error((err as Error).message)
+    } catch {
+      setTimeout(() => {
         setFinishLoading(false)
-      }
+      }, 1000)
     }
   }
 
