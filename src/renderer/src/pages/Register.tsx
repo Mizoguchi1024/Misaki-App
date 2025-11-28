@@ -1,4 +1,4 @@
-import { InfoCircleOutlined, LockOutlined, MailOutlined } from '@ant-design/icons'
+import { InfoCircleOutlined, LockOutlined, MailOutlined, UserOutlined } from '@ant-design/icons'
 import { login, register, sendVerifyCode } from '@renderer/api/auth'
 import { getProfile, getSettings } from '@renderer/api/front/user'
 import GlassBox from '@renderer/components/GlassBox'
@@ -12,6 +12,7 @@ import { useNavigate } from 'react-router-dom'
 
 type FieldType = {
   email: string
+  username: string
   password: string
   verifyCode: string
 }
@@ -47,6 +48,7 @@ export default function Register(): React.JSX.Element {
       setFinishLoading(true)
       await register({
         email: values.email,
+        username: values.username,
         password: values.password,
         verifyCode: values.verifyCode
       })
@@ -100,6 +102,16 @@ export default function Register(): React.JSX.Element {
                   {t('sendVerifyCode')}
                 </Button>
               </Space.Compact>
+            </Form.Item>
+            <Form.Item<FieldType>
+              name="username"
+              rules={[
+                { required: true, message: t('usernameRequiredMessage') },
+                { min: 2, message: t('usernameTypeMessage') },
+                { max: 20, message: t('usernameTypeMessage') }
+              ]}
+            >
+              <Input prefix={<UserOutlined />} placeholder={t('username')} allowClear />
             </Form.Item>
             <Form.Item<FieldType>
               name="password"
