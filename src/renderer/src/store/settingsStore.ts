@@ -22,7 +22,7 @@ interface SettingsStore {
 
 const defaultSettings = {
   baseUrl: 'http://localhost:8080/api',
-  appearance: 1,
+  appearance: 2,
   language: 0,
   ttsAutoplay: 0,
   fontSize: 14,
@@ -89,7 +89,7 @@ export const useSettingsStore = create<SettingsStore>()(
         }))
     }),
     {
-      name: 'user-settings-store'
+      name: 'settings-store'
     }
   )
 )

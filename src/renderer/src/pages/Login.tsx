@@ -80,22 +80,20 @@ export default function Login(): React.JSX.Element {
             >
               <Input.Password prefix={<LockOutlined />} placeholder={t('password')} />
             </Form.Item>
-            <Form.Item<FieldType> name="remember" valuePropName="checked">
-              <div className="flex justify-between items-center">
-                <div className="ml-2">
-                  <Checkbox className="select-none">{t('rememberMe')}</Checkbox>
-                </div>
-                <Button
-                  color="primary"
-                  variant="text"
-                  onClick={() => {
-                    navigator('/reset-password', { viewTransition: true })
-                  }}
-                >
-                  {t('forgotPassword')}
-                </Button>
-              </div>
-            </Form.Item>
+            <div className="flex justify-between items-start pl-2">
+              <Form.Item<FieldType> name="remember" valuePropName="checked">
+                <Checkbox className="select-none">{t('rememberMe')}</Checkbox>
+              </Form.Item>
+              <Button
+                color="primary"
+                variant="text"
+                onClick={() => {
+                  navigator('/reset-password', { viewTransition: true })
+                }}
+              >
+                {t('forgotPassword')}
+              </Button>
+            </div>
             <Form.Item label={null} style={{ margin: '0' }}>
               <Button type="primary" block htmlType="submit" loading={finishLoading}>
                 {t('login')}

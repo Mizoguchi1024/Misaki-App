@@ -1,10 +1,7 @@
 import { InfoCircleOutlined, LockOutlined, MailOutlined, UserOutlined } from '@ant-design/icons'
-import { login, register, sendVerifyCode } from '@renderer/api/auth'
-import { getProfile, getSettings } from '@renderer/api/front/user'
+import { register, sendVerifyCode } from '@renderer/api/auth'
 import GlassBox from '@renderer/components/GlassBox'
 import { messageApi } from '@renderer/messageManager'
-import { useSettingsStore } from '@renderer/store/settingsStore'
-import { useUserStore } from '@renderer/store/userStore'
 import { Button, Form, FormProps, Input, Space, Tooltip } from 'antd'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -22,8 +19,6 @@ const onFinishFailed: FormProps<FieldType>['onFinishFailed'] = (errorInfo) => {
 }
 
 export default function Register(): React.JSX.Element {
-  const { setAuthInfo, setProfile } = useUserStore()
-  const { setSettings } = useSettingsStore()
   const navigator = useNavigate()
   const [form] = Form.useForm<FieldType>()
   const [sendVerifyCodeLoading, setSendVerifyCodeLoading] = useState(false)
@@ -53,14 +48,8 @@ export default function Register(): React.JSX.Element {
         verifyCode: values.verifyCode
       })
       messageApi?.success(t('registerSuccess'))
-      const loginRes = await login({ email: values.email, password: values.password })
-      setAuthInfo(loginRes.data)
-      const profileRes = await getProfile()
-      setProfile(profileRes.data)
-      const settingsRes = await getSettings()
-      setSettings(settingsRes.data)
       setFinishLoading(false)
-      navigator('/', { viewTransition: true })
+      navigator('/login', { viewTransition: true })
     } catch {
       setTimeout(() => {
         setFinishLoading(false)

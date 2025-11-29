@@ -81,12 +81,7 @@ export const useUserStore = create<UserStore>()(
         }))
     }),
     {
-      name: 'user-storage',
-      onRehydrateStorage: () => (persistedState) => {
-        if (persistedState && persistedState.rememberMe === false) {
-          useUserStore.getState().logout()
-        }
-      }
+      name: 'user-storage'
     }
   )
 )
