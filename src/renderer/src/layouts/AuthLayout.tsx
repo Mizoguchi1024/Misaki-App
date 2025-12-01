@@ -53,7 +53,7 @@ export default function AuthLayout(): React.JSX.Element {
   ]
 
   return (
-    <Layout className="h-screen">
+    <Layout className="h-full">
       <Header
         className="flex justify-between items-center"
         style={{ background: colorBgContainer, paddingInline: '2rem' }}

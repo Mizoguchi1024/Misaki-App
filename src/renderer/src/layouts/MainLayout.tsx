@@ -19,6 +19,7 @@ import { useUserStore } from '@renderer/store/userStore'
 import SettingsModal from '@renderer/components/SettingsModal'
 import AboutModal from '@renderer/components/AboutModal'
 import { useTranslation } from 'react-i18next'
+import { messageApi } from '@renderer/messageManager'
 
 const { Header, Content, Sider } = Layout
 
@@ -68,7 +69,7 @@ export default function MainLayout(): React.JSX.Element {
     }
   ]
 
-  const items: MenuProps['items'] = [
+  const agentItems: MenuProps['items'] = [
     {
       key: '/',
       label: '新建会话',
@@ -96,7 +97,9 @@ export default function MainLayout(): React.JSX.Element {
     },
     {
       type: 'divider'
-    },
+    }
+  ]
+  const historicalItems: MenuProps['items'] = [
     {
       key: 'sub1',
       label: '项目',
@@ -116,9 +119,10 @@ export default function MainLayout(): React.JSX.Element {
       ]
     }
   ]
+  const items = [...agentItems, ...historicalItems]
 
   return (
-    <Layout className="h-screen">
+    <Layout className="h-full">
       <Header
         className="flex items-center justify-between"
         style={{ background: colorBgContainer, paddingInline: '2rem' }}
@@ -127,7 +131,13 @@ export default function MainLayout(): React.JSX.Element {
           type="text"
           size="large"
           style={{ padding: '0 0.6rem' }}
-          onClick={() => navigate('/misaki', { viewTransition: true })}
+          onClick={() => {
+            if (token != null) {
+              navigate('/misaki', { viewTransition: true })
+            } else {
+              messageApi?.info('请先登录')
+            }
+          }}
         >
           <div className="flex items-center gap-1">
             <MisakiLogo className="w-10 h-10" fill={colorPrimary} />
@@ -159,7 +169,7 @@ export default function MainLayout(): React.JSX.Element {
           </div>
         )}
         {token != null && (
-          <Dropdown menu={{ items }} placement="bottomLeft" trigger={['click']}>
+          <Dropdown menu={{ items: helpList, onClick }} placement="bottomLeft" trigger={['click']}>
             <Button size="large" color="default" variant="filled">
               <Avatar size="small" icon={<UserOutlined />} />
               {username}
@@ -181,6 +191,7 @@ export default function MainLayout(): React.JSX.Element {
             onClick={(e) => navigate(e.key, { viewTransition: true })}
             mode="inline"
             items={items}
+            disabled={token == null}
           />
         </Sider>
         <Content>

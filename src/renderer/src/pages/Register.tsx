@@ -100,7 +100,16 @@ export default function Register(): React.JSX.Element {
                 { max: 20, message: t('usernameTypeMessage') }
               ]}
             >
-              <Input prefix={<UserOutlined />} placeholder={t('username')} allowClear />
+              <Input
+                placeholder={t('username')}
+                prefix={<UserOutlined />}
+                suffix={
+                  <Tooltip title={t('usernameTypeMessage')}>
+                    <InfoCircleOutlined />
+                  </Tooltip>
+                }
+                allowClear
+              />
             </Form.Item>
             <Form.Item<FieldType>
               name="password"
@@ -115,7 +124,7 @@ export default function Register(): React.JSX.Element {
                 prefix={<LockOutlined />}
                 suffix={
                   <Tooltip title={t('passwordTypeMessage')}>
-                    <InfoCircleOutlined style={{ color: 'rgba(0,0,0,.45)' }} />
+                    <InfoCircleOutlined />
                   </Tooltip>
                 }
                 allowClear

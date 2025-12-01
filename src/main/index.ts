@@ -3,8 +3,8 @@ import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 
-app.commandLine.appendSwitch('high-dpi-support', '1')
-app.commandLine.appendSwitch('force-device-scale-factor', '1')
+// app.commandLine.appendSwitch('high-dpi-support', 'true')
+// app.commandLine.appendSwitch('force-device-scale-factor', '1')
 
 function createWindow(): void {
   const mainWindow = new BrowserWindow({
