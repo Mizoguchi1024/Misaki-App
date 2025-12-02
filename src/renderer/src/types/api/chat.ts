@@ -1,16 +1,16 @@
-export interface SendMessageFrontRequest {
+export type SendMessageFrontRequest = {
   content: string
   assistantId: number
   prefix: string
 }
 
-export interface ConversationFrontResponse {
+export type ConversationFrontResponse = {
   id: number
   title: string
   createTime: string
 }
 
-export interface MessageFrontResponse {
+export type MessageFrontResponse = {
   id: number
   conversationId: number
   type: string

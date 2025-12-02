@@ -3,7 +3,7 @@ import { persist } from 'zustand/middleware'
 import { LoginResponse } from '@renderer/types/api/auth'
 import { UserFrontResponse } from '@renderer/types/api/user'
 
-interface UserStore {
+interface UserState {
   token?: string
   authRole?: number
 
@@ -25,7 +25,7 @@ interface UserStore {
   logout: () => void
 }
 
-export const useUserStore = create<UserStore>()(
+export const useUserStore = create<UserState>()(
   persist(
     (set) => ({
       rememberMe: false,
@@ -81,7 +81,7 @@ export const useUserStore = create<UserStore>()(
         }))
     }),
     {
-      name: 'user-storage'
+      name: 'user-store'
     }
   )
 )

@@ -4,10 +4,10 @@ import MisakiLogo from '../assets/misaki-logo-symbol.svg?react'
 import { useEffect, useRef, useState } from 'react'
 import { useUserStore } from '@renderer/store/userStore'
 import api from '@renderer/api'
-import TermsModal from '@renderer/components/TermsModal'
-import PolicyModal from '@renderer/components/PolicyModal'
+import TermsModal from '@renderer/components/common/TermsModal'
+import PolicyModal from '@renderer/components/common/PolicyModal'
 import { AggregationColor } from 'antd/es/color-picker/color'
-import { messageApi } from '@renderer/messageManager'
+import { messageApi } from '@renderer/messageApi'
 import { useTranslation } from 'react-i18next'
 
 export default function Home(): React.JSX.Element {

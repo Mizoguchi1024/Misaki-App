@@ -1,7 +1,7 @@
 import { Layout, Menu, theme, MenuProps, Button, Dropdown, Avatar } from 'antd'
 import { useState } from 'react'
-import { Outlet, useLocation, useNavigate } from 'react-router-dom'
-import MisakiLogo from '../assets/misaki-logo-symbol.svg?react'
+import { Outlet, useLocation, useNavigate, useParams } from 'react-router-dom'
+import MisakiLogo from '@renderer/assets/misaki-logo-symbol.svg?react'
 import {
   CodeOutlined,
   DatabaseOutlined,
@@ -12,14 +12,14 @@ import {
   QuestionCircleOutlined,
   SearchOutlined,
   SettingOutlined,
-  StarOutlined,
   UserOutlined
 } from '@ant-design/icons'
 import { useUserStore } from '@renderer/store/userStore'
-import SettingsModal from '@renderer/components/SettingsModal'
-import AboutModal from '@renderer/components/AboutModal'
+import SettingsModal from '@renderer/components/common/SettingsModal'
+import AboutModal from '@renderer/components/common/AboutModal'
 import { useTranslation } from 'react-i18next'
-import { messageApi } from '@renderer/messageManager'
+import { messageApi } from '@renderer/messageApi'
+import { useChatStore } from '@renderer/store/chatStore'
 
 const { Header, Content, Sider } = Layout
 
@@ -27,7 +27,9 @@ export default function MainLayout(): React.JSX.Element {
   const { t } = useTranslation('mainLayout')
   const [collapsed, setCollapsed] = useState(false)
   const { username } = useUserStore()
+  const { chats } = useChatStore()
   const location = useLocation()
+  const { id } = useParams()
   const navigate = useNavigate()
   const {
     token: { colorBgContainer, colorPrimary }
@@ -99,27 +101,14 @@ export default function MainLayout(): React.JSX.Element {
       type: 'divider'
     }
   ]
-  const historicalItems: MenuProps['items'] = [
-    {
-      key: 'sub1',
-      label: '项目',
-      icon: <StarOutlined />,
-      children: [
-        { key: '7', label: '项目 1' },
-        { key: '8', label: '项目 2' }
-      ]
-    },
-    {
-      key: 'sub2',
-      label: '会话',
-      icon: <MessageOutlined />,
-      children: [
-        { key: '9', label: '会话 1' },
-        { key: '10', label: '会话 2' }
-      ]
-    }
-  ]
-  const items = [...agentItems, ...historicalItems]
+
+  const chatItems = chats.map((item) => ({
+    key: '/chat/' + item.id.toString(),
+    label: item.title ? item.title : t('New Chat'),
+    icon: <MessageOutlined />
+  }))
+
+  const items = [...agentItems, ...chatItems]
 
   return (
     <Layout className="h-full">
@@ -135,7 +124,7 @@ export default function MainLayout(): React.JSX.Element {
             if (token != null) {
               navigate('/misaki', { viewTransition: true })
             } else {
-              messageApi?.info('请先登录')
+              messageApi?.info(t('Login first'))
             }
           }}
         >
@@ -169,12 +158,23 @@ export default function MainLayout(): React.JSX.Element {
           </div>
         )}
         {token != null && (
-          <Dropdown menu={{ items: helpList, onClick }} placement="bottomLeft" trigger={['click']}>
-            <Button size="large" color="default" variant="filled">
-              <Avatar size="small" icon={<UserOutlined />} />
-              {username}
-            </Button>
-          </Dropdown>
+          <div className="flex items-center gap-4">
+            {location.pathname.startsWith('/chat') && (
+              <Button color="danger" variant="outlined">
+                {t('deleteThisChat')}: {id}
+              </Button>
+            )}
+            <Dropdown
+              menu={{ items: helpList, onClick }}
+              placement="bottomLeft"
+              trigger={['click']}
+            >
+              <Button size="large" color="default" variant="filled">
+                <Avatar size="small" icon={<UserOutlined />} />
+                {username}
+              </Button>
+            </Dropdown>
+          </div>
         )}
       </Header>
       <Layout>
@@ -185,10 +185,12 @@ export default function MainLayout(): React.JSX.Element {
           theme="light"
         >
           <Menu
-            className="select-none"
+            className="select-none h-full overflow-y-auto scroll-smooth"
+            style={{ scrollbarWidth: 'none' }}
             theme="light"
             selectedKeys={[location.pathname]}
             onClick={(e) => navigate(e.key, { viewTransition: true })}
+            onAuxClick={(e) => console.log(e)}
             mode="inline"
             items={items}
             disabled={token == null}

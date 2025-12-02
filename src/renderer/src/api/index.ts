@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { useUserStore } from '@renderer/store/userStore'
 import { useSettingsStore } from '@renderer/store/settingsStore'
-import { messageApi } from '@renderer/messageManager'
+import { messageApi } from '@renderer/messageApi'
 
 const api = axios.create({
   baseURL: useSettingsStore.getState().baseUrl,

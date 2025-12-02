@@ -1,3 +1,3 @@
-export interface TtsRequest {
+export type TtsRequest = {
   text: string
 }

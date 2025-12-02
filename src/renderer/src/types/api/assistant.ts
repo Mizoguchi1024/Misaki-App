@@ -1,11 +1,11 @@
-export interface AssistantFrontResponse {
+export type AssistantFrontResponse = {
   id: number
 }
 
-export interface CreateAssistantFrontRequest {
+export type CreateAssistantFrontRequest = {
   name: string
 }
 
-export interface UpdateAssistantFrontRequest {
+export type UpdateAssistantFrontRequest = {
   name: string
 }

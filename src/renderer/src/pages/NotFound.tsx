@@ -1,4 +1,4 @@
-import GlassBox from '@renderer/components/GlassBox'
+import GlassBox from '@renderer/components/common/GlassBox'
 import { Button, theme, Typography } from 'antd'
 import { useTranslation } from 'react-i18next'
 import { useLocation, useNavigate } from 'react-router-dom'
@@ -12,7 +12,7 @@ export default function NotFound(): React.JSX.Element {
   } = theme.useToken()
   return (
     <div className="h-full flex items-center justify-center">
-      <GlassBox className="gap-8 min-w-2/5">
+      <GlassBox className="gap-8 min-w-lg">
         <div>
           <Typography.Title className="select-none text-center" style={{ color: colorPrimary }}>
             404

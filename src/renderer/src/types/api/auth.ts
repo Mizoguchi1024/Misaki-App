@@ -1,21 +1,21 @@
-export interface LoginRequest {
+export type LoginRequest = {
   email: string
   password: string
 }
 
-export interface LoginResponse {
+export type LoginResponse = {
   token: string
   authRole: number
 }
 
-export interface RegisterRequest {
+export type RegisterRequest = {
   email: string
   username: string
   password: string
   verifyCode: string
 }
 
-export interface ResetPasswordRequest {
+export type ResetPasswordRequest = {
   email: string
   password: string
   verifyCode: string

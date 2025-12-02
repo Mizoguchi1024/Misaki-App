@@ -1,14 +1,16 @@
 import { LockOutlined, MailOutlined } from '@ant-design/icons'
-import GlassBox from '@renderer/components/GlassBox'
+import GlassBox from '@renderer/components/common/GlassBox'
 import { Button, Checkbox, Form, FormProps, Input } from 'antd'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { login } from '@renderer/api/auth'
 import { useUserStore } from '@renderer/store/userStore'
 import { getProfile, getSettings } from '@renderer/api/front/user'
-import { messageApi } from '@renderer/messageManager'
+import { messageApi } from '@renderer/messageApi'
 import { useState } from 'react'
 import { useSettingsStore } from '@renderer/store/settingsStore'
+import { listConversations } from '@renderer/api/front/chat'
+import { useChatStore } from '@renderer/store/chatStore'
 
 type FieldType = {
   email: string
@@ -19,6 +21,7 @@ type FieldType = {
 export default function Login(): React.JSX.Element {
   const { setAuthInfo, setProfile, setRememberMe } = useUserStore()
   const { setSettings } = useSettingsStore()
+  const { setChats } = useChatStore()
   const [finishLoading, setFinishLoading] = useState(false)
   const { t } = useTranslation('login')
   const navigator = useNavigate()
@@ -34,6 +37,8 @@ export default function Login(): React.JSX.Element {
       setProfile(profileRes.data)
       const settingsRes = await getSettings()
       setSettings(settingsRes.data)
+      const chatRes = await listConversations()
+      setChats(chatRes.data)
       setFinishLoading(false)
       navigator('/', { viewTransition: true })
     } catch {

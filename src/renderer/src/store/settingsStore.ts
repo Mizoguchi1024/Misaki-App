@@ -5,7 +5,7 @@ import zh_CN from 'antd/locale/zh_CN'
 import en_US from 'antd/locale/en_US'
 import ja_JP from 'antd/locale/ja_JP'
 
-interface SettingsStore {
+interface SettingsState {
   baseUrl: string
 
   appearance: number
@@ -22,7 +22,7 @@ interface SettingsStore {
 
 const defaultSettings = {
   baseUrl: 'http://localhost:8080/api',
-  appearance: 2,
+  appearance: 1,
   language: 0,
   ttsAutoplay: 0,
   fontSize: 14,
@@ -54,7 +54,7 @@ export const LanguageMap = {
   [LanguageEnum.JP]: '日本語'
 }
 
-export const useSettingsStore = create<SettingsStore>()(
+export const useSettingsStore = create<SettingsState>()(
   persist(
     (set) => ({
       baseUrl: defaultSettings.baseUrl,

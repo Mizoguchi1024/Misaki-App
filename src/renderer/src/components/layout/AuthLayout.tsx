@@ -1,12 +1,12 @@
 import { Button, Dropdown, Layout, MenuProps, theme } from 'antd'
 import { Outlet } from 'react-router-dom'
-import MisakiLogo from '../assets/misaki-logo-symbol.svg?react'
+import MisakiLogo from '@renderer/assets/misaki-logo-symbol.svg?react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { InfoCircleOutlined, QuestionCircleOutlined, SettingOutlined } from '@ant-design/icons'
 import { useState } from 'react'
-import SettingsModal from '@renderer/components/SettingsModal'
-import AboutModal from '@renderer/components/AboutModal'
+import SettingsModal from '@renderer/components/common/SettingsModal'
+import AboutModal from '@renderer/components/common/AboutModal'
 
 const { Header, Content, Footer } = Layout
 

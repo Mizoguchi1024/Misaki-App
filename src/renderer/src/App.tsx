@@ -1,13 +1,13 @@
 import { ConfigProvider, message, theme } from 'antd'
 import 'dayjs/locale/zh-cn'
 import { LanguageAntdMap, useSettingsStore } from './store/settingsStore'
-import { setMessageApi } from './messageManager'
+import { setMessageApi } from './messageApi'
 
 export default function App({ children }: { children?: React.ReactNode }): React.JSX.Element {
   const { appearance, fontSize, colorPrimary, borderRadius, language } = useSettingsStore()
-  const [messageApi, contextHolder] = message.useMessage()
+  const [messageInstance, contextHolder] = message.useMessage()
 
-  setMessageApi(messageApi)
+  setMessageApi(messageInstance)
 
   return (
     <ConfigProvider

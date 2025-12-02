@@ -1,4 +1,4 @@
-export interface UpdateUserFrontRequest {
+export type UpdateUserFrontRequest = {
   username: string
   gender: number
   birthday: string
@@ -7,7 +7,7 @@ export interface UpdateUserFrontRequest {
   detail: string
 }
 
-export interface UserFrontResponse {
+export type UserFrontResponse = {
   email: string
   username: string
   gender: number
@@ -18,7 +18,7 @@ export interface UserFrontResponse {
   createTime: string
 }
 
-export interface UpdateSettingsFrontRequest {
+export type UpdateSettingsFrontRequest = {
   appearance: number
   language: number
   ttsAutoplay: number
@@ -28,7 +28,7 @@ export interface UpdateSettingsFrontRequest {
   backgroundImagePath: string
 }
 
-export interface SettingsFrontResponse {
+export type SettingsFrontResponse = {
   appearance: number
   language: number
   ttsAutoplay: number

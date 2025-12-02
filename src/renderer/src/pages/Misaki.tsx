@@ -1,4 +1,4 @@
-import GlassBox from '@renderer/components/GlassBox'
+import GlassBox from '@renderer/components/common/GlassBox'
 
 export default function Misaki(): React.JSX.Element {
   return (
