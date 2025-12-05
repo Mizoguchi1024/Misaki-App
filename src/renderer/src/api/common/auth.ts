@@ -1,5 +1,5 @@
 import { Result } from '@renderer/types/api/base'
-import api from './index'
+import api from '../index'
 import {
   LoginRequest,
   LoginResponse,
@@ -17,4 +17,4 @@ export const resetPassword = (data: ResetPasswordRequest): Promise<Result<void>>
   api.post<Result<void>>('/auth/reset-password', data).then((res) => res.data)
 
 export const sendVerifyCode = (email: string): Promise<Result<void>> =>
-  api.get<Result<void>>(`/auth/verify/${email}`).then((res) => res.data)
+  api.post<Result<void>>(`/auth/verify/${email}`).then((res) => res.data)

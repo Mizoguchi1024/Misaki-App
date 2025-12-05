@@ -15,6 +15,14 @@ export default function AuthLayout(): React.JSX.Element {
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false)
   const [isAboutModalOpen, setIsAboutModalOpen] = useState(false)
 
+  const handleEscape = (event: KeyboardEvent): void => {
+    if (event.key === 'Escape') {
+      navigate(-1)
+    }
+  }
+
+  window.addEventListener('keydown', handleEscape)
+
   const handleSettingsModalCancel = (): void => {
     setIsSettingsModalOpen(false)
   }

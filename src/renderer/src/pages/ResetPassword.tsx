@@ -1,5 +1,5 @@
 import { InfoCircleOutlined, LockOutlined, MailOutlined } from '@ant-design/icons'
-import { resetPassword, sendVerifyCode } from '@renderer/api/auth'
+import { resetPassword, sendVerifyCode } from '@renderer/api/common/auth'
 import GlassBox from '@renderer/components/common/GlassBox'
 import { messageApi } from '@renderer/messageApi'
 import { useUserStore } from '@renderer/store/userStore'

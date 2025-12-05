@@ -3,13 +3,13 @@ import GlassBox from '@renderer/components/common/GlassBox'
 import { Button, Checkbox, Form, FormProps, Input } from 'antd'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { login } from '@renderer/api/auth'
+import { login } from '@renderer/api/common/auth'
 import { useUserStore } from '@renderer/store/userStore'
 import { getProfile, getSettings } from '@renderer/api/front/user'
 import { messageApi } from '@renderer/messageApi'
 import { useState } from 'react'
 import { useSettingsStore } from '@renderer/store/settingsStore'
-import { listConversations } from '@renderer/api/front/chat'
+import { listChats } from '@renderer/api/front/chat'
 import { useChatStore } from '@renderer/store/chatStore'
 
 type FieldType = {
@@ -37,7 +37,7 @@ export default function Login(): React.JSX.Element {
       setProfile(profileRes.data)
       const settingsRes = await getSettings()
       setSettings(settingsRes.data)
-      const chatRes = await listConversations()
+      const chatRes = await listChats()
       setChats(chatRes.data)
       setFinishLoading(false)
       navigator('/', { viewTransition: true })

@@ -4,7 +4,7 @@ export type SendMessageFrontRequest = {
   prefix: string
 }
 
-export type ConversationFrontResponse = {
+export type ChatFrontResponse = {
   id: number
   title: string
   createTime: string
@@ -12,7 +12,7 @@ export type ConversationFrontResponse = {
 
 export type MessageFrontResponse = {
   id: number
-  conversationId: number
+  chatId: number
   type: string
   content: string
   mcpEnabled: number

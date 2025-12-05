@@ -1,5 +1,5 @@
 import { InfoCircleOutlined, LockOutlined, MailOutlined, UserOutlined } from '@ant-design/icons'
-import { register, sendVerifyCode } from '@renderer/api/auth'
+import { register, sendVerifyCode } from '@renderer/api/common/auth'
 import GlassBox from '@renderer/components/common/GlassBox'
 import { messageApi } from '@renderer/messageApi'
 import { Button, Form, FormProps, Input, Space, Tooltip } from 'antd'

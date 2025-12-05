@@ -1,6 +1,6 @@
 import { Layout, Menu, theme, MenuProps, Button, Dropdown, Avatar } from 'antd'
 import { useState } from 'react'
-import { Outlet, useLocation, useNavigate, useParams } from 'react-router-dom'
+import { Outlet, useLocation, useNavigate } from 'react-router-dom'
 import MisakiLogo from '@renderer/assets/misaki-logo-symbol.svg?react'
 import {
   CodeOutlined,
@@ -10,9 +10,11 @@ import {
   InfoCircleOutlined,
   MessageOutlined,
   QuestionCircleOutlined,
+  EllipsisOutlined,
   SearchOutlined,
   SettingOutlined,
-  UserOutlined
+  UserOutlined,
+  HeartOutlined
 } from '@ant-design/icons'
 import { useUserStore } from '@renderer/store/userStore'
 import SettingsModal from '@renderer/components/common/SettingsModal'
@@ -29,7 +31,6 @@ export default function MainLayout(): React.JSX.Element {
   const { username } = useUserStore()
   const { chats } = useChatStore()
   const location = useLocation()
-  const { id } = useParams()
   const navigate = useNavigate()
   const {
     token: { colorBgContainer, colorPrimary }
@@ -160,10 +161,22 @@ export default function MainLayout(): React.JSX.Element {
         {token != null && (
           <div className="flex items-center gap-4">
             {location.pathname.startsWith('/chat') && (
-              <Button color="danger" variant="outlined">
-                {t('deleteThisChat')}: {id}
-              </Button>
+              <Dropdown
+                menu={{ items: helpList, onClick }}
+                placement="bottomLeft"
+                trigger={['click']}
+              >
+                <Button
+                  color="default"
+                  variant="filled"
+                  shape="circle"
+                  icon={<EllipsisOutlined />}
+                ></Button>
+              </Dropdown>
             )}
+            <Button color="primary" variant="filled" icon={<HeartOutlined />}>
+              {t('wish')}
+            </Button>
             <Dropdown
               menu={{ items: helpList, onClick }}
               placement="bottomLeft"

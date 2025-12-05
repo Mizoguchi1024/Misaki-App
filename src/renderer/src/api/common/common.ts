@@ -1,5 +1,5 @@
 import { TtsRequest } from '@renderer/types/api/common'
-import api from './index'
+import api from '../index'
 import { Result } from '@renderer/types/api/base'
 
 export const upload = (data: FormData): Promise<Result<void>> =>
