@@ -59,79 +59,77 @@ export default function ResetPassword(): React.JSX.Element {
   }
 
   return (
-    <>
-      <div className="flex items-center justify-center h-full">
-        <GlassBox className="gap-12">
-          <h1 className="text-4xl font-medium select-none">{t('title')}</h1>
-          <Form
-            form={form}
-            name="basic"
-            size={'large'}
-            variant={'filled'}
-            onFinish={onFinish}
-            onFinishFailed={onFinishFailed}
-            autoComplete="off"
-            className="w-100"
-            validateTrigger="onSubmit"
+    <div className="flex items-center justify-center h-full">
+      <GlassBox className="gap-12">
+        <h1 className="text-4xl font-medium select-none">{t('title')}</h1>
+        <Form
+          form={form}
+          name="basic"
+          size={'large'}
+          variant={'filled'}
+          onFinish={onFinish}
+          onFinishFailed={onFinishFailed}
+          autoComplete="off"
+          className="w-100"
+          validateTrigger="onSubmit"
+        >
+          <Form.Item<FieldType>
+            name="email"
+            rules={[
+              { type: 'email', message: t('emailTypeMessage') },
+              { required: true, message: t('emailRequiredMessage') }
+            ]}
           >
-            <Form.Item<FieldType>
-              name="email"
-              rules={[
-                { type: 'email', message: t('emailTypeMessage') },
-                { required: true, message: t('emailRequiredMessage') }
-              ]}
-            >
-              <Space.Compact className="w-full">
-                <Input prefix={<MailOutlined />} placeholder={t('email')} allowClear />
-                <Button
-                  color="primary"
-                  variant="filled"
-                  loading={sendVerifyCodeLoading}
-                  onClick={onSendVerifyCode}
-                >
-                  {t('sendVerifyCode')}
-                </Button>
-              </Space.Compact>
-            </Form.Item>
-
-            <Form.Item<FieldType>
-              name="password"
-              rules={[
-                { required: true, message: t('passwordRequiredMessage') },
-                { min: 6, message: t('passwordTypeMessage') },
-                { max: 20, message: t('passwordTypeMessage') }
-              ]}
-            >
-              <Input.Password
-                placeholder={t('password')}
-                prefix={<LockOutlined />}
-                suffix={
-                  <Tooltip title={t('passwordTypeMessage')}>
-                    <InfoCircleOutlined style={{ color: 'rgba(0,0,0,.45)' }} />
-                  </Tooltip>
-                }
-                allowClear
-              />
-            </Form.Item>
-
-            <Form.Item<FieldType>
-              name="verifyCode"
-              rules={[
-                { required: true, message: t('verifyCodeRequiredMessage') },
-                { pattern: /^\d{6}$/, message: t('verifyCodeTypeMessage') }
-              ]}
-            >
-              <Input.OTP />
-            </Form.Item>
-
-            <Form.Item label={null} style={{ margin: '0' }}>
-              <Button type="primary" block htmlType="submit" loading={finishLoading}>
-                {t('reset')}
+            <Space.Compact className="w-full">
+              <Input prefix={<MailOutlined />} placeholder={t('email')} allowClear />
+              <Button
+                color="primary"
+                variant="filled"
+                loading={sendVerifyCodeLoading}
+                onClick={onSendVerifyCode}
+              >
+                {t('sendVerifyCode')}
               </Button>
-            </Form.Item>
-          </Form>
-        </GlassBox>
-      </div>
-    </>
+            </Space.Compact>
+          </Form.Item>
+
+          <Form.Item<FieldType>
+            name="password"
+            rules={[
+              { required: true, message: t('passwordRequiredMessage') },
+              { min: 6, message: t('passwordTypeMessage') },
+              { max: 20, message: t('passwordTypeMessage') }
+            ]}
+          >
+            <Input.Password
+              placeholder={t('password')}
+              prefix={<LockOutlined />}
+              suffix={
+                <Tooltip title={t('passwordTypeMessage')}>
+                  <InfoCircleOutlined style={{ color: 'rgba(0,0,0,.45)' }} />
+                </Tooltip>
+              }
+              allowClear
+            />
+          </Form.Item>
+
+          <Form.Item<FieldType>
+            name="verifyCode"
+            rules={[
+              { required: true, message: t('verifyCodeRequiredMessage') },
+              { pattern: /^\d{6}$/, message: t('verifyCodeTypeMessage') }
+            ]}
+          >
+            <Input.OTP />
+          </Form.Item>
+
+          <Form.Item label={null} style={{ margin: '0' }}>
+            <Button type="primary" block htmlType="submit" loading={finishLoading}>
+              {t('reset')}
+            </Button>
+          </Form.Item>
+        </Form>
+      </GlassBox>
+    </div>
   )
 }

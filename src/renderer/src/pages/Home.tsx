@@ -70,83 +70,78 @@ export default function Home(): React.JSX.Element {
   }
 
   return (
-    <>
-      <div className="flex flex-col h-full">
-        <div className="flex flex-col flex-1 justify-center items-center">
-          <div className="flex items-center gap-1 mb-24">
-            <ColorPicker
-              value={color}
-              onChange={handleColorChange}
-              disabledAlpha
-              arrow={false}
-              disabled={token == null}
-            >
-              <MisakiLogo className="h-28 ml-24" fill={colorPrimary} />
-            </ColorPicker>
-            <span
-              ref={spanRef}
-              className="text-8xl font-semibold absolute invisible whitespace-pre"
-            >
-              {title + 'iiii' || ' '}
-            </span>
-            <Input
-              spellCheck="false"
-              maxLength={8}
-              defaultValue="Misaki"
-              variant="borderless"
-              className={token == null ? 'cursor-default' : ''}
-              style={{ width: width }}
-              styles={{
-                input: {
-                  fontSize: '6rem',
-                  fontWeight: 600
-                }
-              }}
-              onChange={(e) => setTitle(e.target.value)}
-              onBlur={handleTitleBlur}
-              onMouseDown={(e) => {
-                if (token == null) e.preventDefault()
-              }}
-            />
-          </div>
-          <Sender
-            style={{ width: '75%' }}
-            placeholder={token == null ? t('pleaseLoginFirst') : t('greetings')}
+    <div className="flex flex-col h-full">
+      <div className="flex flex-col flex-1 justify-center items-center">
+        <div className="flex items-center gap-1 mb-24">
+          <ColorPicker
+            value={color}
+            onChange={handleColorChange}
+            disabledAlpha
+            arrow={false}
             disabled={token == null}
-            footer={() => {
-              return (
-                <div className="flex gap-2">
-                  <Button color="default" variant="filled" disabled={token == null}>
-                    {t('createScript')}
-                  </Button>
-                  <Dropdown menu={{ items }} disabled={token == null}>
-                    <Button color="default" variant="filled">
-                      MCP · 3
-                    </Button>
-                  </Dropdown>
-                  <Button color="default" variant="filled" disabled={token == null}>
-                    {t('meme')}
-                  </Button>
-                </div>
-              )
+          >
+            <MisakiLogo className="h-28 ml-24" fill={colorPrimary} />
+          </ColorPicker>
+          <span ref={spanRef} className="text-8xl font-semibold absolute invisible whitespace-pre">
+            {title + 'iiii' || ' '}
+          </span>
+          <Input
+            spellCheck="false"
+            maxLength={8}
+            defaultValue="Misaki"
+            variant="borderless"
+            className={token == null ? 'cursor-default' : ''}
+            style={{ width: width }}
+            styles={{
+              input: {
+                fontSize: '6rem',
+                fontWeight: 600
+              }
             }}
-            onSubmit={() => {
-              api.get('/test').catch(() => {
-                messageApi?.error(t('requestFailed'))
-              })
+            onChange={(e) => setTitle(e.target.value)}
+            onBlur={handleTitleBlur}
+            onMouseDown={(e) => {
+              if (token == null) e.preventDefault()
             }}
           />
         </div>
-        <div className="h-14 flex justify-center items-center select-none">
-          <span>{t('footer.agreement')}</span>
-          <a onClick={showTermsModal}>{t('footer.terms')}</a>
-          <span>{t('footer.andRead')}</span>
-          <a onClick={showPolicyModal}>{t('footer.policy')}</a>
-          <span>{t('footer.period')}</span>
-          <TermsModal open={isTermsModalOpen} onCancel={handleTermsCancel} />
-          <PolicyModal open={isPolicyModalOpen} onCancel={handlePolicyCancel} />
-        </div>
+        <Sender
+          style={{ width: '75%' }}
+          placeholder={token == null ? t('pleaseLoginFirst') : t('greetings')}
+          disabled={token == null}
+          footer={() => {
+            return (
+              <div className="flex gap-2">
+                <Button color="default" variant="filled" disabled={token == null}>
+                  {t('createScript')}
+                </Button>
+                <Dropdown menu={{ items }} disabled={token == null}>
+                  <Button color="default" variant="filled">
+                    MCP · 3
+                  </Button>
+                </Dropdown>
+                <Button color="default" variant="filled" disabled={token == null}>
+                  {t('meme')}
+                </Button>
+              </div>
+            )
+          }}
+          onSubmit={() => {
+            api.get('/test').catch(() => {
+              messageApi?.error(t('requestFailed'))
+            })
+          }}
+        />
       </div>
-    </>
+      <div className="h-14 flex justify-center items-center select-none">
+        <span>{t('footer.agreement')}</span>
+        <a onClick={showTermsModal}>{t('footer.terms')}</a>
+        <span>{t('footer.andRead')}</span>
+        <a onClick={showPolicyModal}>{t('footer.policy')}</a>
+        <span>{t('footer.period')}</span>
+        <TermsModal open={isTermsModalOpen} onCancel={handleTermsCancel} />
+        <PolicyModal open={isPolicyModalOpen} onCancel={handlePolicyCancel} />
+      </div>
+    </div>
   )
 }

@@ -14,34 +14,32 @@ export default function Search(): React.JSX.Element {
   }
 
   return (
-    <>
-      <div className="relative h-full">
-        <List
-          size="large"
-          dataSource={data}
-          renderItem={(item) => (
-            <List.Item className="select-none">
-              <List.Item.Meta
-                title={item}
-                description="Ant Design, a design language for background applications, is refined by Ant UED Team"
-              />
-            </List.Item>
-          )}
-        />
-        <Input.Search
-          size="large"
-          variant="filled"
-          placeholder="搜索历史会话"
-          allowClear
-          onSearch={onSearch}
-          className="absolute bottom-20"
-          style={{
-            width: '75%',
-            left: '50%',
-            transform: 'translateX(-50%)'
-          }}
-        />
-      </div>
-    </>
+    <div className="relative h-full">
+      <List
+        size="large"
+        dataSource={data}
+        renderItem={(item) => (
+          <List.Item className="select-none">
+            <List.Item.Meta
+              title={item}
+              description="Ant Design, a design language for background applications, is refined by Ant UED Team"
+            />
+          </List.Item>
+        )}
+      />
+      <Input.Search
+        size="large"
+        variant="filled"
+        placeholder="搜索历史会话"
+        allowClear
+        onSearch={onSearch}
+        className="absolute bottom-20"
+        style={{
+          width: '75%',
+          left: '50%',
+          transform: 'translateX(-50%)'
+        }}
+      />
+    </div>
   )
 }
