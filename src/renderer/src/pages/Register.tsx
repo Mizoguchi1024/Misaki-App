@@ -58,7 +58,7 @@ export default function Register(): React.JSX.Element {
   }
 
   return (
-    <div className="flex items-center justify-center h-full">
+    <div className="flex items-center justify-center h-full bg-[url(../assets/background.png)] bg-cover">
       <GlassBox className="gap-12">
         <h1 className="text-4xl font-medium select-none">{t('title')}</h1>
         <Form

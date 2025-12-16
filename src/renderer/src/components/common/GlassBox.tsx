@@ -31,7 +31,7 @@ export default function GlassBox({
       ref={ref}
       onMouseMove={handleMouseMove}
       className={`group overflow-hidden flex flex-col items-center justify-center
-        px-12 py-10 rounded-4xl backdrop-blur-xl bg-white/70 border-white
+        px-12 py-10 rounded-4xl backdrop-blur-sm bg-white/20 border-white
          dark:bg-white/10 dark:border-white/16 border-2
          shadow-2xl shadow-black/20 dark:shadow-none
          ${appearance === 1 ? '' : 'dark'}

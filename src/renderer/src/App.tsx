@@ -4,7 +4,7 @@ import { LanguageAntdMap, useSettingsStore } from './store/settingsStore'
 import { setMessageApi } from './messageApi'
 
 export default function App({ children }: { children?: React.ReactNode }): React.JSX.Element {
-  const { appearance, fontSize, colorPrimary, borderRadius, language } = useSettingsStore()
+  const { appearance, fontSize, mainColor, borderRadius, language } = useSettingsStore()
   const [messageInstance, contextHolder] = message.useMessage()
 
   setMessageApi(messageInstance)
@@ -15,7 +15,7 @@ export default function App({ children }: { children?: React.ReactNode }): React
         algorithm: appearance === 1 ? theme.defaultAlgorithm : theme.darkAlgorithm, // defaultAlgorithm | darkAlgorithm
         token: {
           fontSize: fontSize,
-          colorPrimary: colorPrimary,
+          colorPrimary: mainColor,
           borderRadius: borderRadius
         },
         components: {

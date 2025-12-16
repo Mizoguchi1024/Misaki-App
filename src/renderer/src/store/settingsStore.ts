@@ -8,11 +8,12 @@ import ja_JP from 'antd/locale/ja_JP'
 interface SettingsState {
   baseUrl: string
 
+  fontSize: number
+
   appearance: number
   language: LanguageEnum
+  mainColor: string
   ttsAutoplay: number
-  fontSize: number
-  colorPrimary: string
   borderRadius: number
   backgroundImagePath: string
 
@@ -26,7 +27,7 @@ const defaultSettings = {
   language: 0,
   ttsAutoplay: 0,
   fontSize: 14,
-  colorPrimary: '#3142ef',
+  mainColor: '#3142ef',
   borderRadius: 12,
   backgroundImagePath: ''
 }
@@ -62,7 +63,7 @@ export const useSettingsStore = create<SettingsState>()(
       language: defaultSettings.language,
       ttsAutoplay: defaultSettings.ttsAutoplay,
       fontSize: defaultSettings.fontSize,
-      colorPrimary: defaultSettings.colorPrimary,
+      mainColor: defaultSettings.mainColor,
       borderRadius: defaultSettings.borderRadius,
       backgroundImagePath: defaultSettings.backgroundImagePath,
 
@@ -72,7 +73,7 @@ export const useSettingsStore = create<SettingsState>()(
           language: s.language ?? defaultSettings.language,
           ttsAutoplay: s.ttsAutoplay ?? defaultSettings.ttsAutoplay,
           fontSize: s.fontSize ?? defaultSettings.fontSize,
-          colorPrimary: s.colorPrimary ?? defaultSettings.colorPrimary,
+          colorPrimary: s.colorPrimary ?? defaultSettings.mainColor,
           borderRadius: s.borderRadius ?? defaultSettings.borderRadius,
           backgroundImagePath: s.backgroundImagePath ?? defaultSettings.backgroundImagePath
         })),
@@ -83,7 +84,7 @@ export const useSettingsStore = create<SettingsState>()(
           language: defaultSettings.language,
           ttsAutoplay: defaultSettings.ttsAutoplay,
           fontSize: defaultSettings.fontSize,
-          colorPrimary: defaultSettings.colorPrimary,
+          colorPrimary: defaultSettings.mainColor,
           borderRadius: defaultSettings.borderRadius,
           backgroundImagePath: defaultSettings.backgroundImagePath
         }))
