@@ -21,8 +21,8 @@ export const router = createBrowserRouter([
   {
     element: <MainLayout />,
     children: [
-      { path: '/misaki', element: <Misaki /> },
       { path: '/', element: <Home /> },
+      { path: '/misaki', element: <Misaki /> },
       { path: '/search', element: <Search /> },
       { path: '/mcp-server', element: <McpServer /> },
       { path: '/script', element: <Script /> },

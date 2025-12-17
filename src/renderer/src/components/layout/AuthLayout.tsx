@@ -7,11 +7,13 @@ import { InfoCircleOutlined, QuestionCircleOutlined, SettingOutlined } from '@an
 import { useState } from 'react'
 import SettingsModal from '@renderer/components/common/SettingsModal'
 import AboutModal from '@renderer/components/common/AboutModal'
+import { messageApi } from '@renderer/messageApi'
 
 const { Header, Content, Footer } = Layout
 
 export default function AuthLayout(): React.JSX.Element {
   const { t } = useTranslation('authLayout')
+  const [logoClickedCount, setLogoClickedCount] = useState(0)
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false)
   const [isAboutModalOpen, setIsAboutModalOpen] = useState(false)
 
@@ -66,7 +68,18 @@ export default function AuthLayout(): React.JSX.Element {
         className="flex justify-between items-center"
         style={{ background: colorBgContainer, paddingInline: '2rem' }}
       >
-        <Button type="text" size="large" style={{ padding: '0 0.6rem' }}>
+        <Button
+          type="text"
+          size="large"
+          style={{ padding: '0 0.6rem' }}
+          onClick={() => {
+            setLogoClickedCount(logoClickedCount + 1)
+            if (logoClickedCount >= 4) {
+              messageApi?.info(t('doNotClickAgain'))
+              setLogoClickedCount(0)
+            }
+          }}
+        >
           <div className="flex items-center gap-1">
             <MisakiLogo className="w-10 h-10" fill={colorPrimary} />
             <span className="text-2xl font-semibold select-none">Misaki</span>
