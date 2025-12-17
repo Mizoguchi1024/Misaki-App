@@ -19,6 +19,7 @@ type FieldType = {
 }
 
 export default function Login(): React.JSX.Element {
+  const [passwordFocus, setPasswordFocus] = useState(false)
   const { setAuthInfo, setProfile, setRememberMe } = useUserStore()
   const { setSettings } = useSettingsStore()
   const { setChats } = useChatStore()
@@ -49,7 +50,11 @@ export default function Login(): React.JSX.Element {
   }
 
   return (
-    <div className="flex items-center justify-center h-full bg-[url(../assets/background.png)] bg-cover">
+    <div className="relative flex items-center justify-center h-full overflow-hidden bg-[url(../assets/background.png)] bg-cover bg-center">
+      <div
+        className={`absolute inset-0 bg-[url(../assets/background-eye-closed.png)] bg-cover bg-center transition-opacity duration-250
+        ${passwordFocus ? 'opacity-100' : 'opacity-0'}`}
+      />
       <GlassBox className="gap-12">
         <h1 className="text-4xl font-medium select-none">{t('title')}</h1>
         <Form
@@ -82,7 +87,12 @@ export default function Login(): React.JSX.Element {
               { max: 20, message: t('passwordTypeMessage') }
             ]}
           >
-            <Input.Password prefix={<LockOutlined />} placeholder={t('password')} />
+            <Input.Password
+              prefix={<LockOutlined />}
+              placeholder={t('password')}
+              onFocus={() => setPasswordFocus(true)}
+              onBlur={() => setPasswordFocus(false)}
+            />
           </Form.Item>
           <div className="flex justify-between items-start pl-2">
             <Form.Item<FieldType> name="remember" valuePropName="checked">

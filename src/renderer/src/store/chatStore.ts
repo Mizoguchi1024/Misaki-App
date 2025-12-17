@@ -1,4 +1,4 @@
-import { ConversationFrontResponse } from '@renderer/types/api/chat'
+import { ChatFrontResponse } from '@renderer/types/api/chat'
 import { Chat } from '@renderer/types/entity/chat'
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
@@ -6,7 +6,7 @@ import { persist } from 'zustand/middleware'
 interface ChatState {
   chats: Chat[]
 
-  setChats: (res: ConversationFrontResponse[]) => void
+  setChats: (res: ChatFrontResponse[]) => void
 }
 
 export const useChatStore = create<ChatState>()(

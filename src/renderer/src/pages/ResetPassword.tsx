@@ -19,6 +19,7 @@ const onFinishFailed: FormProps<FieldType>['onFinishFailed'] = (errorInfo) => {
 }
 
 export default function ResetPassword(): React.JSX.Element {
+  const [passwordFocus, setPasswordFocus] = useState(false)
   const navigator = useNavigate()
   const { logout } = useUserStore()
   const [form] = Form.useForm<FieldType>()
@@ -59,7 +60,11 @@ export default function ResetPassword(): React.JSX.Element {
   }
 
   return (
-    <div className="flex items-center justify-center h-full bg-[url(../assets/background.png)] bg-cover">
+    <div className="relative flex items-center justify-center h-full overflow-hidden bg-[url(../assets/background.png)] bg-cover bg-center">
+      <div
+        className={`absolute inset-0 bg-[url(../assets/background-eye-closed.png)] bg-cover bg-center transition-opacity duration-250
+        ${passwordFocus ? 'opacity-100' : 'opacity-0'}`}
+      />
       <GlassBox className="gap-12">
         <h1 className="text-4xl font-medium select-none">{t('title')}</h1>
         <Form
@@ -110,6 +115,8 @@ export default function ResetPassword(): React.JSX.Element {
                 </Tooltip>
               }
               allowClear
+              onFocus={() => setPasswordFocus(true)}
+              onBlur={() => setPasswordFocus(false)}
             />
           </Form.Item>
 
