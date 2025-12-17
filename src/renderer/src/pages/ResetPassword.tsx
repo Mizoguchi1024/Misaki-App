@@ -62,7 +62,7 @@ export default function ResetPassword(): React.JSX.Element {
   return (
     <div className="relative flex items-center justify-center h-full overflow-hidden bg-[url(../assets/background.png)] bg-cover bg-center">
       <div
-        className={`absolute inset-0 bg-[url(../assets/background-eye-closed.png)] bg-cover bg-center transition-opacity duration-250
+        className={`absolute inset-0 bg-[url(../assets/background-eye-closed.png)] bg-cover bg-center transition-opacity duration-500 ease-in-out
         ${passwordFocus ? 'opacity-100' : 'opacity-0'}`}
       />
       <GlassBox className="gap-12">
