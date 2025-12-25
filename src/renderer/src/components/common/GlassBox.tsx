@@ -42,9 +42,9 @@ export default function GlassBox({
         className="
           pointer-events-none absolute -translate-x-1/2 -translate-y-1/2
           w-[500px] h-[500px] rounded-full
-          bg-black/4 dark:bg-white/8 blur-3xl opacity-0
-          transition-opacity duration-250
-          group-hover:opacity-100
+          bg-black/4 dark:bg-white/8 blur-3xl opacity-0 scale-50
+          transition duration-250 ease-in-out
+          group-hover:opacity-100 group-hover:scale-100
         "
         style={{
           left: 'var(--x)',

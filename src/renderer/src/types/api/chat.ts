@@ -1,18 +1,18 @@
 export type SendMessageFrontRequest = {
   content: string
-  assistantId: number
+  assistantId: string
   prefix: string
 }
 
 export type ChatFrontResponse = {
-  id: number
+  id: string
   title: string
   createTime: string
 }
 
 export type MessageFrontResponse = {
-  id: number
-  chatId: number
+  id: string
+  chatId: string
   type: string
   content: string
   mcpEnabled: number
