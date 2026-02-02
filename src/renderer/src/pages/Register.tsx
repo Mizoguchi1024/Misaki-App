@@ -143,7 +143,7 @@ export default function Register(): React.JSX.Element {
               { pattern: /^\d{6}$/, message: t('verifyCodeTypeMessage') }
             ]}
           >
-            <Input.OTP />
+            <Input.OTP className="w-full justify-between" />
           </Form.Item>
           <Form.Item label={null} style={{ margin: '0' }}>
             <Button type="primary" block htmlType="submit" loading={finishLoading}>
