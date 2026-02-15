@@ -18,3 +18,13 @@ export type MessageFrontResponse = {
   mcpEnabled: number
   timestamp: string
 }
+
+export type ListPromptsFrontRequest = {
+  parentId: string
+  size: number
+}
+
+export type UpdateChatTitleFrontRequest = {
+  title: string
+  version: number
+}
