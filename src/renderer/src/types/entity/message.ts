@@ -1,6 +1,8 @@
 export type Message = {
-  id: number
+  id: string
+  chatId: string
+  parentId: string
+  type: string
   content: string
-  role: string
-  chatId: number
+  createTime: string
 }

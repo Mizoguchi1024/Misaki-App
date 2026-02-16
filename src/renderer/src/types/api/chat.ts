@@ -13,10 +13,10 @@ export type ChatFrontResponse = {
 export type MessageFrontResponse = {
   id: string
   chatId: string
+  parentId: string
   type: string
   content: string
-  mcpEnabled: number
-  timestamp: string
+  createTime: string
 }
 
 export type ListPromptsFrontRequest = {

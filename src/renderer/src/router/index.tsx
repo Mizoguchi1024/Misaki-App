@@ -11,10 +11,12 @@ import Script from '../pages/Script'
 import Misaki from '../pages/Misaki'
 import NotFound from '../pages/NotFound'
 import Chat from '../pages/Chat'
+import { listMessages } from '@renderer/api/front/chat'
 
-const chatLoader = async ({ params }): Promise<null> => {
-  console.log(params.id)
-  return null
+
+const chatLoader = async ({ params }) => {
+  const messageRes = await listMessages(params.id)
+  return messageRes.data
 }
 
 export const router = createBrowserRouter([

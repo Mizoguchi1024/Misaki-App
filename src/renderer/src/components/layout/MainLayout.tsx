@@ -112,7 +112,7 @@ export default function MainLayout(): React.JSX.Element {
   const items = [...agentItems, ...chatItems]
 
   return (
-    <Layout className="h-full">
+    <Layout className="h-screen">
       <Header
         className="flex items-center justify-between"
         style={{ background: colorBgContainer, paddingInline: '2rem' }}

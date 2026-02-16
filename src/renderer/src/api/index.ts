@@ -19,7 +19,10 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (res) => res,
   (err) => {
-    console.error('API error:', err)
+    if (err.response?.status === 401) {
+      useUserStore.getState().logout()
+      window.location.href = '/login'
+    }
     const serverMessage = err.response?.data?.message
     if (serverMessage) {
       messageApi?.error(serverMessage)

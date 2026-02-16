@@ -2,12 +2,26 @@ import { ConfigProvider, message, theme } from 'antd'
 import 'dayjs/locale/zh-cn'
 import { LanguageAntdMap, useSettingsStore } from './store/settingsStore'
 import { setMessageApi } from './messageApi'
+import { useEffect } from 'react'
+import { jwtDecode } from 'jwt-decode'
+import { useUserStore } from './store/userStore'
 
 export default function App({ children }: { children?: React.ReactNode }): React.JSX.Element {
+  const { token, logout } = useUserStore()
   const { appearance, fontSize, mainColor, borderRadius, language } = useSettingsStore()
   const [messageInstance, contextHolder] = message.useMessage()
 
   setMessageApi(messageInstance)
+
+  useEffect(() => {
+    if (token) {
+      const decoded = jwtDecode(token)
+      const now = Date.now() / 1000
+      if (decoded && decoded.exp) {
+        if (decoded.exp < now) logout()
+      }
+    }
+  }, [])
 
   return (
     <ConfigProvider
