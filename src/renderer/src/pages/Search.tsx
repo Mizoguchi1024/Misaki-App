@@ -1,6 +1,24 @@
-import { Input, List } from 'antd'
+import { CloseCircleOutlined, MessageOutlined, SearchOutlined } from '@ant-design/icons'
+import { Sender } from '@ant-design/x'
+import { Card } from 'antd'
+import { useState } from 'react'
 
-const data = [
+const results = [
+  'Time',
+  'Weather',
+  'Australian walks 100km after outback crash.',
+  'Man charged over missing wedding girl.',
+  'Los Angeles battles huge wildfires.',
+  'Time',
+  'Weather',
+  'Australian walks 100km after outback crash.',
+  'Man charged over missing wedding girl.',
+  'Los Angeles battles huge wildfires.',
+  'Time',
+  'Weather',
+  'Australian walks 100km after outback crash.',
+  'Man charged over missing wedding girl.',
+  'Los Angeles battles huge wildfires.',
   'Time',
   'Weather',
   'Australian walks 100km after outback crash.',
@@ -9,37 +27,44 @@ const data = [
 ]
 
 export default function Search(): React.JSX.Element {
+  const [loading, setLoading] = useState(false)
+
   const onSearch = (value: string): void => {
+    setLoading(true)
     console.log(value)
   }
 
   return (
     <div className="relative h-full">
-      <List
-        size="large"
-        dataSource={data}
-        renderItem={(item) => (
-          <List.Item className="select-none">
-            <List.Item.Meta
-              title={item}
-              description="Ant Design, a design language for background applications, is refined by Ant UED Team"
-            />
-          </List.Item>
-        )}
-      />
-      <Input.Search
-        size="large"
-        variant="filled"
-        placeholder="搜索历史会话"
-        allowClear
-        onSearch={onSearch}
-        className="absolute bottom-20"
-        style={{
-          width: '75%',
-          left: '50%',
-          transform: 'translateX(-50%)'
-        }}
-      />
+      <div className="max-h-full px-32 pt-8 pb-40 flex flex-col gap-2 overflow-y-auto">
+        {results.map((item) => (
+          <Card loading={loading} className='flex-none'>
+            <Card.Meta avatar={<MessageOutlined className='h-full' style={{ fontSize: '24px' }} />} title={item} description={item}/>
+          </Card>
+        ))}
+      </div>
+      <div className="absolute bottom-12 w-full px-48">
+        <Sender
+          className="bg-white/70 dark:bg-white/10 backdrop-blur-xs hover:backdrop-blur-sm ease-in-out duration-500"
+          placeholder="搜索历史会话"
+          loading={loading}
+          onSubmit={() => {
+            onSearch('')
+          }}
+          onCancel={() => {
+            setLoading(false)
+          }}
+          suffix={(_, info) => {
+            const { SendButton, ClearButton } = info.components
+            return (
+              <div className="flex gap-2">
+                <ClearButton icon={<CloseCircleOutlined />} />
+                <SendButton type="primary" icon={<SearchOutlined />} disabled={false} />
+              </div>
+            )
+          }}
+        />
+      </div>
     </div>
   )
 }

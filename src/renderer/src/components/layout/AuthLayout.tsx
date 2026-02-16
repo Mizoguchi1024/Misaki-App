@@ -8,6 +8,7 @@ import { useState } from 'react'
 import SettingsModal from '@renderer/components/common/SettingsModal'
 import AboutModal from '@renderer/components/common/AboutModal'
 import { messageApi } from '@renderer/messageApi'
+import { useSettingsStore } from '@renderer/store/settingsStore'
 
 const { Header, Content, Footer } = Layout
 
@@ -16,6 +17,7 @@ export default function AuthLayout(): React.JSX.Element {
   const [logoClickedCount, setLogoClickedCount] = useState(0)
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false)
   const [isAboutModalOpen, setIsAboutModalOpen] = useState(false)
+  const { appearance } = useSettingsStore()
 
   const handleEscape = (event: KeyboardEvent): void => {
     if (event.key === 'Escape') {
@@ -63,7 +65,7 @@ export default function AuthLayout(): React.JSX.Element {
   ]
 
   return (
-    <Layout className="h-full">
+    <Layout className={`h-screen ${appearance === 1 ? '' : 'dark'}`}>
       <Header
         className="flex justify-between items-center"
         style={{ background: colorBgContainer, paddingInline: '2rem' }}

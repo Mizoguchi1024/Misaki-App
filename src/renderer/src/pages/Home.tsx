@@ -107,7 +107,7 @@ export default function Home(): React.JSX.Element {
         </div>
         <Sender
           style={{ width: '75%' }}
-          className='bg-white/70 backdrop-blur-xs hover:backdrop-blur-sm'
+          className='bg-white/70 dark:bg-white/20 backdrop-blur-xs hover:backdrop-blur-sm ease-in-out duration-500'
           placeholder={token == null ? t('pleaseLoginFirst') : t('greetings')}
           disabled={token == null}
           footer={() => {

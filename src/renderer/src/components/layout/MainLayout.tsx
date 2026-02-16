@@ -22,6 +22,7 @@ import AboutModal from '@renderer/components/common/AboutModal'
 import { useTranslation } from 'react-i18next'
 import { messageApi } from '@renderer/messageApi'
 import { useChatStore } from '@renderer/store/chatStore'
+import { useSettingsStore } from '@renderer/store/settingsStore'
 
 const { Header, Content, Sider } = Layout
 
@@ -29,6 +30,7 @@ export default function MainLayout(): React.JSX.Element {
   const { t } = useTranslation('mainLayout')
   const [collapsed, setCollapsed] = useState(false)
   const { username } = useUserStore()
+  const { appearance } = useSettingsStore()
   const { chats } = useChatStore()
   const location = useLocation()
   const navigate = useNavigate()
@@ -112,7 +114,7 @@ export default function MainLayout(): React.JSX.Element {
   const items = [...agentItems, ...chatItems]
 
   return (
-    <Layout className="h-screen">
+    <Layout className={`h-screen ${appearance === 1 ? '' : 'dark'}`}>
       <Header
         className="flex items-center justify-between"
         style={{ background: colorBgContainer, paddingInline: '2rem' }}

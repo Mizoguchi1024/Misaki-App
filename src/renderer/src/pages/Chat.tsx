@@ -97,8 +97,8 @@ export default function Chat(): React.JSX.Element {
       <div className="max-h-full px-12 pb-40 overflow-y-auto">
         <Bubble.List role={role} items={items} autoScroll={false} />
       </div>
-      <div className="absolute bottom-20 w-full px-48">
-        <Sender className="bg-white/70 backdrop-blur-xs hover:backdrop-blur-sm ease-in-out duration-250" />
+      <div className="absolute bottom-12 w-full px-48">
+        <Sender className="bg-white/70 dark:bg-white/20 backdrop-blur-xs hover:backdrop-blur-sm ease-in-out duration-500" />
       </div>
     </div>
   )
