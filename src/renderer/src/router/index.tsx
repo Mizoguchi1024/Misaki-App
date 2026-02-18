@@ -13,7 +13,6 @@ import NotFound from '../pages/NotFound'
 import Chat from '../pages/Chat'
 import { listMessages } from '@renderer/api/front/chat'
 
-
 const chatLoader = async ({ params }) => {
   const messageRes = await listMessages(params.id)
   return messageRes.data
@@ -23,21 +22,21 @@ export const router = createBrowserRouter([
   {
     element: <MainLayout />,
     children: [
-      { path: '/', element: <Home /> },
-      { path: '/misaki', element: <Misaki /> },
-      { path: '/search', element: <Search /> },
-      { path: '/mcp-server', element: <McpServer /> },
-      { path: '/script', element: <Script /> },
-      { path: '/chat/:id', loader: chatLoader, element: <Chat /> }
+      { index: true, element: <Home />, handle: { header: 'home' } },
+      { path: '/misaki', element: <Misaki />, handle: { header: 'misaki' } },
+      { path: '/search', element: <Search />, handle: { header: 'search' } },
+      { path: '/mcp-server', element: <McpServer />, handle: { header: 'mcp-server' } },
+      { path: '/script', element: <Script />, handle: { header: 'script' } },
+      { path: '/chat/:id', element: <Chat />, handle: { header: 'chat' }, loader: chatLoader }
     ]
   },
   {
     element: <AuthLayout />,
     children: [
-      { path: '/login', element: <Login /> },
-      { path: '/register', element: <Register /> },
-      { path: '/reset-password', element: <ResetPassword /> },
-      { path: '*', element: <NotFound /> }
+      { path: '/login', element: <Login />, handle: { header: 'login' } },
+      { path: '/register', element: <Register />, handle: { header: 'register' } },
+      { path: '/reset-password', element: <ResetPassword />, handle: { header: 'reset-password' } },
+      { path: '*', element: <NotFound />, handle: { header: 'not-found' } }
     ]
   }
 ])

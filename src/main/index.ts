@@ -2,6 +2,7 @@ import { app, shell, BrowserWindow, ipcMain } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
+import MCPClient from './mcp'
 
 // app.commandLine.appendSwitch('high-dpi-support', 'true')
 // app.commandLine.appendSwitch('force-device-scale-factor', '1')
@@ -40,10 +41,11 @@ function createWindow(): void {
   }
 }
 
+let mcpClient: MCPClient
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.whenReady().then(() => {
+app.whenReady().then(async() => {
   // Set app user model id for windows
   electronApp.setAppUserModelId('com.electron')
 
@@ -54,8 +56,13 @@ app.whenReady().then(() => {
     optimizer.watchWindowShortcuts(window)
   })
 
-  // IPC test
-  ipcMain.on('ping', () => console.log('pong'))
+   mcpClient = new MCPClient()
+  try {
+    await mcpClient.connectToServer('src/main/mcp-servers/filesystem/index.ts')
+  } catch (e) {
+    console.error('Error:', e)
+    await mcpClient.cleanup()
+  }
 
   createWindow()
 
@@ -64,6 +71,10 @@ app.whenReady().then(() => {
     // dock icon is clicked and there are no other windows open.
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
   })
+})
+
+ipcMain.handle('mcp-list-tools', async () => {
+  return mcpClient.tools
 })
 
 // Quit when all windows are closed, except on macOS. There, it's common

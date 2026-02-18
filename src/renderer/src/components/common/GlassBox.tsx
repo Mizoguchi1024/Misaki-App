@@ -1,4 +1,3 @@
-import { useSettingsStore } from '@renderer/store/settingsStore'
 import React, { useRef } from 'react'
 
 interface BoxProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -38,7 +37,7 @@ export default function GlassBox({
       <div
         className="
           pointer-events-none absolute -translate-x-1/2 -translate-y-1/2
-          w-[500px] h-[500px] rounded-full
+          w-125 h-125 rounded-full
           bg-black/4 dark:bg-white/8 blur-3xl opacity-0 scale-50
           transition duration-250 ease-in-out
           group-hover:opacity-100 group-hover:scale-100

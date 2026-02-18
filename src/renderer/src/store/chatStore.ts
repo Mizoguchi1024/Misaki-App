@@ -5,44 +5,42 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
 interface ChatState {
-  chats: Chat[]
-  messages: Message[]
-  parentId: string
+  chats: Chat[] | null
+  messages: Message[] | null
+  parentId: string | null
 
-  setChats: (res: ChatFrontResponse[]) => void
-  setMessages: (res: MessageFrontResponse[]) => void
-  setParentId: (id: string) => void
+  setChats: (chatFrontResponse: ChatFrontResponse[]) => void
+  setMessages: (messageFrontResponse: MessageFrontResponse[]) => void
+  setParentId: (parentId: string) => void
+  reset: () => void
+}
+
+const initialState = {
+  chats: null,
+  messages: null,
+  parentId: null
 }
 
 export const useChatStore = create<ChatState>()(
   persist(
     (set) => ({
-      chats: [],
-      messages: [],
-      parentId: '',
-      setChats: (res) => {
-        const chats: Chat[] = res.map((item) => ({
-          id: item.id,
-          title: item.title,
-          createTime: item.createTime
-        }))
+      ...initialState,
 
-        set({ chats })
-      },
-      setMessages: (res: MessageFrontResponse[]) =>
+      setChats: (chatFrontResponse) => set({ chats: chatFrontResponse }),
+      setMessages: (messageFrontResponse: MessageFrontResponse[]) =>
         set((state) => {
-          if (!res.length) {
+          if (!messageFrontResponse.length) {
             return { messages: [] }
           }
 
           // 1. 建立 id -> message 映射
           const map = new Map<string, MessageFrontResponse>()
-          res.forEach((msg) => {
+          messageFrontResponse.forEach((msg) => {
             map.set(msg.id, msg)
           })
 
           // 2. 确定起点
-          let currentId = state.parentId || res[res.length - 1].id
+          let currentId = state.parentId || messageFrontResponse[messageFrontResponse.length - 1].id
 
           const path: MessageFrontResponse[] = []
 
@@ -63,7 +61,8 @@ export const useChatStore = create<ChatState>()(
             parentId: path.length ? path[path.length - 1].id : ''
           }
         }),
-      setParentId: (parentId) => set({ parentId })
+      setParentId: (parentId) => set({ parentId }),
+      reset: () => set(initialState)
     }),
 
     { name: 'chat-store' }

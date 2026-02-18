@@ -2,4 +2,5 @@ export type Chat = {
   id: string
   title: string
   createTime: string
+  version: number
 }

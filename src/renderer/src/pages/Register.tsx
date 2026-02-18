@@ -59,9 +59,9 @@ export default function Register(): React.JSX.Element {
   }
 
   return (
-    <div className="relative flex items-center justify-center h-full overflow-hidden bg-[url(../assets/background.png)] bg-cover bg-center">
+    <div className="relative flex items-center justify-center h-full overflow-hidden bg-[url(../assets/login-background.png)] bg-cover bg-center">
       <div
-        className={`absolute inset-0 bg-[url(../assets/background-eye-closed.png)] bg-cover bg-center transition-opacity duration-500 ease-in-out
+        className={`absolute inset-0 bg-[url(../assets/login-background-password.png)] bg-cover bg-center transition-opacity duration-500 ease-in-out
         ${passwordFocus ? 'opacity-100' : 'opacity-0'}`}
       />
       <GlassBox className="gap-12">
@@ -145,7 +145,7 @@ export default function Register(): React.JSX.Element {
           >
             <Input.OTP className="w-full justify-between" />
           </Form.Item>
-          <Form.Item label={null} style={{ margin: '0' }}>
+          <Form.Item label={null} className='m-0'>
             <Button type="primary" block htmlType="submit" loading={finishLoading}>
               {t('register')}
             </Button>

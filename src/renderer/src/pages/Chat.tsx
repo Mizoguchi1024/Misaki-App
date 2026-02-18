@@ -35,11 +35,11 @@ export default function Chat(): React.JSX.Element {
     setMessages(data)
   }, [data])
 
-  const items = messages.map((item) => ({
+  const items = messages?.map((item) => ({
     key: item.id,
     role: item.type,
     content: item.content
-  }))
+  })) ?? []
 
   const update = (key: string | number, editable: any) => {}
 
@@ -97,7 +97,7 @@ export default function Chat(): React.JSX.Element {
       <div className="max-h-full px-12 pb-40 overflow-y-auto">
         <Bubble.List role={role} items={items} autoScroll={false} />
       </div>
-      <div className="absolute bottom-12 w-full px-48">
+      <div className="absolute bottom-12 left-1/2 -translate-x-1/2 w-160">
         <Sender className="bg-white/70 dark:bg-white/20 backdrop-blur-xs hover:backdrop-blur-sm ease-in-out duration-500" />
       </div>
     </div>

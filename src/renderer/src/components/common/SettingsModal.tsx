@@ -19,7 +19,7 @@ export default function SettingsModal({ open, onCancel }: SettingsModalProps): R
       onCancel={onCancel}
       className="select-none"
     >
-      <div className="max-h-120 overflow-y-auto" style={{ scrollbarWidth: 'none' }}>
+      <div className="max-h-120 overflow-y-auto scrollbar-none">
         <Tabs defaultActiveKey="1" centered tabPlacement="start">
           <TabPane tab={t('system')} key="1">
             <div>系统设置内容</div>

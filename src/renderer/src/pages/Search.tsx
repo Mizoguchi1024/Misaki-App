@@ -1,5 +1,6 @@
 import { CloseCircleOutlined, MessageOutlined, SearchOutlined } from '@ant-design/icons'
 import { Sender } from '@ant-design/x'
+import { messageApi } from '@renderer/messageApi'
 import { Card } from 'antd'
 import { useState } from 'react'
 
@@ -36,14 +37,14 @@ export default function Search(): React.JSX.Element {
 
   return (
     <div className="relative h-full">
-      <div className="max-h-full px-32 pt-8 pb-40 flex flex-col gap-2 overflow-y-auto">
+      <div className="max-h-full px-32 pt-8 pb-40 flex flex-col gap-4 overflow-y-auto">
         {results.map((item) => (
-          <Card loading={loading} className='flex-none'>
+          <Card loading={loading} onClick={()=>{}} className='flex-none select-none cursor-pointer shadow-sm hover:shadow-lg ease-in-out duration-500'>
             <Card.Meta avatar={<MessageOutlined className='h-full' style={{ fontSize: '24px' }} />} title={item} description={item}/>
           </Card>
         ))}
       </div>
-      <div className="absolute bottom-12 w-full px-48">
+      <div className="absolute bottom-12 left-1/2 -translate-x-1/2 w-160">
         <Sender
           className="bg-white/70 dark:bg-white/10 backdrop-blur-xs hover:backdrop-blur-sm ease-in-out duration-500"
           placeholder="搜索历史会话"

@@ -8,6 +8,7 @@ export type ChatFrontResponse = {
   id: string
   title: string
   createTime: string
+  version: number
 }
 
 export type MessageFrontResponse = {

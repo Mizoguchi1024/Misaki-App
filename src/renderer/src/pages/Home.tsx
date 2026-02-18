@@ -11,7 +11,7 @@ import { messageApi } from '@renderer/messageApi'
 import { useTranslation } from 'react-i18next'
 
 export default function Home(): React.JSX.Element {
-  const { token } = useUserStore()
+  const { jwt } = useUserStore()
   const { t } = useTranslation('home')
   const [title, setTitle] = useState('Misaki')
   const [width, setWidth] = useState(10)
@@ -23,11 +23,17 @@ export default function Home(): React.JSX.Element {
   const [color, setColor] = useState('#3142ef')
 
   useEffect(() => {
+    test()
     const span = spanRef.current
     if (span) {
       setWidth(span.offsetWidth)
     }
   }, [title])
+
+  const test = async() => {
+    const tools = await window.api.listMcpTools()
+    console.log('tools', tools)
+  }
 
   function handleTitleBlur(): void {
     submitTitle()
@@ -78,7 +84,7 @@ export default function Home(): React.JSX.Element {
             onChange={handleColorChange}
             disabledAlpha
             arrow={false}
-            disabled={token == null}
+            disabled={!jwt}
           >
             <MisakiLogo className="h-28 ml-24" fill={colorPrimary} />
           </ColorPicker>
@@ -90,7 +96,7 @@ export default function Home(): React.JSX.Element {
             maxLength={8}
             defaultValue="Misaki"
             variant="borderless"
-            className={token == null ? 'cursor-default' : ''}
+            className={!jwt ? 'cursor-default' : ''}
             style={{ width: width }}
             styles={{
               input: {
@@ -101,38 +107,39 @@ export default function Home(): React.JSX.Element {
             onChange={(e) => setTitle(e.target.value)}
             onBlur={handleTitleBlur}
             onMouseDown={(e) => {
-              if (token == null) e.preventDefault()
+              if (!jwt) e.preventDefault()
             }}
           />
         </div>
-        <Sender
-          style={{ width: '75%' }}
-          className='bg-white/70 dark:bg-white/20 backdrop-blur-xs hover:backdrop-blur-sm ease-in-out duration-500'
-          placeholder={token == null ? t('pleaseLoginFirst') : t('greetings')}
-          disabled={token == null}
-          footer={() => {
-            return (
-              <div className="flex gap-2">
-                <Button color="default" variant="filled" disabled={token == null}>
-                  {t('createScript')}
-                </Button>
-                <Dropdown menu={{ items }} disabled={token == null}>
-                  <Button color="default" variant="filled">
-                    MCP · 3
+        <div className='w-3/4'>
+          <Sender
+            className="bg-white/70 dark:bg-white/20 backdrop-blur-xs hover:backdrop-blur-sm ease-in-out duration-500"
+            placeholder={!jwt ? t('pleaseLoginFirst') : t('greetings')}
+            disabled={!jwt}
+            footer={() => {
+              return (
+                <div className="flex gap-2">
+                  <Button color="default" variant="filled" disabled={!jwt}>
+                    {t('createScript')}
                   </Button>
-                </Dropdown>
-                <Button color="default" variant="filled" disabled={token == null}>
-                  {t('meme')}
-                </Button>
-              </div>
-            )
-          }}
-          onSubmit={() => {
-            api.get('/test').catch(() => {
-              messageApi?.error(t('requestFailed'))
-            })
-          }}
-        />
+                  <Dropdown menu={{ items }} disabled={!jwt}>
+                    <Button color="default" variant="filled">
+                      MCP · 3
+                    </Button>
+                  </Dropdown>
+                  <Button color="default" variant="filled" disabled={!jwt}>
+                    {t('meme')}
+                  </Button>
+                </div>
+              )
+            }}
+            onSubmit={() => {
+              api.get('/test').catch(() => {
+                messageApi?.error(t('requestFailed'))
+              })
+            }}
+          />
+        </div>
       </div>
       <div className="h-14 flex justify-center items-center select-none">
         <span>{t('footer.agreement')}</span>
