@@ -1,7 +1,15 @@
+export type ToolDefinition = {
+  name: string
+  description: string
+  parameters: Record<string, any>
+  strict?: boolean
+}
+
 export type SendMessageFrontRequest = {
   content: string
-  assistantId: string
-  prefix: string
+  parentId?: string
+  prefix?: string
+  tools?: ToolDefinition[]
 }
 
 export type ChatFrontResponse = {

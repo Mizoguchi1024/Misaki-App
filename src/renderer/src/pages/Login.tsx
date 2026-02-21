@@ -108,7 +108,7 @@ export default function Login(): React.JSX.Element {
               {t('forgotPassword')}
             </Button>
           </div>
-          <Form.Item label={null} className='m-0'>
+          <Form.Item label={null} className="m-0">
             <Button type="primary" block htmlType="submit" loading={finishLoading}>
               {t('login')}
             </Button>

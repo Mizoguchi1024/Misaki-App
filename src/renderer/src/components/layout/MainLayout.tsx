@@ -77,13 +77,11 @@ export default function MainLayout(): React.JSX.Element {
   const items = [...agentItems, ...chatItems]
 
   return (
-    <Layout className={`h-screen ${appearance === 1 ? '' : 'dark'}`}>
-      <Header
-        className="flex relative items-center justify-between bg-white/70 backdrop:blur-xs hover:backdrop-blur-sm px-8"
-      >
-        <MisakiButton/>
-        <HeaderMiddlePart type={headerType}/>
-        <HeaderRightPart type={headerType}/>
+    <Layout className="h-screen">
+      <Header className="flex items-center justify-between bg-white dark:bg-neutral-800 px-8">
+        <MisakiButton />
+        <HeaderMiddlePart type={headerType} />
+        <HeaderRightPart type={headerType} />
       </Header>
       <Layout>
         <Sider

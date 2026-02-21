@@ -6,10 +6,19 @@ import { useEffect } from 'react'
 import { jwtDecode } from 'jwt-decode'
 import { useUserStore } from './store/userStore'
 import { StyleProvider } from '@ant-design/cssinjs'
+import { useChatStore } from './store/chatStore'
 
 export default function App({ children }: { children?: React.ReactNode }): React.JSX.Element {
   const { jwt, logout } = useUserStore()
-  const { appearance, fontSize, mainColor, borderRadius, language } = useSettingsStore()
+  const {
+    appearance,
+    fontSize,
+    mainColor,
+    borderRadius,
+    language,
+    resetCloudSettings: resetSettingsStore
+  } = useSettingsStore()
+  const { reset: resetChatStore } = useChatStore()
   const [messageInstance, contextHolder] = message.useMessage()
 
   useEffect(() => {
@@ -18,8 +27,16 @@ export default function App({ children }: { children?: React.ReactNode }): React
       const decoded = jwtDecode(jwt)
       const now = Date.now() / 1000
       if (decoded && decoded.exp) {
-        if (decoded.exp < now) logout()
+        if (decoded.exp < now) {
+          logout()
+          resetSettingsStore()
+          resetChatStore()
+        }
       }
+    } else {
+      logout()
+      resetSettingsStore()
+      resetChatStore()
     }
   }, [])
 
@@ -41,8 +58,10 @@ export default function App({ children }: { children?: React.ReactNode }): React
         }}
         locale={LanguageAntdMap[language]}
       >
-        {contextHolder}
-        {children}
+        <div className={`${appearance === 1 ? '' : 'dark'}`}>
+          {contextHolder}
+          {children}
+        </div>
       </ConfigProvider>
     </StyleProvider>
   )

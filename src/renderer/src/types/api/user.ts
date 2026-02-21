@@ -31,9 +31,10 @@ export type UpdateSettingsFrontRequest = {
 export type SettingsFrontResponse = {
   appearance: number
   language: number
-  ttsAutoplay: number
+  ttsAutoplay: boolean
   fontSize: number
   colorPrimary: string
   borderRadius: number
   backgroundImagePath: string
+  enabledAssistantId: string
 }

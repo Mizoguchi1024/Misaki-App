@@ -39,8 +39,16 @@ export default function Search(): React.JSX.Element {
     <div className="relative h-full">
       <div className="max-h-full px-32 pt-8 pb-40 flex flex-col gap-4 overflow-y-auto">
         {results.map((item) => (
-          <Card loading={loading} onClick={()=>{}} className='flex-none select-none cursor-pointer shadow-sm hover:shadow-lg ease-in-out duration-500'>
-            <Card.Meta avatar={<MessageOutlined className='h-full' style={{ fontSize: '24px' }} />} title={item} description={item}/>
+          <Card
+            loading={loading}
+            onClick={() => {}}
+            className="flex-none select-none cursor-pointer shadow-sm hover:shadow-lg ease-in-out duration-500"
+          >
+            <Card.Meta
+              avatar={<MessageOutlined className="h-full" style={{ fontSize: '24px' }} />}
+              title={item}
+              description={item}
+            />
           </Card>
         ))}
       </div>

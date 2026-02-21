@@ -1,5 +1,5 @@
 import { useChatStore } from '@renderer/store/chatStore'
-import { Input, Typography } from 'antd'
+import { Input } from 'antd'
 import { useParams } from 'react-router-dom'
 import Assistantlist from './Assistantlist'
 
@@ -11,7 +11,11 @@ export default function HeaderMiddlePart({ type }): React.JSX.Element {
     case 'chat':
       return (
         <div className="absolute left-1/2 -translate-x-1/2 w-160">
-          <Input variant="borderless" className='text-center font-medium' value={chats?.find((chat) => chat.id === id)?.title}></Input>
+          <Input
+            variant="borderless"
+            className="text-center font-medium"
+            value={chats?.find((chat) => chat.id === id)?.title}
+          ></Input>
         </div>
       )
     case 'misaki':

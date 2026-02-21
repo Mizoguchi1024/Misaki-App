@@ -1,27 +1,37 @@
-import { Button, ColorPicker, Dropdown, Input, theme } from 'antd'
+import { ColorPicker, Dropdown, Input, theme } from 'antd'
 import { Sender } from '@ant-design/x'
 import MisakiLogo from '../assets/misaki-logo-symbol.svg?react'
 import { useEffect, useRef, useState } from 'react'
 import { useUserStore } from '@renderer/store/userStore'
-import api from '@renderer/api'
 import TermsModal from '@renderer/components/common/TermsModal'
 import PolicyModal from '@renderer/components/common/PolicyModal'
 import { AggregationColor } from 'antd/es/color-picker/color'
 import { messageApi } from '@renderer/messageApi'
 import { useTranslation } from 'react-i18next'
+import { createChat, createChatTitle, listChats, sendMessage } from '@renderer/api/front/chat'
+import { useNavigate } from 'react-router-dom'
+import { useChatStore } from '@renderer/store/chatStore'
 
 export default function Home(): React.JSX.Element {
   const { jwt } = useUserStore()
+  const { setChats } = useChatStore()
   const { t } = useTranslation('home')
+  const navigate = useNavigate()
   const [title, setTitle] = useState('Misaki')
   const [width, setWidth] = useState(10)
   const spanRef = useRef<HTMLSpanElement>(null)
+  const [message, setMessage] = useState('')
+  const [loading, setLoading] = useState(false)
   const {
     token: { colorPrimary }
   } = theme.useToken()
 
   const [color, setColor] = useState('#3142ef')
 
+  const test = async (): Promise<void> => {
+    const tools = await window.api.listMcpTools()
+    console.log('tools', tools)
+  }
   useEffect(() => {
     test()
     const span = spanRef.current
@@ -29,11 +39,6 @@ export default function Home(): React.JSX.Element {
       setWidth(span.offsetWidth)
     }
   }, [title])
-
-  const test = async() => {
-    const tools = await window.api.listMcpTools()
-    console.log('tools', tools)
-  }
 
   function handleTitleBlur(): void {
     submitTitle()
@@ -111,32 +116,52 @@ export default function Home(): React.JSX.Element {
             }}
           />
         </div>
-        <div className='w-3/4'>
+        <div className="w-3/4">
           <Sender
             className="bg-white/70 dark:bg-white/20 backdrop-blur-xs hover:backdrop-blur-sm ease-in-out duration-500"
+            value={message}
+            loading={loading}
             placeholder={!jwt ? t('pleaseLoginFirst') : t('greetings')}
-            disabled={!jwt}
+            readOnly={!jwt}
+            submitType="enter"
             footer={() => {
               return (
                 <div className="flex gap-2">
-                  <Button color="default" variant="filled" disabled={!jwt}>
+                  <Sender.Switch color="default" disabled={!jwt}>
                     {t('createScript')}
-                  </Button>
+                  </Sender.Switch>
                   <Dropdown menu={{ items }} disabled={!jwt}>
-                    <Button color="default" variant="filled">
-                      MCP · 3
-                    </Button>
+                    <Sender.Switch color="default">MCP · 3</Sender.Switch>
                   </Dropdown>
-                  <Button color="default" variant="filled" disabled={!jwt}>
+                  <Sender.Switch color="default" disabled={!jwt}>
                     {t('meme')}
-                  </Button>
+                  </Sender.Switch>
                 </div>
               )
             }}
-            onSubmit={() => {
-              api.get('/test').catch(() => {
-                messageApi?.error(t('requestFailed'))
-              })
+            onChange={(value) => {
+              setMessage(value)
+            }}
+            onSubmit={async () => {
+              try {
+                setLoading(true)
+                const chatId = (await createChat()).data.id
+                const chatRes = await listChats()
+                setChats(chatRes.data)
+                setMessage('')
+                setLoading(false)
+                navigate(`/chat/${chatId}`, {
+                  state: { firstMessage: message },
+                  viewTransition: true
+                })
+              } catch {
+                setTimeout(() => {
+                  setLoading(false)
+                }, 1000)
+              }
+            }}
+            onCancel={() => {
+              setLoading(false)
             }}
           />
         </div>

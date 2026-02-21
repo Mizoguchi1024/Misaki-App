@@ -13,17 +13,33 @@ export default function HeaderRightPart({ type }): React.JSX.Element {
   const { t } = useTranslation('headerRightPart')
 
   if (!jwt) {
-    return (
-      <div className="flex items-center gap-4">
-        <HelpDropdown />
-        <Button type="primary" onClick={() => navigate('/login', { viewTransition: true })}>
-          {t('login')}
-        </Button>
-        <Button onClick={() => navigate('/register', { viewTransition: true })}>
-          {t('register')}
-        </Button>
-      </div>
-    )
+    switch (type) {
+      case 'home':
+        return (
+          <div className="flex items-center gap-4">
+            <HelpDropdown />
+            <Button type="primary" onClick={() => navigate('/login', { viewTransition: true })}>
+              {t('login')}
+            </Button>
+            <Button onClick={() => navigate('/register', { viewTransition: true })}>
+              {t('register')}
+            </Button>
+          </div>
+        )
+      default:
+        return (
+          <div className="flex items-center gap-4">
+            <HelpDropdown />
+            <Button
+              onClick={() => {
+                navigate(-1)
+              }}
+            >
+              {t('back')}
+            </Button>
+          </div>
+        )
+    }
   }
 
   switch (type) {

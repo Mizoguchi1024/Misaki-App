@@ -23,7 +23,8 @@ export const useAssistantStore = create<assistantState>()(
       ...initialState,
 
       setAssistants: (assistantFrontResponse) => set({ assistants: assistantFrontResponse }),
-      setPublicAssistants: (assistantFrontResponse) => set({ publicAssistants: assistantFrontResponse }),
+      setPublicAssistants: (assistantFrontResponse) =>
+        set({ publicAssistants: assistantFrontResponse }),
       reset: () => set(initialState)
     }),
     {

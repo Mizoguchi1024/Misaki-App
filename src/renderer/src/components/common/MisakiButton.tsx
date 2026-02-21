@@ -17,7 +17,7 @@ export default function MisakiButton(): React.JSX.Element {
     <Button
       type="text"
       size="large"
-      className='px-2 py-4'
+      className="px-2 py-4"
       onClick={() => {
         if (jwt) {
           navigate('/misaki', { viewTransition: true })

@@ -7,29 +7,39 @@ import ja_JP from 'antd/locale/ja_JP'
 
 interface SettingsState {
   baseUrl: string
-
   fontSize: number
-
   appearance: number
   language: LanguageEnum
-  mainColor: string
-  ttsAutoplay: number
   borderRadius: number
-  backgroundImagePath: string
 
-  setSettings: (s: SettingsFrontResponse) => void
+  mainColor: string
+  ttsAutoplay: boolean
+  backgroundImagePath: string | null
+  enabledAssistantId: string | null
+
+  setSettings: (settingsFrontResponse: SettingsFrontResponse) => void
+  setPartial: (patch: Partial<SettingsState>) => void
+  resetCloudSettings: () => void
   reset: () => void
 }
 
-const defaultSettings = {
+const initialState = {
   baseUrl: 'http://localhost:8080/api',
-  appearance: 1,
+  appearance: 2,
   language: 0,
-  ttsAutoplay: 0,
+  ttsAutoplay: false,
   fontSize: 14,
   mainColor: '#3142ef',
   borderRadius: 12,
-  backgroundImagePath: ''
+  backgroundImagePath: null,
+  enabledAssistantId: null
+}
+
+const initialCloudState = {
+  mainColor: '#3142ef',
+  borderRadius: 12,
+  backgroundImagePath: null,
+  enabledAssistantId: null
 }
 
 export enum LanguageEnum {
@@ -58,36 +68,12 @@ export const LanguageMap = {
 export const useSettingsStore = create<SettingsState>()(
   persist(
     (set) => ({
-      baseUrl: defaultSettings.baseUrl,
-      appearance: defaultSettings.appearance,
-      language: defaultSettings.language,
-      ttsAutoplay: defaultSettings.ttsAutoplay,
-      fontSize: defaultSettings.fontSize,
-      mainColor: defaultSettings.mainColor,
-      borderRadius: defaultSettings.borderRadius,
-      backgroundImagePath: defaultSettings.backgroundImagePath,
+      ...initialState,
 
-      setSettings: (s: SettingsFrontResponse) =>
-        set(() => ({
-          appearance: s.appearance ?? defaultSettings.appearance,
-          language: s.language ?? defaultSettings.language,
-          ttsAutoplay: s.ttsAutoplay ?? defaultSettings.ttsAutoplay,
-          fontSize: s.fontSize ?? defaultSettings.fontSize,
-          colorPrimary: s.colorPrimary ?? defaultSettings.mainColor,
-          borderRadius: s.borderRadius ?? defaultSettings.borderRadius,
-          backgroundImagePath: s.backgroundImagePath ?? defaultSettings.backgroundImagePath
-        })),
-
-      reset: () =>
-        set(() => ({
-          appearance: defaultSettings.appearance,
-          language: defaultSettings.language,
-          ttsAutoplay: defaultSettings.ttsAutoplay,
-          fontSize: defaultSettings.fontSize,
-          colorPrimary: defaultSettings.mainColor,
-          borderRadius: defaultSettings.borderRadius,
-          backgroundImagePath: defaultSettings.backgroundImagePath
-        }))
+      setSettings: (settingsFrontResponse) => set(settingsFrontResponse),
+      setPartial: (patch) => set((state) => ({ ...state, ...patch })),
+      reset: () => set(initialState),
+      resetCloudSettings: () => set(initialCloudState)
     }),
     {
       name: 'settings-store'

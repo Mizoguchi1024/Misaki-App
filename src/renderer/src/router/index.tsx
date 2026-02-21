@@ -11,12 +11,6 @@ import Script from '../pages/Script'
 import Misaki from '../pages/Misaki'
 import NotFound from '../pages/NotFound'
 import Chat from '../pages/Chat'
-import { listMessages } from '@renderer/api/front/chat'
-
-const chatLoader = async ({ params }) => {
-  const messageRes = await listMessages(params.id)
-  return messageRes.data
-}
 
 export const router = createBrowserRouter([
   {
@@ -27,7 +21,7 @@ export const router = createBrowserRouter([
       { path: '/search', element: <Search />, handle: { header: 'search' } },
       { path: '/mcp-server', element: <McpServer />, handle: { header: 'mcp-server' } },
       { path: '/script', element: <Script />, handle: { header: 'script' } },
-      { path: '/chat/:id', element: <Chat />, handle: { header: 'chat' }, loader: chatLoader }
+      { path: '/chat/:id', element: <Chat />, handle: { header: 'chat' } }
     ]
   },
   {
