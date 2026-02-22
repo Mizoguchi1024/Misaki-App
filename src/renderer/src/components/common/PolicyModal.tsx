@@ -1,11 +1,6 @@
 import { Modal } from 'antd'
 
-interface PolicyModalProps {
-  open: boolean
-  onCancel: () => void
-}
-
-export default function PolicyModal({ open, onCancel }: PolicyModalProps): React.JSX.Element {
+export default function PolicyModal({ open, onCancel }): React.JSX.Element {
   return (
     <Modal
       title="隐私政策"

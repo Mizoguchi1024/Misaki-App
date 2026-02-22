@@ -8,7 +8,7 @@ import { t } from 'i18next'
 export default function HelpDropdown(): React.JSX.Element {
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false)
   const [isAboutModalOpen, setIsAboutModalOpen] = useState(false)
-  
+
   const list: MenuProps['items'] = [
     {
       key: '/settings',

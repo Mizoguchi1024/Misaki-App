@@ -7,15 +7,17 @@ import ja_JP from 'antd/locale/ja_JP'
 
 interface SettingsState {
   baseUrl: string
+  language: number // 0:中文 1:英文 2:日文
   fontSize: number
-  appearance: number
-  language: LanguageEnum
+  appearance: number // 0:跟随系统 1:浅色 2:暗色
   borderRadius: number
 
-  mainColor: string
+  mainColor: string // #3142ef
   ttsAutoplay: boolean
   backgroundImagePath: string | null
   enabledAssistantId: string | null
+
+  version: number
 
   setSettings: (settingsFrontResponse: SettingsFrontResponse) => void
   setPartial: (patch: Partial<SettingsState>) => void
@@ -25,21 +27,23 @@ interface SettingsState {
 
 const initialState = {
   baseUrl: 'http://localhost:8080/api',
-  appearance: 2,
+  appearance: 1,
   language: 0,
   ttsAutoplay: false,
   fontSize: 14,
   mainColor: '#3142ef',
   borderRadius: 12,
   backgroundImagePath: null,
-  enabledAssistantId: null
+  enabledAssistantId: null,
+  version: 0
 }
 
 const initialCloudState = {
   mainColor: '#3142ef',
-  borderRadius: 12,
+  ttsAutoplay: false,
   backgroundImagePath: null,
-  enabledAssistantId: null
+  enabledAssistantId: null,
+  version: 0
 }
 
 export enum LanguageEnum {

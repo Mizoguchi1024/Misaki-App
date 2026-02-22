@@ -1,6 +1,6 @@
-import { Layout, Menu, theme, MenuProps } from 'antd'
+import { Layout, Menu, MenuProps } from 'antd'
 import { useState } from 'react'
-import { Outlet, useLocation, useMatches, useNavigate } from 'react-router-dom'
+import { Outlet, UIMatch, useLocation, useMatches, useNavigate } from 'react-router-dom'
 
 import {
   CodeOutlined,
@@ -13,7 +13,6 @@ import {
 import { useUserStore } from '@renderer/store/userStore'
 import { useTranslation } from 'react-i18next'
 import { useChatStore } from '@renderer/store/chatStore'
-import { useSettingsStore } from '@renderer/store/settingsStore'
 import HeaderRightPart from '../common/HeaderRightPart'
 import MisakiButton from '../common/MisakiButton'
 import HeaderMiddlePart from '../common/HeaderMiddlePart'
@@ -23,18 +22,13 @@ const { Header, Content, Sider } = Layout
 export default function MainLayout(): React.JSX.Element {
   const { t } = useTranslation('mainLayout')
   const [collapsed, setCollapsed] = useState(false)
-  const { appearance } = useSettingsStore()
   const { chats } = useChatStore()
   const location = useLocation()
   const navigate = useNavigate()
-  const {
-    token: { colorBgContainer }
-  } = theme.useToken()
   const { jwt } = useUserStore()
 
-  const matches = useMatches()
-  const currentMatch = matches[matches.length - 1]
-  const headerType = currentMatch?.handle?.header
+  const matches = useMatches() as UIMatch<unknown, { page?: string }>[]
+  const currentPage = matches.at(-1)?.handle?.page
 
   const agentItems: MenuProps['items'] = [
     {
@@ -80,8 +74,8 @@ export default function MainLayout(): React.JSX.Element {
     <Layout className="h-screen">
       <Header className="flex items-center justify-between bg-white dark:bg-neutral-800 px-8">
         <MisakiButton />
-        <HeaderMiddlePart type={headerType} />
-        <HeaderRightPart type={headerType} />
+        <HeaderMiddlePart currentPage={currentPage} />
+        <HeaderRightPart currentPage={currentPage} />
       </Header>
       <Layout>
         <Sider

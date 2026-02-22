@@ -42,7 +42,7 @@ export default function Search(): React.JSX.Element {
           <Card
             loading={loading}
             onClick={() => {}}
-            className="flex-none select-none cursor-pointer shadow-sm hover:shadow-lg ease-in-out duration-500"
+            className="flex-none select-none cursor-pointer shadow-sm hover:shadow-lg dark:hover:shadow-neutral-700 dark:hover:shadow-lg ease-in-out duration-500"
           >
             <Card.Meta
               avatar={<MessageOutlined className="h-full" style={{ fontSize: '24px' }} />}

@@ -22,9 +22,6 @@ export default function ChatDropdown(): React.JSX.Element {
 
   const onClick: MenuProps['onClick'] = ({ key }) => {
     switch (key) {
-      case '/updateTitle':
-        
-        break
       case '/delete':
         setIsDeleteConfirmModalOpen(true)
         break

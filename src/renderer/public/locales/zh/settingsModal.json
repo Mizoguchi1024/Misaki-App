@@ -1,6 +1,8 @@
 {
     "title": "设置",
-    "system": "系统",
+    "general": "通用",
+    "appearance": "外观",
+    "chat": "聊天",
     "user": "用户",
     "other": "其他"
 }

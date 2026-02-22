@@ -58,7 +58,7 @@ export default function App({ children }: { children?: React.ReactNode }): React
         }}
         locale={LanguageAntdMap[language]}
       >
-        <div className={`${appearance === 1 ? '' : 'dark'}`}>
+        <div className={appearance === 1 ? '' : 'dark'}>
           {contextHolder}
           {children}
         </div>

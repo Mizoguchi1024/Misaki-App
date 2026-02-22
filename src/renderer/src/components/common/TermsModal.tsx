@@ -1,11 +1,6 @@
 import { Modal } from 'antd'
 
-interface TermsModalProps {
-  open: boolean
-  onCancel: () => void
-}
-
-export default function TermsModal({ open, onCancel }: TermsModalProps): React.JSX.Element {
+export default function TermsModal({ open, onCancel }): React.JSX.Element {
   return (
     <Modal
       title="条款"

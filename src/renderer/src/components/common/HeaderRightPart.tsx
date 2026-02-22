@@ -7,13 +7,13 @@ import { useNavigate } from 'react-router-dom'
 import { HeartOutlined } from '@ant-design/icons'
 import HelpDropdown from './HelpDropdown'
 
-export default function HeaderRightPart({ type }): React.JSX.Element {
+export default function HeaderRightPart({ currentPage }): React.JSX.Element {
   const { jwt } = useUserStore()
   const navigate = useNavigate()
   const { t } = useTranslation('headerRightPart')
 
   if (!jwt) {
-    switch (type) {
+    switch (currentPage) {
       case 'home':
         return (
           <div className="flex items-center gap-4">
@@ -42,12 +42,25 @@ export default function HeaderRightPart({ type }): React.JSX.Element {
     }
   }
 
-  switch (type) {
+  switch (currentPage) {
     case 'chat':
       return (
         <div className="flex items-center gap-4">
           <ChatDropdown />
           <UserDropdown />
+        </div>
+      )
+    case 'not-found':
+      return (
+        <div className="flex items-center gap-4">
+          <HelpDropdown />
+          <Button
+            onClick={() => {
+              navigate(-1)
+            }}
+          >
+            {t('back')}
+          </Button>
         </div>
       )
     default:

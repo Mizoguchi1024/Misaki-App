@@ -1,5 +1,5 @@
 import { Layout } from 'antd'
-import { Outlet, useMatches } from 'react-router-dom'
+import { Outlet, UIMatch, useMatches } from 'react-router-dom'
 import { useNavigate } from 'react-router-dom'
 import HeaderRightPart from '../common/HeaderRightPart'
 import MisakiButton from '../common/MisakiButton'
@@ -8,9 +8,8 @@ const { Header, Content, Footer } = Layout
 
 export default function AuthLayout(): React.JSX.Element {
   const navigate = useNavigate()
-  const matches = useMatches()
-  const currentMatch = matches[matches.length - 1]
-  const headerType = currentMatch?.handle?.header
+  const matches = useMatches() as UIMatch<unknown, { page?: string }>[]
+  const currentPage = matches.at(-1)?.handle?.page
   const handleEscape = (event: KeyboardEvent): void => {
     if (event.key === 'Escape') {
       navigate(-1)
@@ -23,7 +22,7 @@ export default function AuthLayout(): React.JSX.Element {
     <Layout className="h-screen relative">
       <Header className="flex items-center justify-between bg-white dark:bg-neutral-800 px-8">
         <MisakiButton />
-        <HeaderRightPart type={headerType} />
+        <HeaderRightPart currentPage={currentPage} />
       </Header>
       <Content>
         <Outlet />

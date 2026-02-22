@@ -15,7 +15,9 @@ export type SendMessageFrontRequest = {
 export type ChatFrontResponse = {
   id: string
   title: string
+  token: number
   createTime: string
+  updateTime: string
   version: number
 }
 

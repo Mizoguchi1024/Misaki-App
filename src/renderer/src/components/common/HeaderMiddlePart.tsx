@@ -3,11 +3,11 @@ import { Input } from 'antd'
 import { useParams } from 'react-router-dom'
 import Assistantlist from './Assistantlist'
 
-export default function HeaderMiddlePart({ type }): React.JSX.Element {
+export default function HeaderMiddlePart({ currentPage }): React.JSX.Element {
   const { chats } = useChatStore()
   const { id } = useParams()
 
-  switch (type) {
+  switch (currentPage) {
     case 'chat':
       return (
         <div className="absolute left-1/2 -translate-x-1/2 w-160">

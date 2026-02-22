@@ -1,20 +1,22 @@
-import { ColorPicker, Dropdown, Input, theme } from 'antd'
+import { ColorPicker, Dropdown, Input } from 'antd'
 import { Sender } from '@ant-design/x'
 import MisakiLogo from '../assets/misaki-logo-symbol.svg?react'
 import { useEffect, useRef, useState } from 'react'
 import { useUserStore } from '@renderer/store/userStore'
 import TermsModal from '@renderer/components/common/TermsModal'
 import PolicyModal from '@renderer/components/common/PolicyModal'
-import { AggregationColor } from 'antd/es/color-picker/color'
 import { messageApi } from '@renderer/messageApi'
 import { useTranslation } from 'react-i18next'
-import { createChat, createChatTitle, listChats, sendMessage } from '@renderer/api/front/chat'
+import { createChat, listChats } from '@renderer/api/front/chat'
 import { useNavigate } from 'react-router-dom'
 import { useChatStore } from '@renderer/store/chatStore'
+import { useSettingsStore } from '@renderer/store/settingsStore'
+import { getSettings, updateSettings } from '@renderer/api/front/user'
 
 export default function Home(): React.JSX.Element {
   const { jwt } = useUserStore()
   const { setChats } = useChatStore()
+  const { mainColor, version: settingsVersion, setSettings } = useSettingsStore()
   const { t } = useTranslation('home')
   const navigate = useNavigate()
   const [title, setTitle] = useState('Misaki')
@@ -22,11 +24,7 @@ export default function Home(): React.JSX.Element {
   const spanRef = useRef<HTMLSpanElement>(null)
   const [message, setMessage] = useState('')
   const [loading, setLoading] = useState(false)
-  const {
-    token: { colorPrimary }
-  } = theme.useToken()
-
-  const [color, setColor] = useState('#3142ef')
+  const [colorPickerValue, setColorPickerValue] = useState(mainColor)
 
   const test = async (): Promise<void> => {
     const tools = await window.api.listMcpTools()
@@ -39,6 +37,10 @@ export default function Home(): React.JSX.Element {
       setWidth(span.offsetWidth)
     }
   }, [title])
+
+  useEffect(() => {
+    setColorPickerValue(mainColor)
+  }, [mainColor])
 
   function handleTitleBlur(): void {
     submitTitle()
@@ -76,22 +78,23 @@ export default function Home(): React.JSX.Element {
     setIsPolicyModalOpen(false)
   }
 
-  function handleColorChange(value: AggregationColor): void {
-    setColor(value.toHexString())
-  }
-
   return (
     <div className="flex flex-col h-full">
       <div className="flex flex-col flex-1 justify-center items-center">
         <div className="flex items-center gap-1 mb-24">
           <ColorPicker
-            value={color}
-            onChange={handleColorChange}
+            value={colorPickerValue}
+            onChange={(color) => setColorPickerValue(color.toHexString())}
+            onChangeComplete={async (color) => {
+              await updateSettings({ mainColor: color.toHexString(), version: settingsVersion })
+              const settingsRes = await getSettings()
+              setSettings(settingsRes.data)
+            }}
             disabledAlpha
             arrow={false}
             disabled={!jwt}
           >
-            <MisakiLogo className="h-28 ml-24" fill={colorPrimary} />
+            <MisakiLogo className="h-28 ml-24" fill={mainColor} />
           </ColorPicker>
           <span ref={spanRef} className="text-8xl font-semibold absolute invisible whitespace-pre">
             {title + 'iiii' || ' '}

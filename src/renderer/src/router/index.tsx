@@ -16,21 +16,21 @@ export const router = createBrowserRouter([
   {
     element: <MainLayout />,
     children: [
-      { index: true, element: <Home />, handle: { header: 'home' } },
-      { path: '/misaki', element: <Misaki />, handle: { header: 'misaki' } },
-      { path: '/search', element: <Search />, handle: { header: 'search' } },
-      { path: '/mcp-server', element: <McpServer />, handle: { header: 'mcp-server' } },
-      { path: '/script', element: <Script />, handle: { header: 'script' } },
-      { path: '/chat/:id', element: <Chat />, handle: { header: 'chat' } }
+      { index: true, element: <Home />, handle: { page: 'home' } },
+      { path: '/misaki', element: <Misaki />, handle: { page: 'misaki' } },
+      { path: '/search', element: <Search />, handle: { page: 'search' } },
+      { path: '/mcp-server', element: <McpServer />, handle: { page: 'mcp-server' } },
+      { path: '/script', element: <Script />, handle: { page: 'script' } },
+      { path: '/chat/:id', element: <Chat />, handle: { page: 'chat' } }
     ]
   },
   {
     element: <AuthLayout />,
     children: [
-      { path: '/login', element: <Login />, handle: { header: 'login' } },
-      { path: '/register', element: <Register />, handle: { header: 'register' } },
-      { path: '/reset-password', element: <ResetPassword />, handle: { header: 'reset-password' } },
-      { path: '*', element: <NotFound />, handle: { header: 'not-found' } }
+      { path: '/login', element: <Login />, handle: { page: 'login' } },
+      { path: '/register', element: <Register />, handle: { page: 'register' } },
+      { path: '/reset-password', element: <ResetPassword />, handle: { page: 'reset-password' } },
+      { path: '*', element: <NotFound />, handle: { page: 'not-found' } }
     ]
   }
 ])

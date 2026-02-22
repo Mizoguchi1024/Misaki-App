@@ -19,22 +19,17 @@ export type UserFrontResponse = {
 }
 
 export type UpdateSettingsFrontRequest = {
-  appearance: number
-  language: number
-  ttsAutoplay: number
-  fontSize: number
-  colorPrimary: string
-  borderRadius: number
-  backgroundImagePath: string
+  ttsAutoplay?: boolean
+  mainColor?: string
+  backgroundImagePath?: string
+  enabledAssistantId?: string
+  version: number
 }
 
 export type SettingsFrontResponse = {
-  appearance: number
-  language: number
   ttsAutoplay: boolean
-  fontSize: number
   colorPrimary: string
-  borderRadius: number
   backgroundImagePath: string
   enabledAssistantId: string
+  version: number
 }
