@@ -2,6 +2,8 @@ import axios from 'axios'
 import { useUserStore } from '@renderer/store/userStore'
 import { useSettingsStore } from '@renderer/store/settingsStore'
 import { messageApi } from '@renderer/messageApi'
+import { useChatStore } from '@renderer/store/chatStore'
+import { useAssistantStore } from '@renderer/store/assistantStore'
 
 const api = axios.create({
   baseURL: useSettingsStore.getState().baseUrl,
@@ -21,6 +23,10 @@ api.interceptors.response.use(
   (err) => {
     if (err.response?.status === 401) {
       useUserStore.getState().logout()
+      useSettingsStore.getState().resetCloudSettings()
+      useChatStore.getState().reset()
+      useAssistantStore.getState().reset()
+      messageApi?.info('Please login again')
       window.location.href = '/login'
     }
     const serverMessage = err.response?.data?.message

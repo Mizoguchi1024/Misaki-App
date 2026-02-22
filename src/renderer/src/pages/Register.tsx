@@ -145,7 +145,7 @@ export default function Register(): React.JSX.Element {
           >
             <Input.OTP className="w-full justify-between" />
           </Form.Item>
-          <Form.Item label={null} className='m-0'>
+          <Form.Item label={null} className="m-0">
             <Button type="primary" block htmlType="submit" loading={finishLoading}>
               {t('register')}
             </Button>

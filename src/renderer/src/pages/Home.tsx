@@ -1,4 +1,4 @@
-import { ColorPicker, Dropdown, Input } from 'antd'
+import { ColorPicker, Dropdown, Input, InputRef } from 'antd'
 import { Sender } from '@ant-design/x'
 import MisakiLogo from '../assets/misaki-logo-symbol.svg?react'
 import { useEffect, useRef, useState } from 'react'
@@ -12,43 +12,61 @@ import { useNavigate } from 'react-router-dom'
 import { useChatStore } from '@renderer/store/chatStore'
 import { useSettingsStore } from '@renderer/store/settingsStore'
 import { getSettings, updateSettings } from '@renderer/api/front/user'
+import { useAssistantStore } from '@renderer/store/assistantStore'
+import { listAssistants, updateAssistant } from '@renderer/api/front/assistant'
 
 export default function Home(): React.JSX.Element {
   const { jwt } = useUserStore()
+  const {
+    mainColor,
+    enabledAssistantId,
+    version: settingsVersion,
+    setSettings
+  } = useSettingsStore()
   const { setChats } = useChatStore()
-  const { mainColor, version: settingsVersion, setSettings } = useSettingsStore()
+  const { assistants, setAssistants } = useAssistantStore()
   const { t } = useTranslation('home')
   const navigate = useNavigate()
-  const [title, setTitle] = useState('Misaki')
-  const [width, setWidth] = useState(10)
-  const spanRef = useRef<HTMLSpanElement>(null)
   const [message, setMessage] = useState('')
   const [loading, setLoading] = useState(false)
   const [colorPickerValue, setColorPickerValue] = useState(mainColor)
+  const [assistantNameInputValue, setAssistantNameInputValue] = useState(
+    assistants?.find((assistant) => assistant.id === enabledAssistantId)?.name || 'Misaki'
+  )
+  const assistantInputRef = useRef<InputRef>(null)
 
   const test = async (): Promise<void> => {
     const tools = await window.api.listMcpTools()
     console.log('tools', tools)
   }
-  useEffect(() => {
-    test()
-    const span = spanRef.current
-    if (span) {
-      setWidth(span.offsetWidth)
-    }
-  }, [title])
 
   useEffect(() => {
     setColorPickerValue(mainColor)
   }, [mainColor])
 
-  function handleTitleBlur(): void {
-    submitTitle()
-    messageApi?.success(t('titleUpdated'))
-  }
+  useEffect(() => {
+    const assistant = assistants?.find((assistant) => assistant.id === enabledAssistantId)
+    if (assistant) {
+      setAssistantNameInputValue(assistant.name)
+    } else {
+      setAssistantNameInputValue('Misaki')
+    }
+  }, [enabledAssistantId])
 
-  function submitTitle(): void {
-    // TODO
+  const handleAssistantNameSubmit = async (name: string): Promise<void> => {
+    const enabledAssistant = assistants?.find((assistant) => assistant.id === enabledAssistantId)
+    if (name && enabledAssistant) {
+      if (name == enabledAssistant.name) return
+      await updateAssistant(enabledAssistantId!, {
+        name,
+        version: enabledAssistant.version
+      })
+      const assistantRes = await listAssistants()
+      setAssistants(assistantRes.data)
+      messageApi?.success(t('titleUpdated'))
+    } else {
+      setAssistantNameInputValue(enabledAssistant?.name || 'Misaki')
+    }
   }
 
   const items = [
@@ -94,29 +112,19 @@ export default function Home(): React.JSX.Element {
             arrow={false}
             disabled={!jwt}
           >
-            <MisakiLogo className="h-28 ml-24" fill={mainColor} />
+            <MisakiLogo className="h-28 shrink-0" fill={mainColor} />
           </ColorPicker>
-          <span ref={spanRef} className="text-8xl font-semibold absolute invisible whitespace-pre">
-            {title + 'iiii' || ' '}
-          </span>
           <Input
-            spellCheck="false"
-            maxLength={8}
-            defaultValue="Misaki"
+            value={assistantNameInputValue}
+            ref={assistantInputRef}
             variant="borderless"
-            className={!jwt ? 'cursor-default' : ''}
-            style={{ width: width }}
-            styles={{
-              input: {
-                fontSize: '6rem',
-                fontWeight: 600
-              }
-            }}
-            onChange={(e) => setTitle(e.target.value)}
-            onBlur={handleTitleBlur}
-            onMouseDown={(e) => {
-              if (!jwt) e.preventDefault()
-            }}
+            maxLength={8}
+            spellCheck="false"
+            className={`${jwt ? 'cursor-text' : ''} text-8xl font-semibold field-sizing-content`}
+            onChange={(e) => setAssistantNameInputValue(e.target.value)}
+            onPressEnter={() => assistantInputRef.current!.blur()}
+            onBlur={() => handleAssistantNameSubmit(assistantNameInputValue)}
+            inert={!jwt}
           />
         </div>
         <div className="w-3/4">

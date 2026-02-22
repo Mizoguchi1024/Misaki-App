@@ -71,7 +71,7 @@ export default function MainLayout(): React.JSX.Element {
   const items = [...agentItems, ...chatItems]
 
   return (
-    <Layout className="h-screen">
+    <Layout className="h-screen w-screen overflow-hidden">
       <Header className="flex items-center justify-between bg-white dark:bg-neutral-800 px-8">
         <MisakiButton />
         <HeaderMiddlePart currentPage={currentPage} />

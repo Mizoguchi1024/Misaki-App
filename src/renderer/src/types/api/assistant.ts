@@ -28,12 +28,12 @@ export type AddAssistantFrontRequest = {
 }
 
 export type UpdateAssistantFrontRequest = {
-  name: string
-  personality: string
-  detail: string
-  gender: number
-  birthday: string
-  modelId: string
-  publicFlag: boolean
+  name?: string
+  personality?: string
+  detail?: string
+  gender?: number
+  birthday?: string
+  modelId?: string
+  publicFlag?: boolean
   version: number
 }

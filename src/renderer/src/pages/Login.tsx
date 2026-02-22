@@ -11,6 +11,8 @@ import { useState } from 'react'
 import { useSettingsStore } from '@renderer/store/settingsStore'
 import { listChats } from '@renderer/api/front/chat'
 import { useChatStore } from '@renderer/store/chatStore'
+import { listAssistants } from '@renderer/api/front/assistant'
+import { useAssistantStore } from '@renderer/store/assistantStore'
 
 type FieldType = {
   email: string
@@ -23,6 +25,7 @@ export default function Login(): React.JSX.Element {
   const { setAuthInfo, setProfile, setRememberMe } = useUserStore()
   const { setSettings } = useSettingsStore()
   const { setChats } = useChatStore()
+  const { setAssistants } = useAssistantStore()
   const [finishLoading, setFinishLoading] = useState(false)
   const { t } = useTranslation('login')
   const navigator = useNavigate()
@@ -40,6 +43,8 @@ export default function Login(): React.JSX.Element {
       setSettings(settingsRes.data)
       const chatRes = await listChats()
       setChats(chatRes.data)
+      const assistantRes = await listAssistants()
+      setAssistants(assistantRes.data)
       setFinishLoading(false)
       navigator('/', { viewTransition: true })
     } catch {

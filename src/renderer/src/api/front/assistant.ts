@@ -1,6 +1,6 @@
 import {
   AssistantFrontResponse,
-  CreateAssistantFrontRequest,
+  AddAssistantFrontRequest,
   UpdateAssistantFrontRequest
 } from '@renderer/types/api/assistant'
 import api from '../index'
@@ -22,7 +22,7 @@ export const listPublicAssistants = (
     >('/front/assistants/public', { params: { pageIndex, pageSize } })
     .then((res) => res.data)
 
-export const createAssistant = (data: CreateAssistantFrontRequest): Promise<Result<void>> =>
+export const createAssistant = (data: AddAssistantFrontRequest): Promise<Result<void>> =>
   api.post<Result<void>>('/front/assistants', data).then((res) => res.data)
 
 export const copyAssistant = (id: string): Promise<Result<void>> =>

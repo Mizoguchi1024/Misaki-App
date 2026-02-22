@@ -19,7 +19,7 @@ export default function AuthLayout(): React.JSX.Element {
   window.addEventListener('keydown', handleEscape)
 
   return (
-    <Layout className="h-screen relative">
+    <Layout className="h-screen w-screen overflow-hidden relative">
       <Header className="flex items-center justify-between bg-white dark:bg-neutral-800 px-8">
         <MisakiButton />
         <HeaderRightPart currentPage={currentPage} />

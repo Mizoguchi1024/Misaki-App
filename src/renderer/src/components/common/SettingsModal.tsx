@@ -7,7 +7,7 @@ import {
   ColorPicker,
   Input,
   Modal,
-  Radio,
+  Segmented,
   Select,
   Slider,
   Space,
@@ -104,15 +104,18 @@ export default function SettingsModal({ open, onCancel }): React.JSX.Element {
           <div className="w-full flex flex-col gap-4">
             <div className="flex justify-between items-center">
               <span>{t('appearance')}</span>
-              <Radio.Group
-                defaultValue={appearance}
-                buttonStyle="solid"
-                onChange={(e) => setPartial({ appearance: e.target.value })}
-              >
-                <Radio.Button value={0}>{t('system')}</Radio.Button>
-                <Radio.Button value={1}>{t('light')}</Radio.Button>
-                <Radio.Button value={2}>{t('dark')}</Radio.Button>
-              </Radio.Group>
+              <Segmented<string>
+                defaultValue={appearance.toString()}
+                shape="round"
+                options={[
+                  { label: t('auto'), value: '0' },
+                  { label: t('light'), value: '1' },
+                  { label: t('dark'), value: '2' }
+                ]}
+                onChange={(value) => {
+                  setPartial({ appearance: Number(value) })
+                }}
+              />
             </div>
             {jwt && (
               <div className="flex justify-between items-center">
