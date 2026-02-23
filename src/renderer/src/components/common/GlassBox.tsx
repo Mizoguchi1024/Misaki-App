@@ -1,4 +1,5 @@
 import { useSettingsStore } from '@renderer/store/settingsStore'
+import clsx from 'clsx'
 import React, { useRef } from 'react'
 
 export default function GlassBox({ children, className = '', ...rest }): React.JSX.Element {
@@ -21,12 +22,14 @@ export default function GlassBox({ children, className = '', ...rest }): React.J
     <div
       ref={ref}
       onMouseMove={handleMouseMove}
-      className={`group overflow-hidden flex flex-col items-center justify-center
+      className={clsx(
+        `group overflow-hidden flex flex-col items-center justify-center
         px-12 py-10 backdrop-blur-sm hover:backdrop-blur-md bg-white/20 border-white
          dark:bg-white/12 dark:border-white/16 border-2
          shadow-2xl shadow-black/20 dark:shadow-none
-         ease-in-out duration-500
-         ${className}`}
+         ease-in-out duration-500`,
+        className
+      )}
       style={{ borderRadius: borderRadius * 2 }}
       {...rest}
     >

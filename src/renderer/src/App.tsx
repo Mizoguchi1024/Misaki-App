@@ -44,6 +44,15 @@ export default function App({ children }: { children?: React.ReactNode }): React
     }
   }, [])
 
+  useEffect(() => {
+    const root = document.documentElement
+    if (appearance != 1) {
+      root.classList.add('dark')
+    } else {
+      root.classList.remove('dark')
+    }
+  }, [appearance])
+
   return (
     <StyleProvider layer>
       <ConfigProvider
@@ -62,10 +71,8 @@ export default function App({ children }: { children?: React.ReactNode }): React
         }}
         locale={LanguageAntdMap[language]}
       >
-        <div className={clsx(appearance != 1 && 'dark')}>
-          {contextHolder}
-          {children}
-        </div>
+        {contextHolder}
+        {children}
       </ConfigProvider>
     </StyleProvider>
   )
