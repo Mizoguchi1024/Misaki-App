@@ -1,7 +1,7 @@
 import { useSettingsStore } from '@renderer/store/settingsStore'
 import React, { useRef } from 'react'
 
-export default function GlassBox({ children, className='', ...rest }): React.JSX.Element {
+export default function GlassBox({ children, className = '', ...rest }): React.JSX.Element {
   const { borderRadius } = useSettingsStore()
   const ref = useRef<HTMLDivElement>(null)
 

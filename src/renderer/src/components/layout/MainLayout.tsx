@@ -1,5 +1,5 @@
 import { Layout, Menu, MenuProps } from 'antd'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Outlet, UIMatch, useLocation, useMatches, useNavigate } from 'react-router-dom'
 
 import {
@@ -16,19 +16,39 @@ import { useChatStore } from '@renderer/store/chatStore'
 import HeaderRightPart from '../common/HeaderRightPart'
 import MisakiButton from '../common/MisakiButton'
 import HeaderMiddlePart from '../common/HeaderMiddlePart'
+import { listAssistants } from '@renderer/api/front/assistant'
+import { listChats } from '@renderer/api/front/chat'
+import { getProfile, getSettings } from '@renderer/api/front/user'
+import { useSettingsStore } from '@renderer/store/settingsStore'
+import { useAssistantStore } from '@renderer/store/assistantStore'
 
 const { Header, Content, Sider } = Layout
 
 export default function MainLayout(): React.JSX.Element {
   const { t } = useTranslation('mainLayout')
   const [collapsed, setCollapsed] = useState(false)
-  const { chats } = useChatStore()
   const location = useLocation()
   const navigate = useNavigate()
-  const { jwt } = useUserStore()
+  const { jwt, setProfile } = useUserStore()
+  const { setSettings } = useSettingsStore()
+  const { chats, setChats } = useChatStore()
+  const { setAssistants } = useAssistantStore()
 
   const matches = useMatches() as UIMatch<unknown, { page?: string }>[]
   const currentPage = matches.at(-1)?.handle?.page
+
+  useEffect(() => {
+    if (jwt) {
+      Promise.all([getProfile(), getSettings(), listChats(), listAssistants()]).then(
+        ([profileRes, settingsRes, chatsRes, assistantsRes]) => {
+          setProfile(profileRes.data)
+          setSettings(settingsRes.data)
+          setChats(chatsRes.data)
+          setAssistants(assistantsRes.data)
+        }
+      )
+    }
+  }, [])
 
   const agentItems: MenuProps['items'] = [
     {

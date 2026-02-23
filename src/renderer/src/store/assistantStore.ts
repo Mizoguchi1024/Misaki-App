@@ -3,7 +3,7 @@ import { Assistant } from '@renderer/types/entity/assistant'
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
-interface assistantState {
+interface AssistantState {
   assistants: Assistant[] | null
   publicAssistants: Assistant[] | null
 
@@ -17,7 +17,7 @@ const initialState = {
   publicAssistants: null
 }
 
-export const useAssistantStore = create<assistantState>()(
+export const useAssistantStore = create<AssistantState>()(
   persist(
     (set) => ({
       ...initialState,

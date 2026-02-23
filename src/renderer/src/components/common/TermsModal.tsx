@@ -8,6 +8,7 @@ export default function TermsModal({ open, onCancel }): React.JSX.Element {
       footer={null}
       open={open}
       onCancel={onCancel}
+      destroyOnHidden
       className="select-none"
     >
       <div className="max-h-120 overflow-y-auto scrollbar-none">

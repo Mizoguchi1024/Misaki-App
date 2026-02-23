@@ -1,6 +1,6 @@
 import { UploadOutlined } from '@ant-design/icons'
 import { getSettings, updateSettings } from '@renderer/api/front/user'
-import { useSettingsStore } from '@renderer/store/settingsStore'
+import { LanguageMap, useSettingsStore } from '@renderer/store/settingsStore'
 import { useUserStore } from '@renderer/store/userStore'
 import {
   Button,
@@ -46,7 +46,7 @@ export default function SettingsModal({ open, onCancel }): React.JSX.Element {
       key: '1',
       label: t('general'),
       children: (
-        <div className="h-80 w-full flex flex-col gap-4 pt-2 pr-2 overflow-y-auto scrollbar-none">
+        <div className="h-80 w-full flex flex-col gap-4 pl-6 pt-2 pr-2 overflow-y-auto scrollbar-none">
           <div className="flex justify-between items-center">
             <span>{t('baseUrl')}</span>
             <Space.Compact className="w-64">
@@ -72,9 +72,9 @@ export default function SettingsModal({ open, onCancel }): React.JSX.Element {
               className="w-24"
               defaultValue={language}
               options={[
-                { value: 0, label: '中文' },
-                { value: 1, label: 'English' },
-                { value: 2, label: '日本語' }
+                { value: 0, label: LanguageMap[0] },
+                { value: 1, label: LanguageMap[1] },
+                { value: 2, label: LanguageMap[2] }
               ]}
               onChange={(value) => {
                 setPartial({ language: value })
@@ -89,7 +89,7 @@ export default function SettingsModal({ open, onCancel }): React.JSX.Element {
       key: '2',
       label: t('appearance'),
       children: (
-        <div className="h-80 w-full flex flex-col gap-6 pt-2 pr-2 overflow-y-auto scrollbar-none">
+        <div className="h-80 w-full flex flex-col gap-4 pl-6 pt-2 pr-2 overflow-y-auto scrollbar-none">
           <div className="flex justify-between items-center">
             <span>{t('appearance')}</span>
             <Segmented<string>
@@ -170,25 +170,29 @@ export default function SettingsModal({ open, onCancel }): React.JSX.Element {
         </div>
       )
     },
-    {
-      key: '3',
-      label: t('chat'),
-      children: (
-        <div className="h-80 w-full flex flex-col gap-4 pt-2 pr-2 overflow-y-auto scrollbar-none">
-          <div className="flex justify-between items-center">
-            <span>{t('ttsAutoplay')}</span>
-            <Switch
-              checked={ttsAutoplay}
-              onChange={async (checked) => {
-                await updateSettings({ ttsAutoplay: checked, version: settingsVersion })
-                const settingsRes = await getSettings()
-                setSettings(settingsRes.data)
-              }}
-            ></Switch>
-          </div>
-        </div>
-      )
-    }
+    ...(jwt
+      ? [
+          {
+            key: '3',
+            label: t('chat'),
+            children: (
+              <div className="h-80 w-full flex flex-col gap-4 pl-6 pt-2 pr-2 overflow-y-auto scrollbar-none">
+                <div className="flex justify-between items-center">
+                  <span>{t('ttsAutoplay')}</span>
+                  <Switch
+                    checked={ttsAutoplay}
+                    onChange={async (checked) => {
+                      await updateSettings({ ttsAutoplay: checked, version: settingsVersion })
+                      const settingsRes = await getSettings()
+                      setSettings(settingsRes.data)
+                    }}
+                  ></Switch>
+                </div>
+              </div>
+            )
+          }
+        ]
+      : [])
   ]
 
   return (
@@ -206,7 +210,8 @@ export default function SettingsModal({ open, onCancel }): React.JSX.Element {
         centered
         tabPlacement="start"
         classNames={{
-          header: 'pt-2'
+          header: 'pt-2',
+          content: 'p-0'
         }}
       />
     </Modal>

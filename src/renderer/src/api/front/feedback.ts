@@ -9,4 +9,4 @@ export const listFeedbacks = (): Promise<Result<FeedbackFrontResponse[]>> =>
   api.get<Result<FeedbackFrontResponse[]>>('/front/feedbacks').then((res) => res.data)
 
 export const deleteFeedback = (id: string): Promise<Result<void>> =>
-  api.delete<Result<void>>(`/front/feedbacks${id}`).then((res) => res.data)
+  api.delete<Result<void>>(`/front/feedbacks/${id}`).then((res) => res.data)

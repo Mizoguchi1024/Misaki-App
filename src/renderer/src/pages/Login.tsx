@@ -5,14 +5,8 @@ import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { login } from '@renderer/api/common/auth'
 import { useUserStore } from '@renderer/store/userStore'
-import { getProfile, getSettings } from '@renderer/api/front/user'
 import { messageApi } from '@renderer/messageApi'
 import { useState } from 'react'
-import { useSettingsStore } from '@renderer/store/settingsStore'
-import { listChats } from '@renderer/api/front/chat'
-import { useChatStore } from '@renderer/store/chatStore'
-import { listAssistants } from '@renderer/api/front/assistant'
-import { useAssistantStore } from '@renderer/store/assistantStore'
 import clsx from 'clsx'
 
 type FieldType = {
@@ -23,10 +17,7 @@ type FieldType = {
 
 export default function Login(): React.JSX.Element {
   const [passwordFocus, setPasswordFocus] = useState(false)
-  const { setAuthInfo, setProfile, setRememberMe } = useUserStore()
-  const { setSettings } = useSettingsStore()
-  const { setChats } = useChatStore()
-  const { setAssistants } = useAssistantStore()
+  const { setAuthInfo, setRememberMe } = useUserStore()
   const [submitButtonLoading, setSubmitButtonLoading] = useState(false)
   const { t } = useTranslation('login')
   const navigator = useNavigate()
@@ -38,14 +29,6 @@ export default function Login(): React.JSX.Element {
       setAuthInfo(loginRes.data)
       setRememberMe(values.remember)
       messageApi?.success(t('loginSuccess'))
-      const profileRes = await getProfile()
-      setProfile(profileRes.data)
-      const settingsRes = await getSettings()
-      setSettings(settingsRes.data)
-      const chatRes = await listChats()
-      setChats(chatRes.data)
-      const assistantRes = await listAssistants()
-      setAssistants(assistantRes.data)
       setSubmitButtonLoading(false)
       navigator('/', { viewTransition: true })
     } catch {
