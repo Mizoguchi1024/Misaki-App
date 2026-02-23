@@ -14,6 +14,7 @@ import { useSettingsStore } from '@renderer/store/settingsStore'
 import { getSettings, updateSettings } from '@renderer/api/front/user'
 import { useAssistantStore } from '@renderer/store/assistantStore'
 import { listAssistants, updateAssistant } from '@renderer/api/front/assistant'
+import clsx from 'clsx'
 
 export default function Home(): React.JSX.Element {
   const { jwt } = useUserStore()
@@ -63,7 +64,7 @@ export default function Home(): React.JSX.Element {
       })
       const assistantRes = await listAssistants()
       setAssistants(assistantRes.data)
-      messageApi?.success(t('titleUpdated'))
+      messageApi?.success(t('assistantNameUpdated'))
     } else {
       setAssistantNameInputValue(enabledAssistant?.name || 'Misaki')
     }
@@ -120,7 +121,7 @@ export default function Home(): React.JSX.Element {
             variant="borderless"
             maxLength={8}
             spellCheck="false"
-            className={`${jwt ? 'cursor-text' : ''} text-8xl font-semibold field-sizing-content`}
+            className={clsx('text-8xl font-semibold field-sizing-content', jwt && 'cursor-text')}
             onChange={(e) => setAssistantNameInputValue(e.target.value)}
             onPressEnter={() => assistantInputRef.current!.blur()}
             onBlur={() => handleAssistantNameSubmit(assistantNameInputValue)}

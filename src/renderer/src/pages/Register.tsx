@@ -3,6 +3,7 @@ import { register, sendVerifyCode } from '@renderer/api/common/auth'
 import GlassBox from '@renderer/components/common/GlassBox'
 import { messageApi } from '@renderer/messageApi'
 import { Button, Form, FormProps, Input, Space, Tooltip } from 'antd'
+import clsx from 'clsx'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
@@ -61,8 +62,10 @@ export default function Register(): React.JSX.Element {
   return (
     <div className="relative flex items-center justify-center h-full overflow-hidden bg-[url(../assets/login-background.png)] bg-cover bg-center">
       <div
-        className={`absolute inset-0 bg-[url(../assets/login-background-password.png)] bg-cover bg-center transition-opacity duration-500 ease-in-out
-        ${passwordFocus ? 'opacity-100' : 'opacity-0'}`}
+        className={clsx(
+          'absolute inset-0 bg-[url(../assets/login-background-password.png)] bg-cover bg-center duration-500 ease-in-out',
+          passwordFocus ? 'opacity-100' : 'opacity-0'
+        )}
       />
       <GlassBox className="gap-12">
         <h1 className="text-4xl font-medium select-none">{t('title')}</h1>

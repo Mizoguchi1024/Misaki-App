@@ -8,6 +8,7 @@ import { useUserStore } from './store/userStore'
 import { StyleProvider } from '@ant-design/cssinjs'
 import { useChatStore } from './store/chatStore'
 import { useAssistantStore } from './store/assistantStore'
+import clsx from 'clsx'
 
 export default function App({ children }: { children?: React.ReactNode }): React.JSX.Element {
   const { jwt, logout } = useUserStore()
@@ -61,7 +62,7 @@ export default function App({ children }: { children?: React.ReactNode }): React
         }}
         locale={LanguageAntdMap[language]}
       >
-        <div className={appearance === 1 ? '' : 'dark'}>
+        <div className={clsx(appearance != 1 && 'dark')}>
           {contextHolder}
           {children}
         </div>

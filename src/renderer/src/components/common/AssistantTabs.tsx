@@ -1,7 +1,7 @@
 import { HeartOutlined } from '@ant-design/icons'
 import { Tabs } from 'antd'
 
-export default function Assistantlist(): React.JSX.Element {
+export default function AssistantTabs(): React.JSX.Element {
   const list = [
     {
       key: '1',

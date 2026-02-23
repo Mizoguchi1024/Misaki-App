@@ -13,6 +13,7 @@ import { listChats } from '@renderer/api/front/chat'
 import { useChatStore } from '@renderer/store/chatStore'
 import { listAssistants } from '@renderer/api/front/assistant'
 import { useAssistantStore } from '@renderer/store/assistantStore'
+import clsx from 'clsx'
 
 type FieldType = {
   email: string
@@ -26,13 +27,13 @@ export default function Login(): React.JSX.Element {
   const { setSettings } = useSettingsStore()
   const { setChats } = useChatStore()
   const { setAssistants } = useAssistantStore()
-  const [finishLoading, setFinishLoading] = useState(false)
+  const [submitButtonLoading, setSubmitButtonLoading] = useState(false)
   const { t } = useTranslation('login')
   const navigator = useNavigate()
 
   const onFinish: FormProps<FieldType>['onFinish'] = async (values) => {
     try {
-      setFinishLoading(true)
+      setSubmitButtonLoading(true)
       const loginRes = await login({ email: values.email, password: values.password })
       setAuthInfo(loginRes.data)
       setRememberMe(values.remember)
@@ -45,11 +46,11 @@ export default function Login(): React.JSX.Element {
       setChats(chatRes.data)
       const assistantRes = await listAssistants()
       setAssistants(assistantRes.data)
-      setFinishLoading(false)
+      setSubmitButtonLoading(false)
       navigator('/', { viewTransition: true })
     } catch {
       setTimeout(() => {
-        setFinishLoading(false)
+        setSubmitButtonLoading(false)
       }, 1000)
     }
   }
@@ -57,8 +58,10 @@ export default function Login(): React.JSX.Element {
   return (
     <div className="relative flex items-center justify-center h-full overflow-hidden bg-[url(../assets/login-background.png)] bg-cover bg-center">
       <div
-        className={`absolute inset-0 bg-[url(../assets/login-background-password.png)] bg-cover bg-center transition-opacity duration-500 ease-in-out
-        ${passwordFocus ? 'opacity-100' : 'opacity-0'}`}
+        className={clsx(
+          'absolute inset-0 bg-[url(../assets/login-background-password.png)] bg-cover bg-center duration-500 ease-in-out',
+          passwordFocus ? 'opacity-100' : 'opacity-0'
+        )}
       />
       <GlassBox className="gap-12">
         <h1 className="text-4xl font-medium select-none">{t('title')}</h1>
@@ -114,7 +117,7 @@ export default function Login(): React.JSX.Element {
             </Button>
           </div>
           <Form.Item label={null} className="m-0">
-            <Button type="primary" block htmlType="submit" loading={finishLoading}>
+            <Button type="primary" block htmlType="submit" loading={submitButtonLoading}>
               {t('login')}
             </Button>
           </Form.Item>

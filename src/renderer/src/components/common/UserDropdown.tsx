@@ -1,6 +1,7 @@
 import {
   InfoCircleOutlined,
   LogoutOutlined,
+  SendOutlined,
   SettingOutlined,
   UserOutlined
 } from '@ant-design/icons'
@@ -13,6 +14,7 @@ import { useState } from 'react'
 import { useChatStore } from '@renderer/store/chatStore'
 import { useSettingsStore } from '@renderer/store/settingsStore'
 import ProfileModal from './ProfileModal'
+import FeedbackModal from './FeedbackModal'
 
 export default function UserDropdown(): React.JSX.Element {
   const { username, logout } = useUserStore()
@@ -20,6 +22,7 @@ export default function UserDropdown(): React.JSX.Element {
   const { reset: resetChatStore } = useChatStore()
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false)
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false)
+  const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState(false)
   const [isAboutModalOpen, setIsAboutModalOpen] = useState(false)
   const { t } = useTranslation('userDropdown')
 
@@ -33,6 +36,11 @@ export default function UserDropdown(): React.JSX.Element {
       key: '/settings',
       label: t('settings'),
       icon: <SettingOutlined />
+    },
+    {
+      key: '/feedback',
+      label: t('feedback'),
+      icon: <SendOutlined />
     },
     {
       key: '/about',
@@ -57,6 +65,9 @@ export default function UserDropdown(): React.JSX.Element {
       case '/settings':
         setIsSettingsModalOpen(true)
         break
+      case '/feedback':
+        setIsFeedbackModalOpen(true)
+        break
       case '/about':
         setIsAboutModalOpen(true)
         break
@@ -70,19 +81,22 @@ export default function UserDropdown(): React.JSX.Element {
 
   return (
     <>
-      <Dropdown menu={{ items: list, onClick }} placement="bottomLeft" trigger={['click']}>
+      <Dropdown
+        menu={{ items: list, onClick }}
+        placement="bottomLeft"
+        trigger={['click']}
+        classNames={{
+          itemContent: 'select-none'
+        }}
+      >
         <Button size="large" color="default" variant="filled">
           <Avatar size="small" icon={<UserOutlined />} />
           {username}
         </Button>
       </Dropdown>
-      <ProfileModal
-        open={isProfileModalOpen}
-        onCancel={() => {
-          setIsProfileModalOpen(false)
-        }}
-      />
+      <ProfileModal open={isProfileModalOpen} onCancel={() => setIsProfileModalOpen(false)} />
       <SettingsModal open={isSettingsModalOpen} onCancel={() => setIsSettingsModalOpen(false)} />
+      <FeedbackModal open={isFeedbackModalOpen} onCancel={() => setIsFeedbackModalOpen(false)} />
       <AboutModal open={isAboutModalOpen} onCancel={() => setIsAboutModalOpen(false)} />
     </>
   )

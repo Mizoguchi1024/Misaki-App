@@ -35,7 +35,14 @@ export default function HelpDropdown(): React.JSX.Element {
 
   return (
     <>
-      <Dropdown menu={{ items: list, onClick }} placement="bottomLeft" trigger={['click']}>
+      <Dropdown
+        menu={{ items: list, onClick }}
+        placement="bottomLeft"
+        trigger={['click']}
+        classNames={{
+          itemContent: 'select-none'
+        }}
+      >
         <Button
           color="default"
           variant="filled"
