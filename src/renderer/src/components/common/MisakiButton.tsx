@@ -3,7 +3,7 @@ import { useUserStore } from '@renderer/store/userStore'
 import { Button } from 'antd'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
-import MisakiLogo from '@renderer/assets/misaki-logo-symbol.svg?react'
+import MisakiLogo from '@renderer/assets/img/misaki-logo-symbol.svg?react'
 import { useSettingsStore } from '@renderer/store/settingsStore'
 import { useAssistantStore } from '@renderer/store/assistantStore'
 

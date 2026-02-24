@@ -93,21 +93,23 @@ export default function MainLayout(): React.JSX.Element {
   const items = [...agentItems, ...chatItems]
 
   return (
-    <Layout
-      className={clsx(
-        'h-screen w-screen overflow-hidden',
-        backgroundPath &&
-          `relative z-0 before:content-[''] before:absolute before:inset-0 before:bg-[url(${getOssBaseUrl() + backgroundPath})]
-            before:bg-cover before:bg-center before:opacity-${backgroundOpacity} before:blur-[${backgroundBlur}px]
-            before:scale-105 before:transform before:-z-10`
+    <Layout className="h-screen w-screen overflow-hidden relative z-0">
+      {backgroundPath && (
+        <div
+          className="absolute inset-0 bg-cover bg-center scale-110 transform -z-10"
+          style={{
+            backgroundImage: `url(${getOssBaseUrl() + backgroundPath})`,
+            opacity: `${backgroundOpacity}%`,
+            filter: `blur(${backgroundBlur}px)`
+          }}
+        ></div>
       )}
-    >
       <Header
         className={clsx(
           'flex items-center justify-between px-8',
           backgroundPath
-            ? 'bg-white/40 dark:bg-neutral-800/40 backdrop-blur-lg'
-            : 'bg-white dark:bg-neutral-800 '
+            ? 'bg-white/40 dark:bg-neutral-900/40 backdrop-blur-2xl border-b border-white/60 dark:border-white/16'
+            : 'bg-white dark:bg-neutral-900'
         )}
       >
         <MisakiButton />
@@ -120,7 +122,11 @@ export default function MainLayout(): React.JSX.Element {
           collapsed={collapsed}
           onCollapse={(value) => setCollapsed(value)}
           theme="light"
-          className="bg-neutral-800/90"
+          className={
+            backgroundPath
+              ? 'bg-white/20 dark:bg-neutral-800/20 backdrop-blur-lg border-r border-white/60 dark:border-white/16'
+              : 'bg-white dark:bg-neutral-800'
+          }
         >
           <Menu
             className="select-none h-full overflow-y-auto scroll-smooth scrollbar-none bg-transparent"

@@ -212,18 +212,38 @@ export default function SettingsModal({ open, onCancel }): React.JSX.Element {
                   defaultValue={backgroundOpacity}
                   className="w-36 mr-2"
                   marks={{ 0: '0', 100: '100' }}
-                  onChange={(value) => setPartial({ backgroundOpacity: value })}
+                  onChange={(value) => {
+                    setPartial({ backgroundOpacity: value })
+                  }}
+                  onChangeComplete={async (value) => {
+                    await updateSettings({
+                      backgroundOpacity: value,
+                      version: settingsVersion!
+                    })
+                    const settingsRes = await getSettings()
+                    setSettings(settingsRes.data)
+                  }}
                 />
               </div>
               <div className="flex justify-between items-center">
                 <span>{t('backgroundBlur')}</span>
                 <Slider
                   min={0}
-                  max={100}
+                  max={50}
                   defaultValue={backgroundBlur}
                   className="w-36 mr-2"
-                  marks={{ 0: '0', 100: '100' }}
-                  onChange={(value) => setPartial({ backgroundBlur: value })}
+                  marks={{ 0: '0', 50: '50' }}
+                  onChange={(value) => {
+                    setPartial({ backgroundBlur: value })
+                  }}
+                  onChangeComplete={async (value) => {
+                    await updateSettings({
+                      backgroundBlur: value,
+                      version: settingsVersion!
+                    })
+                    const settingsRes = await getSettings()
+                    setSettings(settingsRes.data)
+                  }}
                 />
               </div>
             </>

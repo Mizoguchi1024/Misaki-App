@@ -1,6 +1,6 @@
 import { ColorPicker, Dropdown, Input, InputRef } from 'antd'
 import { Sender } from '@ant-design/x'
-import MisakiLogo from '../assets/misaki-logo-symbol.svg?react'
+import MisakiLogo from '@renderer/assets/img/misaki-logo-symbol.svg?react'
 import { useEffect, useRef, useState } from 'react'
 import { useUserStore } from '@renderer/store/userStore'
 import TermsModal from '@renderer/components/common/TermsModal'
@@ -113,7 +113,7 @@ export default function Home(): React.JSX.Element {
             arrow={false}
             disabled={!jwt}
           >
-            <MisakiLogo className="h-28 shrink-0" fill={mainColor} />
+            <MisakiLogo className="h-28 shrink-0 cursor-pointer" fill={mainColor} />
           </ColorPicker>
           <Input
             value={assistantNameInputValue}

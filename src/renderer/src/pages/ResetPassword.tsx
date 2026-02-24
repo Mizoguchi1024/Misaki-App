@@ -61,10 +61,10 @@ export default function ResetPassword(): React.JSX.Element {
   }
 
   return (
-    <div className="relative flex items-center justify-center h-full overflow-hidden bg-[url(../assets/login-background.png)] bg-cover bg-center">
+    <div className="relative flex items-center justify-center h-full overflow-hidden bg-[url(src/assets/img/login-background.png)] bg-cover bg-center">
       <div
         className={clsx(
-          'absolute inset-0 bg-[url(../assets/login-background-password.png)] bg-cover bg-center duration-500 ease-in-out',
+          'absolute inset-0 bg-[url(src/assets/img/login-background-password.png)] bg-cover bg-center duration-500 ease-in-out',
           passwordFocus ? 'opacity-100' : 'opacity-0'
         )}
       />

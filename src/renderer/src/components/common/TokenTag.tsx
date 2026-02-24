@@ -13,8 +13,9 @@ export default function TokenTag(): React.JSX.Element {
     <>
       <Tag
         color="geekblue"
+        variant="filled"
         icon={<HeartOutlined />}
-        className="select-none"
+        className="select-none cursor-pointer"
         onClick={() => setIsModalOpen(true)}
       >
         {token}
@@ -25,7 +26,7 @@ export default function TokenTag(): React.JSX.Element {
         title={t('token')}
         type={t('forChat')}
         amount={token}
-        imgPath="src/assets/misaki-logo-symbol.svg"
+        imgPath="src/assets/img/misaki-logo-symbol.svg"
         description="大语言模型用来拆解或拼合语言的拼图片，在中文里的正式译文为“词元”。"
       />
     </>
