@@ -19,6 +19,8 @@ interface SettingsState {
 
   version: number
 
+  getApiBaseUrl: () => string
+  getOssBaseUrl: () => string
   setSettings: (settingsFrontResponse: SettingsFrontResponse) => void
   setPartial: (patch: Partial<SettingsState>) => void
   resetCloudSettings: () => void
@@ -26,7 +28,7 @@ interface SettingsState {
 }
 
 const initialState = {
-  baseUrl: 'http://localhost:8080/api',
+  baseUrl: 'http://localhost',
   appearance: 1,
   language: 0,
   ttsAutoplay: false,
@@ -72,9 +74,11 @@ export const LanguageMap = {
 
 export const useSettingsStore = create<SettingsState>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       ...initialState,
 
+      getApiBaseUrl: () => `${get().baseUrl}:8080/api`,
+      getOssBaseUrl: () => `${get().baseUrl}:9000`,
       setSettings: (settingsFrontResponse) => set(settingsFrontResponse),
       setPartial: (patch) => set((state) => ({ ...state, ...patch })),
       reset: () => set(initialState),

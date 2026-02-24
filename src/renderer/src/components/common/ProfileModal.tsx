@@ -1,31 +1,59 @@
-import { LoadingOutlined, PlusOutlined } from '@ant-design/icons'
 import { useUserStore } from '@renderer/store/userStore'
-import { Button, DatePicker, Form, FormProps, Input, Modal, Radio, Upload } from 'antd'
+import { Button, DatePicker, Form, FormProps, Input, Modal, Radio } from 'antd'
 import dayjs from 'dayjs'
-import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import ImageUpload from './ImageUpload'
+import { UploadResponse } from '@renderer/types/api/common'
+import { getProfile, updateProfile } from '@renderer/api/front/user'
+import { messageApi } from '@renderer/messageApi'
 
 export default function ProfileModal({ open, onCancel }): React.JSX.Element {
   const { t } = useTranslation('profileModal')
-  const { id, email, username, gender, birthday, avatarPath, occupation, detail, createTime } =
-    useUserStore()
-  const [avatarLoading, setAvatarLoading] = useState(false)
+  const {
+    id,
+    email,
+    username,
+    gender,
+    birthday,
+    avatarPath,
+    occupation,
+    detail,
+    createTime,
+    version: profileVersion,
+    setProfile
+  } = useUserStore()
 
   type FieldType = {
     username: string
     gender: number
-    birthday: string
+    birthday: dayjs.Dayjs
     avatarPath: string
     occupation: string
     detail: string
   }
-  const onFinish: FormProps<FieldType>['onFinish'] = async (values) => {}
+  const onFinish: FormProps<FieldType>['onFinish'] = async (values) => {
+    try {
+      await updateProfile({
+        username: values.username,
+        gender: values.gender,
+        birthday: values.birthday.format('YYYY-MM-DD'),
+        avatarPath: values.avatarPath,
+        occupation: values.occupation,
+        detail: values.detail,
+        version: profileVersion!
+      })
+      const profileRes = await getProfile()
+      setProfile(profileRes.data)
+      messageApi?.success(t('updateSuccess'))
+    } catch {
+      return
+    }
+  }
 
-  const beforeUpload = (file) => {}
   return (
     <>
       <Modal
-        title="个人信息"
+        title={t('profile')}
         centered
         footer={null}
         open={open}
@@ -34,12 +62,19 @@ export default function ProfileModal({ open, onCancel }): React.JSX.Element {
         className="select-none"
       >
         <div className=" flex flex-col p-2 items-center gap-4 overflow-y-auto scrollbar-none ">
-          <Upload listType="picture-card" beforeUpload={beforeUpload}>
-            <button>
-              {avatarLoading ? <LoadingOutlined /> : <PlusOutlined />}
-              <div>{t('upload')}</div>
-            </button>
-          </Upload>
+          <ImageUpload
+            imgPath={avatarPath}
+            onSuccess={async (data: UploadResponse) => {
+              try {
+                await updateProfile({ avatarPath: data.path, version: profileVersion! })
+                messageApi?.success(t('uploadSuccess'))
+                const profileRes = await getProfile()
+                setProfile(profileRes.data)
+              } catch {
+                return
+              }
+            }}
+          />
           <Form
             name="basic"
             autoComplete="off"
@@ -87,7 +122,11 @@ export default function ProfileModal({ open, onCancel }): React.JSX.Element {
               initialValue={dayjs(birthday)}
               rules={[{ required: true, message: t('birthdayRequired') }]}
             >
-              <DatePicker placeholder={t('birthday')} form="YYYY-MM-DD" />
+              <DatePicker
+                placeholder={t('birthday')}
+                form="YYYY-MM-DD"
+                disabledDate={(current) => current && current > dayjs().endOf('day')}
+              />
             </Form.Item>
             <Form.Item<FieldType>
               name="occupation"

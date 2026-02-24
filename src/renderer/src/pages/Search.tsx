@@ -1,6 +1,5 @@
 import { CloseCircleOutlined, MessageOutlined, SearchOutlined } from '@ant-design/icons'
 import { Sender } from '@ant-design/x'
-import { messageApi } from '@renderer/messageApi'
 import { Card } from 'antd'
 import { useState } from 'react'
 

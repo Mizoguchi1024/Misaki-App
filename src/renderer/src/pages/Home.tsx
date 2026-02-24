@@ -36,10 +36,10 @@ export default function Home(): React.JSX.Element {
   )
   const assistantInputRef = useRef<InputRef>(null)
 
-  const test = async (): Promise<void> => {
-    const tools = await window.api.listMcpTools()
-    console.log('tools', tools)
-  }
+  // const test = async (): Promise<void> => {
+  //   const tools = await window.api.listMcpTools()
+  //   console.log('tools', tools)
+  // }
 
   useEffect(() => {
     setColorPickerValue(mainColor)

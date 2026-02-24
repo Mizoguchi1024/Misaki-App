@@ -17,8 +17,8 @@ import ProfileModal from './ProfileModal'
 import FeedbackModal from './FeedbackModal'
 
 export default function UserDropdown(): React.JSX.Element {
-  const { username, logout } = useUserStore()
-  const { resetCloudSettings: resetSettingsStore } = useSettingsStore()
+  const { username, avatarPath, logout } = useUserStore()
+  const { getOssBaseUrl, resetCloudSettings: resetSettingsStore } = useSettingsStore()
   const { reset: resetChatStore } = useChatStore()
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false)
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false)
@@ -90,7 +90,12 @@ export default function UserDropdown(): React.JSX.Element {
         }}
       >
         <Button size="large" color="default" variant="filled">
-          <Avatar size="small" icon={<UserOutlined />} />
+          {avatarPath ? (
+            <Avatar size="small" src={getOssBaseUrl() + avatarPath} />
+          ) : (
+            <Avatar size="small" icon={<UserOutlined />} />
+          )}
+
           {username}
         </Button>
       </Dropdown>

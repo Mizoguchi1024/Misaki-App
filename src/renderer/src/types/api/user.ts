@@ -1,10 +1,11 @@
 export type UpdateUserFrontRequest = {
-  username: string
-  gender: number
-  birthday: string
-  avatarUrl: string
-  occupation: string
-  detail: string
+  username?: string
+  gender?: number
+  birthday?: string
+  avatarPath?: string
+  occupation?: string
+  detail?: string
+  version: number
 }
 
 export type UserFrontResponse = {

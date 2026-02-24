@@ -1,9 +1,7 @@
-import { UploadOutlined } from '@ant-design/icons'
 import { getSettings, updateSettings } from '@renderer/api/front/user'
 import { LanguageMap, useSettingsStore } from '@renderer/store/settingsStore'
 import { useUserStore } from '@renderer/store/userStore'
 import {
-  Button,
   ColorPicker,
   Input,
   Modal,
@@ -17,6 +15,8 @@ import {
 } from 'antd'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import ImageUpload from './ImageUpload'
+import { UploadResponse } from '@renderer/types/api/common'
 
 export default function SettingsModal({ open, onCancel }): React.JSX.Element {
   const { t } = useTranslation('settingsModal')
@@ -162,9 +162,12 @@ export default function SettingsModal({ open, onCancel }): React.JSX.Element {
           {jwt && (
             <div className="flex justify-between items-center">
               <span>{t('backgroundImage')}</span>
-              <Upload>
-                <Button icon={<UploadOutlined />}>{t('upload')}</Button>
-              </Upload>
+              <ImageUpload
+                imgPath={backgroundImagePath}
+                onSuccess={(data: UploadResponse) => {
+                  updateSettings({ backgroundImagePath: data.path, version: settingsVersion! })
+                }}
+              />
             </div>
           )}
         </div>
