@@ -1,10 +1,9 @@
 import UserDropdown from './UserDropdown'
 import ChatDropdown from './ChatDropdown'
-import { Button, Tag } from 'antd'
+import { Button } from 'antd'
 import { useUserStore } from '@renderer/store/userStore'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
-import { HeartOutlined } from '@ant-design/icons'
 import HelpDropdown from './HelpDropdown'
 import TokenTag from './TokenTag'
 

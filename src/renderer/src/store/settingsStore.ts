@@ -14,7 +14,9 @@ interface SettingsState {
 
   mainColor: string // #3142ef
   ttsAutoplay: boolean
-  backgroundImagePath: string | null
+  backgroundPath: string | null
+  backgroundOpacity: number
+  backgroundBlur: number
   enabledAssistantId: string | null
 
   version: number
@@ -35,7 +37,9 @@ const initialState = {
   fontSize: 14,
   mainColor: '#3142ef',
   borderRadius: 12,
-  backgroundImagePath: null,
+  backgroundPath: null,
+  backgroundOpacity: 100,
+  backgroundBlur: 0,
   enabledAssistantId: null,
   version: 0
 }
@@ -43,7 +47,9 @@ const initialState = {
 const initialCloudState = {
   mainColor: '#3142ef',
   ttsAutoplay: false,
-  backgroundImagePath: null,
+  backgroundPath: null,
+  backgroundOpacity: 100,
+  backgroundBlur: 0,
   enabledAssistantId: null,
   version: 0
 }

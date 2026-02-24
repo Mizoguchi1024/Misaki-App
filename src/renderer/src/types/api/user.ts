@@ -22,7 +22,7 @@ export type UserFrontResponse = {
 export type UpdateSettingsFrontRequest = {
   ttsAutoplay?: boolean
   mainColor?: string
-  backgroundImagePath?: string
+  backgroundPath?: string
   enabledAssistantId?: string
   version: number
 }
@@ -30,7 +30,7 @@ export type UpdateSettingsFrontRequest = {
 export type SettingsFrontResponse = {
   ttsAutoplay: boolean
   colorPrimary: string
-  backgroundImagePath: string
+  backgroundPath: string
   enabledAssistantId: string
   version: number
 }

@@ -8,7 +8,6 @@ import { useUserStore } from './store/userStore'
 import { StyleProvider } from '@ant-design/cssinjs'
 import { useChatStore } from './store/chatStore'
 import { useAssistantStore } from './store/assistantStore'
-import clsx from 'clsx'
 
 export default function App({ children }: { children?: React.ReactNode }): React.JSX.Element {
   const { jwt, logout } = useUserStore()

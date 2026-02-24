@@ -2,6 +2,7 @@ import { getSettings, updateSettings } from '@renderer/api/front/user'
 import { LanguageMap, useSettingsStore } from '@renderer/store/settingsStore'
 import { useUserStore } from '@renderer/store/userStore'
 import {
+  Button,
   ColorPicker,
   Input,
   Modal,
@@ -10,13 +11,13 @@ import {
   Slider,
   Space,
   Switch,
-  Tabs,
-  Upload
+  Tabs
 } from 'antd'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import ImageUpload from './ImageUpload'
 import { UploadResponse } from '@renderer/types/api/common'
+import { messageApi } from '@renderer/messageApi'
 
 export default function SettingsModal({ open, onCancel }): React.JSX.Element {
   const { t } = useTranslation('settingsModal')
@@ -29,7 +30,9 @@ export default function SettingsModal({ open, onCancel }): React.JSX.Element {
     mainColor,
     borderRadius,
     ttsAutoplay,
-    backgroundImagePath,
+    backgroundPath,
+    backgroundOpacity,
+    backgroundBlur,
     version: settingsVersion,
     setSettings,
     setPartial
@@ -46,7 +49,7 @@ export default function SettingsModal({ open, onCancel }): React.JSX.Element {
       key: '1',
       label: t('general'),
       children: (
-        <div className="h-80 w-full flex flex-col gap-4 pl-6 pt-2 pr-2 overflow-y-auto scrollbar-none">
+        <div className="h-80 w-full flex flex-col gap-4 pl-6 pt-2 pr-2 pb-2 overflow-y-auto scrollbar-none">
           <div className="flex justify-between items-center">
             <span>{t('baseUrl')}</span>
             <Space.Compact className="w-64">
@@ -89,7 +92,7 @@ export default function SettingsModal({ open, onCancel }): React.JSX.Element {
       key: '2',
       label: t('appearance'),
       children: (
-        <div className="h-80 w-full flex flex-col gap-4 pl-6 pt-2 pr-2 overflow-y-auto scrollbar-none">
+        <div className="h-80 w-full flex flex-col gap-4 pl-6 pt-2 pr-2 pb-2 overflow-y-auto scrollbar-none">
           <div className="flex justify-between items-center">
             <span>{t('appearance')}</span>
             <Segmented<string>
@@ -163,12 +166,67 @@ export default function SettingsModal({ open, onCancel }): React.JSX.Element {
             <div className="flex justify-between items-center">
               <span>{t('backgroundImage')}</span>
               <ImageUpload
-                imgPath={backgroundImagePath}
-                onSuccess={(data: UploadResponse) => {
-                  updateSettings({ backgroundImagePath: data.path, version: settingsVersion! })
+                imgPath={backgroundPath}
+                onSuccess={async (data: UploadResponse) => {
+                  try {
+                    console.log(data)
+                    await updateSettings({
+                      backgroundPath: data.path,
+                      version: settingsVersion!
+                    })
+                    messageApi?.success(t('uploadSuccess'))
+                    const settingsRes = await getSettings()
+                    setSettings(settingsRes.data)
+                  } catch {
+                    return
+                  }
                 }}
               />
             </div>
+          )}
+          {jwt && backgroundPath && (
+            <>
+              <div className="flex justify-between items-center">
+                <span>{t('deleteBackground')}</span>
+                <Button
+                  color="danger"
+                  variant="outlined"
+                  onClick={async () => {
+                    await updateSettings({
+                      backgroundPath: '',
+                      version: settingsVersion!
+                    })
+                    messageApi?.success(t('deleteSuccess'))
+                    const settingsRes = await getSettings()
+                    setSettings(settingsRes.data)
+                  }}
+                >
+                  {t('delete')}
+                </Button>
+              </div>
+              <div className="flex justify-between items-center">
+                <span>{t('backgroundOpacity')}</span>
+                <Slider
+                  min={0}
+                  max={100}
+                  defaultValue={backgroundOpacity}
+                  className="w-36 mr-2"
+                  marks={{ 0: '0', 100: '100' }}
+                  onChange={(value) => setPartial({ backgroundOpacity: value })}
+                />
+              </div>
+              <div className="flex justify-between items-center">
+                <span>{t('backgroundBlur')}</span>
+                <Slider
+                  min={0}
+                  max={100}
+                  defaultValue={backgroundBlur}
+                  className="w-36 mr-2"
+                  marks={{ 0: '0', 100: '100' }}
+                  onChange={(value) => setPartial({ backgroundBlur: value })}
+                />
+              </div>
+            </>
           )}
         </div>
       )
@@ -179,7 +237,7 @@ export default function SettingsModal({ open, onCancel }): React.JSX.Element {
             key: '3',
             label: t('chat'),
             children: (
-              <div className="h-80 w-full flex flex-col gap-4 pl-6 pt-2 pr-2 overflow-y-auto scrollbar-none">
+              <div className="h-80 w-full flex flex-col gap-4 pl-6 pt-2 pr-2 pb-2 overflow-y-auto scrollbar-none">
                 <div className="flex justify-between items-center">
                   <span>{t('ttsAutoplay')}</span>
                   <Switch
