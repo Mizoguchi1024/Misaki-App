@@ -5,6 +5,7 @@ import { messageApi } from '@renderer/messageApi'
 import { useChatStore } from '@renderer/store/chatStore'
 import { useAssistantStore } from '@renderer/store/assistantStore'
 import i18n from '@renderer/i18n'
+import { useFeedbackStore } from '@renderer/store/feedbackStore'
 
 const api = axios.create({
   timeout: 5000
@@ -31,6 +32,7 @@ api.interceptors.response.use(
         useSettingsStore.getState().resetCloudSettings()
         useChatStore.getState().reset()
         useAssistantStore.getState().reset()
+        useFeedbackStore.getState().reset()
         messageApi?.info(serverMessage)
         window.location.href = '/login'
       } else {

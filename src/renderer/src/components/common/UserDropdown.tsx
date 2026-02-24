@@ -15,11 +15,15 @@ import { useChatStore } from '@renderer/store/chatStore'
 import { useSettingsStore } from '@renderer/store/settingsStore'
 import ProfileModal from './ProfileModal'
 import FeedbackModal from './FeedbackModal'
+import { useAssistantStore } from '@renderer/store/assistantStore'
+import { useFeedbackStore } from '@renderer/store/feedbackStore'
 
 export default function UserDropdown(): React.JSX.Element {
   const { username, avatarPath, logout } = useUserStore()
   const { getOssBaseUrl, resetCloudSettings: resetSettingsStore } = useSettingsStore()
   const { reset: resetChatStore } = useChatStore()
+  const { reset: resetAssistantStore } = useAssistantStore()
+  const { reset: resetFeedbackStore } = useFeedbackStore()
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false)
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false)
   const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState(false)
@@ -75,6 +79,8 @@ export default function UserDropdown(): React.JSX.Element {
         logout()
         resetSettingsStore()
         resetChatStore()
+        resetAssistantStore()
+        resetFeedbackStore()
         break
     }
   }

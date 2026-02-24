@@ -8,6 +8,7 @@ import { useUserStore } from './store/userStore'
 import { StyleProvider } from '@ant-design/cssinjs'
 import { useChatStore } from './store/chatStore'
 import { useAssistantStore } from './store/assistantStore'
+import { useFeedbackStore } from './store/feedbackStore'
 
 export default function App({ children }: { children?: React.ReactNode }): React.JSX.Element {
   const { jwt, logout } = useUserStore()
@@ -21,6 +22,7 @@ export default function App({ children }: { children?: React.ReactNode }): React
   } = useSettingsStore()
   const { reset: resetChatStore } = useChatStore()
   const { reset: resetAssistantStore } = useAssistantStore()
+  const { reset: resetFeedbackStore } = useFeedbackStore()
   const [messageInstance, contextHolder] = message.useMessage()
 
   useEffect(() => {
@@ -40,6 +42,7 @@ export default function App({ children }: { children?: React.ReactNode }): React
       resetSettingsStore()
       resetChatStore()
       resetAssistantStore()
+      resetFeedbackStore()
     }
   }, [])
 

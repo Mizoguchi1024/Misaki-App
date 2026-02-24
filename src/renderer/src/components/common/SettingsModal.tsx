@@ -35,7 +35,8 @@ export default function SettingsModal({ open, onCancel }): React.JSX.Element {
     backgroundBlur,
     version: settingsVersion,
     setSettings,
-    setPartial
+    setPartial,
+    resetLocalSettings
   } = useSettingsStore()
   const [baseUrlInputValue, setBaseUrlInputValue] = useState(baseUrl.replace('http://', ''))
   const [colorPickerValue, setColorPickerValue] = useState(mainColor)
@@ -84,7 +85,18 @@ export default function SettingsModal({ open, onCancel }): React.JSX.Element {
               }}
             />
           </div>
-          <div className="flex justify-between items-center"></div>
+          <div className="flex justify-between items-center">
+            <span>{t('resetLocalSettings')}</span>
+            <Button
+              color="danger"
+              variant="outlined"
+              onClick={() => {
+                resetLocalSettings()
+              }}
+            >
+              {t('reset')}
+            </Button>
+          </div>
         </div>
       )
     },

@@ -20,14 +20,14 @@ export default function AuthLayout(): React.JSX.Element {
 
   return (
     <Layout className="h-screen w-screen overflow-hidden relative">
-      <Header className="flex items-center justify-between bg-white dark:bg-neutral-800 px-8">
+      <Header className="flex items-center justify-between bg-white dark:bg-neutral-900 px-10">
         <MisakiButton />
         <HeaderRightPart currentPage={currentPage} />
       </Header>
       <Content>
         <Outlet />
       </Content>
-      <Footer className="absolute bottom-0 w-full bg-white/0 text-center select-none">
+      <Footer className="absolute bottom-0 w-full bg-transparent text-center select-none">
         Developed by Mizoguchi. All rights reserved.
       </Footer>
     </Layout>

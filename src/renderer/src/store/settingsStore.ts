@@ -25,8 +25,9 @@ interface SettingsState {
   getOssBaseUrl: () => string
   setSettings: (settingsFrontResponse: SettingsFrontResponse) => void
   setPartial: (patch: Partial<SettingsState>) => void
-  resetCloudSettings: () => void
   reset: () => void
+  resetLocalSettings: () => void
+  resetCloudSettings: () => void
 }
 
 const initialState = {
@@ -42,6 +43,14 @@ const initialState = {
   backgroundBlur: 0,
   enabledAssistantId: null,
   version: 0
+}
+
+const initialLocalState = {
+  baseUrl: 'http://localhost',
+  language: 0,
+  fontSize: 14,
+  appearance: 1,
+  borderRadius: 12
 }
 
 const initialCloudState = {
@@ -88,6 +97,7 @@ export const useSettingsStore = create<SettingsState>()(
       setSettings: (settingsFrontResponse) => set(settingsFrontResponse),
       setPartial: (patch) => set((state) => ({ ...state, ...patch })),
       reset: () => set(initialState),
+      resetLocalSettings: () => set(initialLocalState),
       resetCloudSettings: () => set(initialCloudState)
     }),
     {

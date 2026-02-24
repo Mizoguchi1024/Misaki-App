@@ -106,7 +106,7 @@ export default function MainLayout(): React.JSX.Element {
       )}
       <Header
         className={clsx(
-          'flex items-center justify-between px-8',
+          'flex items-center justify-between px-10',
           backgroundPath
             ? 'bg-white/40 dark:bg-neutral-900/40 backdrop-blur-2xl border-b border-white/60 dark:border-white/16'
             : 'bg-white dark:bg-neutral-900'

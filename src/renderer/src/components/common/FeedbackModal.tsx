@@ -8,7 +8,7 @@ import {
 import { createFeedback, deleteFeedback, listFeedbacks } from '@renderer/api/front/feedback'
 import { messageApi } from '@renderer/messageApi'
 import { useFeedbackStore } from '@renderer/store/feedbackStore'
-import { Button, Card, Form, FormProps, Input, Modal, Select, Tabs, Tag } from 'antd'
+import { Button, Card, Empty, Form, FormProps, Input, Modal, Select, Tabs, Tag } from 'antd'
 import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -72,7 +72,7 @@ export default function FeedbackModal({ open, onCancel }): React.JSX.Element {
           name="basic"
           autoComplete="off"
           validateTrigger="onSubmit"
-          className="h-80 pl-6 pt-2 pr-2 overflow-y-auto scrollbar-none"
+          className="h-120 pl-6 pt-2 pr-2 overflow-y-auto scrollbar-none"
           onFinish={onFinish}
           onFinishFailed={(errorInfo) => {
             console.log('Failed:', errorInfo)
@@ -103,7 +103,12 @@ export default function FeedbackModal({ open, onCancel }): React.JSX.Element {
             name="content"
             rules={[{ required: true, message: t('contentRequired') }]}
           >
-            <Input.TextArea placeholder={t('content')} showCount maxLength={1000}></Input.TextArea>
+            <Input.TextArea
+              autoSize={{ minRows: 7, maxRows: 9 }}
+              placeholder={t('content')}
+              showCount
+              maxLength={1000}
+            ></Input.TextArea>
           </Form.Item>
           <Form.Item>
             <Button type="primary" block htmlType="submit">
@@ -122,7 +127,8 @@ export default function FeedbackModal({ open, onCancel }): React.JSX.Element {
       key: '2',
       label: t('history'),
       children: (
-        <div className="h-80 pl-6 pt-2 pr-2 pb-2 flex flex-col gap-4 overflow-y-auto scrollbar-none">
+        <div className="h-120 pl-6 pt-2 pr-2 pb-2 flex flex-col gap-4 overflow-y-auto scrollbar-none">
+          {feedbacks?.length === 0 && <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />}
           {feedbacks?.map((item) => (
             <Card
               key={item.id}
@@ -178,7 +184,7 @@ export default function FeedbackModal({ open, onCancel }): React.JSX.Element {
   return (
     <>
       <Modal
-        title={t('title')}
+        title={t('feedback')}
         centered
         footer={null}
         open={open}
