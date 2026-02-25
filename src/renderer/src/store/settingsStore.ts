@@ -32,7 +32,7 @@ interface SettingsState {
 
 const initialState = {
   baseUrl: 'http://localhost',
-  appearance: 1,
+  appearance: 0,
   language: 0,
   ttsAutoplay: false,
   fontSize: 14,
@@ -49,7 +49,7 @@ const initialLocalState = {
   baseUrl: 'http://localhost',
   language: 0,
   fontSize: 14,
-  appearance: 1,
+  appearance: 0,
   borderRadius: 12
 }
 

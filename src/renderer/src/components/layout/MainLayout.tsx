@@ -96,7 +96,7 @@ export default function MainLayout(): React.JSX.Element {
     <Layout className="h-screen w-screen overflow-hidden relative z-0">
       {backgroundPath && (
         <div
-          className="absolute inset-0 bg-cover bg-center scale-110 transform -z-10"
+          className="absolute inset-0 bg-cover bg-center scale-110 transform -z-10 bg-no-repeat"
           style={{
             backgroundImage: `url(${getOssBaseUrl() + backgroundPath})`,
             opacity: `${backgroundOpacity}%`,

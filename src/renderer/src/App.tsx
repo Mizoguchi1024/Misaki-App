@@ -2,7 +2,7 @@ import { ConfigProvider, message, theme } from 'antd'
 import 'dayjs/locale/zh-cn'
 import { LanguageAntdMap, useSettingsStore } from './store/settingsStore'
 import { setMessageApi } from './messageApi'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { jwtDecode } from 'jwt-decode'
 import { useUserStore } from './store/userStore'
 import { StyleProvider } from '@ant-design/cssinjs'
@@ -24,9 +24,15 @@ export default function App({ children }: { children?: React.ReactNode }): React
   const { reset: resetAssistantStore } = useAssistantStore()
   const { reset: resetFeedbackStore } = useFeedbackStore()
   const [messageInstance, contextHolder] = message.useMessage()
+  const [isSystemDark, setIsSystemDark] = useState(false)
 
   useEffect(() => {
     setMessageApi(messageInstance)
+
+    window.api.onSystemThemeChange((dark) => {
+      setIsSystemDark(dark)
+    })
+
     if (jwt) {
       const decoded = jwtDecode(jwt)
       const now = Date.now() / 1000
@@ -48,18 +54,21 @@ export default function App({ children }: { children?: React.ReactNode }): React
 
   useEffect(() => {
     const root = document.documentElement
-    if (appearance != 1) {
+    if (appearance === 2 || (appearance === 0 && isSystemDark)) {
       root.classList.add('dark')
     } else {
       root.classList.remove('dark')
     }
-  }, [appearance])
+  }, [isSystemDark, appearance])
 
   return (
     <StyleProvider layer>
       <ConfigProvider
         theme={{
-          algorithm: appearance === 1 ? theme.defaultAlgorithm : theme.darkAlgorithm, // defaultAlgorithm | darkAlgorithm
+          algorithm:
+            appearance === 2 || (appearance === 0 && isSystemDark)
+              ? theme.darkAlgorithm
+              : theme.defaultAlgorithm,
           token: {
             fontSize: fontSize,
             colorPrimary: mainColor,

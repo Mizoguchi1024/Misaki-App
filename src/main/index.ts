@@ -1,4 +1,4 @@
-import { app, shell, BrowserWindow, ipcMain } from 'electron'
+import { app, shell, BrowserWindow, ipcMain, nativeTheme } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
@@ -21,6 +21,16 @@ function createWindow(): void {
       sandbox: false,
       webSecurity: false
     }
+  })
+
+  // 初始主题
+  mainWindow.webContents.once('did-finish-load', () => {
+    mainWindow.webContents.send('system-theme-change', nativeTheme.shouldUseDarkColors)
+  })
+
+  // 监听系统主题变化
+  nativeTheme.on('updated', () => {
+    mainWindow.webContents.send('system-theme-change', nativeTheme.shouldUseDarkColors)
   })
 
   mainWindow.on('ready-to-show', () => {

@@ -2,7 +2,11 @@ import { contextBridge, ipcRenderer } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
 
 // Custom APIs for renderer
-const api = {listMcpTools: () => ipcRenderer.invoke('mcp-list-tools')}
+const api = {
+  listMcpTools: () => ipcRenderer.invoke('mcp-list-tools'),
+  onSystemThemeChange: (callback) =>
+    ipcRenderer.on('system-theme-change', (_, dark) => callback(dark))
+}
 export type API = typeof api
 
 // Use `contextBridge` APIs to expose Electron APIs to
