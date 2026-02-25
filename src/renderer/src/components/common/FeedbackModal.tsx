@@ -11,6 +11,7 @@ import { useFeedbackStore } from '@renderer/store/feedbackStore'
 import { Button, Card, Empty, Form, FormProps, Input, Modal, Select, Tabs, Tag } from 'antd'
 import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
+import EmptyState from './EmptyState'
 
 export default function FeedbackModal({ open, onCancel }): React.JSX.Element {
   const { t } = useTranslation('feedbackModal')
@@ -128,7 +129,7 @@ export default function FeedbackModal({ open, onCancel }): React.JSX.Element {
       label: t('history'),
       children: (
         <div className="h-120 pl-6 pt-2 pr-2 pb-2 flex flex-col gap-4 overflow-y-auto scrollbar-none">
-          {feedbacks?.length === 0 && <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />}
+          {feedbacks?.length === 0 && <EmptyState className="text-lg" />}
           {feedbacks?.map((item) => (
             <Card
               key={item.id}

@@ -29,9 +29,9 @@ export const updateChatTitle = (
 export const listChats = (): Promise<Result<ChatFrontResponse[]>> =>
   api.get<Result<ChatFrontResponse[]>>('/front/chats').then((res) => res.data)
 
-export const searchChats = (keyword: string): Promise<Result<ChatFrontResponse>> =>
+export const searchChats = (keyword: string): Promise<Result<ChatFrontResponse[]>> =>
   api
-    .get<Result<ChatFrontResponse>>('/front/chats/search', { params: { keyword } })
+    .get<Result<ChatFrontResponse[]>>('/front/chats/search', { params: { keyword } })
     .then((res) => res.data)
 
 export const listMessages = (id: string): Promise<Result<MessageFrontResponse[]>> =>

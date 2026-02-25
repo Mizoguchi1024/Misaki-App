@@ -29,6 +29,8 @@ export default function App({ children }: { children?: React.ReactNode }): React
   useEffect(() => {
     setMessageApi(messageInstance)
 
+    window.api.getSystemTheme().then(setIsSystemDark)
+
     window.api.onSystemThemeChange((dark) => {
       setIsSystemDark(dark)
     })

@@ -20,6 +20,7 @@ export default function Home(): React.JSX.Element {
   const { jwt } = useUserStore()
   const {
     mainColor,
+    backgroundPath,
     enabledAssistantId,
     version: settingsVersion,
     setSettings
@@ -121,7 +122,10 @@ export default function Home(): React.JSX.Element {
             variant="borderless"
             maxLength={8}
             spellCheck="false"
-            className={clsx('text-8xl font-semibold field-sizing-content', jwt && 'cursor-text')}
+            className={clsx(
+              'text-8xl font-semibold text-neutral-900 dark:text-neutral-200 field-sizing-content',
+              jwt && 'cursor-text'
+            )}
             onChange={(e) => setAssistantNameInputValue(e.target.value)}
             onPressEnter={() => assistantInputRef.current!.blur()}
             onBlur={() => handleAssistantNameSubmit(assistantNameInputValue)}
@@ -130,7 +134,12 @@ export default function Home(): React.JSX.Element {
         </div>
         <div className="w-3/4">
           <Sender
-            className="bg-white/70 dark:bg-white/20 backdrop-blur-xs hover:backdrop-blur-sm ease-in-out duration-500"
+            className={clsx(
+              backgroundPath
+                ? 'bg-white/60 dark:bg-neutral-800/60 backdrop-blur-xs hover:backdrop-blur-sm '
+                : 'bg-white dark:bg-neutral-800',
+              'transition-all duration-500'
+            )}
             value={message}
             loading={loading}
             placeholder={!jwt ? t('pleaseLoginFirst') : t('greetings')}

@@ -23,16 +23,6 @@ function createWindow(): void {
     }
   })
 
-  // 初始主题
-  mainWindow.webContents.once('did-finish-load', () => {
-    mainWindow.webContents.send('system-theme-change', nativeTheme.shouldUseDarkColors)
-  })
-
-  // 监听系统主题变化
-  nativeTheme.on('updated', () => {
-    mainWindow.webContents.send('system-theme-change', nativeTheme.shouldUseDarkColors)
-  })
-
   mainWindow.on('ready-to-show', () => {
     mainWindow.show()
   })
@@ -66,6 +56,15 @@ app.whenReady().then(async () => {
     optimizer.watchWindowShortcuts(window)
   })
 
+  // 监听系统主题变化
+  nativeTheme.on('updated', () => {
+    BrowserWindow.getAllWindows().forEach((w) => {
+      if (!w.isDestroyed()) {
+        w.webContents.send('system-theme-change', nativeTheme.shouldUseDarkColors)
+      }
+    })
+  })
+
   mcpClient = new MCPClient()
   try {
     await mcpClient.connectToServer('src/main/mcp-servers/filesystem/index.ts')
@@ -81,6 +80,10 @@ app.whenReady().then(async () => {
     // dock icon is clicked and there are no other windows open.
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
   })
+})
+
+ipcMain.handle('system-theme', () => {
+  return nativeTheme.shouldUseDarkColors
 })
 
 ipcMain.handle('mcp-list-tools', async () => {
