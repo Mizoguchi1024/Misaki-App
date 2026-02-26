@@ -82,6 +82,15 @@ app.whenReady().then(async () => {
   })
 })
 
+ipcMain.handle('get-versions', () => {
+  return {
+    misaki: app.getVersion(),
+    electron: process.versions.electron,
+    node: process.versions.node,
+    chrome: process.versions.chrome
+  }
+})
+
 ipcMain.handle('system-theme', () => {
   return nativeTheme.shouldUseDarkColors
 })

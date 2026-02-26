@@ -136,7 +136,12 @@ export default function ProfileModal({ open, onCancel }): React.JSX.Element {
               <Input placeholder={t('occupation')} maxLength={20} showCount />
             </Form.Item>
             <Form.Item<FieldType> name="detail" label={t('detail')} initialValue={detail}>
-              <Input.TextArea placeholder={t('detail')} showCount maxLength={100} autoSize={{ minRows: 2, maxRows: 4 }}></Input.TextArea>
+              <Input.TextArea
+                placeholder={t('detail')}
+                showCount
+                maxLength={100}
+                autoSize={{ minRows: 2, maxRows: 4 }}
+              ></Input.TextArea>
             </Form.Item>
             <Form.Item name="createTime" label={t('createTime')}>
               <span>{createTime}</span>

@@ -1,17 +1,26 @@
 import { HeartFilled, HeartOutlined } from '@ant-design/icons'
 import { getMisakiLikes, likeMisaki } from '@renderer/api/front/about'
+import { messageApi } from '@renderer/messageApi'
 import { useUserStore } from '@renderer/store/userStore'
 import { Button, Modal } from 'antd'
+import React from 'react'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 export default function AboutModal({ open, onCancel }): React.JSX.Element {
   const { t } = useTranslation('aboutModal')
   const { jwt } = useUserStore()
+  const [versions, setVersions] = useState({
+    misaki: '',
+    node: '',
+    chrome: '',
+    electron: ''
+  })
   const [likes, setLikes] = useState(0)
   const [likedFlag, setLikedFlag] = useState(false)
 
   useEffect(() => {
+    window.api.getVersions().then(setVersions)
     const load = async (): Promise<void> => {
       const aboutRes = await getMisakiLikes()
       setLikes(aboutRes.data.likes)
@@ -22,13 +31,6 @@ export default function AboutModal({ open, onCancel }): React.JSX.Element {
     }
   }, [])
 
-  const handleLike = async (): Promise<void> => {
-    await likeMisaki()
-    const aboutRes = await getMisakiLikes()
-    setLikes(aboutRes.data.likes)
-    setLikedFlag(aboutRes.data.likedFlag)
-  }
-
   return (
     <Modal
       title={t('title')}
@@ -38,16 +40,48 @@ export default function AboutModal({ open, onCancel }): React.JSX.Element {
       onCancel={onCancel}
       className="select-none"
     >
-      <div className="max-h-120 overflow-y-auto scrollbar-none">
-        <span className="w-full">{t('description')}</span>
+      <div className="max-h-120 p-2 overflow-y-auto scrollbar-none">
+        <div className=" flex flex-col gap-2 mb-4">
+          <div className="w-full flex justify-between">
+            <span>{t('misakiVersion')}</span>
+            <span>{versions.misaki}</span>
+          </div>
+          <div className="w-full flex justify-between">
+            <span>{t('nodeVersion')}</span>
+            <span>{versions.node}</span>
+          </div>
+          <div className="w-full flex justify-between">
+            <span>{t('electronVersion')}</span>
+            <span>{versions.electron}</span>
+          </div>
+          <div className="w-full flex justify-between">
+            <span>{t('chromeVersion')}</span>
+            <span>{versions.chrome}</span>
+          </div>
+          <div className="w-full flex justify-between">
+            <span>{t('reactVersion')}</span>
+            <span>{React.version}</span>
+          </div>
+        </div>
+        <div className="w-full mb-4">{t('story')}</div>
         {jwt && (
           <div className="flex flex-col items-center gap-6">
-            <span className="w-full">软件开发不易，如果你喜欢本应用的话，点个赞吧～</span>
+            <span className="w-full">{t('likesDescription')}</span>
             <Button
               type={likedFlag ? 'primary' : 'default'}
               icon={likedFlag ? <HeartFilled /> : <HeartOutlined />}
               size="large"
-              onClick={() => handleLike()}
+              onClick={async () => {
+                await likeMisaki()
+                const aboutRes = await getMisakiLikes()
+                setLikes(aboutRes.data.likes)
+                setLikedFlag(aboutRes.data.likedFlag)
+                if (aboutRes.data.likedFlag) {
+                  messageApi?.success(t('thanks'))
+                } else {
+                  messageApi?.info(t('sad'))
+                }
+              }}
             >
               {likes}
             </Button>

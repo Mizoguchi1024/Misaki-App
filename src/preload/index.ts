@@ -3,6 +3,7 @@ import { electronAPI } from '@electron-toolkit/preload'
 
 // Custom APIs for renderer
 const api = {
+  getVersions: () => ipcRenderer.invoke('get-versions'),
   listMcpTools: () => ipcRenderer.invoke('mcp-list-tools'),
   getSystemTheme: () => ipcRenderer.invoke('system-theme'),
   onSystemThemeChange: (callback) =>
