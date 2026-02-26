@@ -19,7 +19,7 @@ import { useAssistantStore } from '@renderer/store/assistantStore'
 import { useFeedbackStore } from '@renderer/store/feedbackStore'
 
 export default function UserDropdown(): React.JSX.Element {
-  const { username, avatarPath, logout } = useUserStore()
+  const { username, avatarPath, reset: resetUserStore } = useUserStore()
   const { getOssBaseUrl, resetCloudSettings: resetSettingsStore } = useSettingsStore()
   const { reset: resetChatStore } = useChatStore()
   const { reset: resetAssistantStore } = useAssistantStore()
@@ -76,7 +76,7 @@ export default function UserDropdown(): React.JSX.Element {
         setIsAboutModalOpen(true)
         break
       case '/logout':
-        logout()
+        resetUserStore()
         resetSettingsStore()
         resetChatStore()
         resetAssistantStore()

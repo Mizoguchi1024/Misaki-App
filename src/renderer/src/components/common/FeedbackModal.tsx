@@ -8,7 +8,7 @@ import {
 import { createFeedback, deleteFeedback, listFeedbacks } from '@renderer/api/front/feedback'
 import { messageApi } from '@renderer/messageApi'
 import { useFeedbackStore } from '@renderer/store/feedbackStore'
-import { Button, Card, Empty, Form, FormProps, Input, Modal, Select, Tabs, Tag } from 'antd'
+import { Button, Card, Form, FormProps, Input, Modal, Select, Tabs, Tag } from 'antd'
 import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import EmptyState from './EmptyState'

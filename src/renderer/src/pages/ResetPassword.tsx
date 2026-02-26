@@ -1,5 +1,6 @@
 import { InfoCircleOutlined, LockOutlined, MailOutlined } from '@ant-design/icons'
 import { resetPassword, sendVerifyCode } from '@renderer/api/common/auth'
+import { getProfile } from '@renderer/api/front/user'
 import GlassBox from '@renderer/components/common/GlassBox'
 import { messageApi } from '@renderer/messageApi'
 import { useUserStore } from '@renderer/store/userStore'
@@ -22,7 +23,7 @@ const onFinishFailed: FormProps<FieldType>['onFinishFailed'] = (errorInfo) => {
 export default function ResetPassword(): React.JSX.Element {
   const [passwordFocus, setPasswordFocus] = useState(false)
   const navigator = useNavigate()
-  const { logout } = useUserStore()
+  const { setProfile } = useUserStore()
   const [form] = Form.useForm<FieldType>()
   const [sendVerifyCodeLoading, setSendVerifyCodeLoading] = useState(false)
   const [finishLoading, setFinishLoading] = useState(false)
@@ -49,7 +50,8 @@ export default function ResetPassword(): React.JSX.Element {
         password: values.password,
         verifyCode: values.verifyCode
       })
-      logout()
+      const profileRes = await getProfile()
+      setProfile(profileRes.data)
       messageApi?.success(t('resetSuccess'))
       setFinishLoading(false)
       navigator('/', { viewTransition: true })

@@ -28,7 +28,7 @@ interface UserState {
   setAuthInfo: (loginResponse: LoginResponse) => void
   setRememberMe: (rememberMe: boolean) => void
   setProfile: (userFrontResponse: UserFrontResponse) => void
-  logout: () => void
+  reset: () => void
 }
 
 const initialState = {
@@ -62,7 +62,7 @@ export const useUserStore = create<UserState>()(
       setAuthInfo: (loginResponse) => set(loginResponse),
       setRememberMe: (rememberMe) => set({ rememberMe }),
       setProfile: (userFrontResponse) => set(userFrontResponse),
-      logout: () => set(initialState)
+      reset: () => set(initialState)
     }),
     {
       name: 'user-store'

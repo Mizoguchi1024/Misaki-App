@@ -9,14 +9,22 @@ export type UpdateUserFrontRequest = {
 }
 
 export type UserFrontResponse = {
+  id: string
   email: string
   username: string
   gender: number
   birthday: string
-  avatarUrl: string
+  avatarPath: string
   occupation: string
   detail: string
+  token: number
+  crystal: number
+  puzzle: number
+  stardust: number
+  lastLoginTime: string
+  lastCheckInDate: string
   createTime: string
+  version: number
 }
 
 export type UpdateSettingsFrontRequest = {

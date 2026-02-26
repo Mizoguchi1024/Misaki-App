@@ -20,7 +20,7 @@ export const updateSettings = (data: UpdateSettingsFrontRequest): Promise<Result
   api.put<Result<void>>('/front/users/settings', data).then((res) => res.data)
 
 export const checkIn = (): Promise<Result<void>> =>
-  api.get<Result<void>>('/front/users/check-in').then((res) => res.data)
+  api.put<Result<void>>('/front/users/check-in').then((res) => res.data)
 
 export const deleteUser = (): Promise<Result<void>> =>
   api.delete<Result<void>>('/front/users').then((res) => res.data)

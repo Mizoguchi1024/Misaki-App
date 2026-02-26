@@ -18,10 +18,12 @@ import MisakiButton from '../common/MisakiButton'
 import HeaderMiddlePart from '../common/HeaderMiddlePart'
 import { listAssistants } from '@renderer/api/front/assistant'
 import { listChats } from '@renderer/api/front/chat'
-import { getProfile, getSettings } from '@renderer/api/front/user'
+import { checkIn, getProfile, getSettings } from '@renderer/api/front/user'
 import { useSettingsStore } from '@renderer/store/settingsStore'
 import { useAssistantStore } from '@renderer/store/assistantStore'
 import clsx from 'clsx'
+import dayjs from 'dayjs'
+import { messageApi } from '@renderer/messageApi'
 
 const { Header, Content, Sider } = Layout
 
@@ -40,16 +42,35 @@ export default function MainLayout(): React.JSX.Element {
   const currentPage = matches.at(-1)?.handle?.page
 
   useEffect(() => {
-    if (jwt) {
-      Promise.all([getProfile(), getSettings(), listChats(), listAssistants()]).then(
-        ([profileRes, settingsRes, chatsRes, assistantsRes]) => {
+    const load = async (): Promise<void> => {
+      if (jwt) {
+        try {
+          const [profileRes, settingsRes, chatsRes, assistantsRes] = await Promise.all([
+            getProfile(),
+            getSettings(),
+            listChats(),
+            listAssistants()
+          ])
           setProfile(profileRes.data)
           setSettings(settingsRes.data)
           setChats(chatsRes.data)
           setAssistants(assistantsRes.data)
+
+          const isToday = dayjs(profileRes.data.lastCheckInDate, 'YYYY-MM-DD').isSame(
+            dayjs(),
+            'day'
+          )
+          if (!isToday) {
+            await checkIn()
+            messageApi?.success(t('checkInSuccess'))
+          }
+        } catch {
+          return
         }
-      )
+      }
     }
+
+    load()
   }, [])
 
   const agentItems: MenuProps['items'] = [

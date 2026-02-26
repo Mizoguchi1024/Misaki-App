@@ -24,20 +24,24 @@ api.interceptors.response.use(
   (res) => res,
   (err) => {
     if (axios.isAxiosError(err)) {
-      messageApi?.error(i18n.t('networkError', { ns: 'api' }))
-    } else {
+      const status = err.response?.status
       const serverMessage = err.response?.data?.message
-      if (err.response?.status === 401) {
-        useUserStore.getState().logout()
-        useSettingsStore.getState().resetCloudSettings()
-        useChatStore.getState().reset()
-        useAssistantStore.getState().reset()
-        useFeedbackStore.getState().reset()
-        messageApi?.info(serverMessage)
-        window.location.href = '/login'
+
+      if (status === 401) {
+        if (useUserStore.getState().jwt) {
+          useUserStore.getState().reset()
+          useSettingsStore.getState().resetCloudSettings()
+          useChatStore.getState().reset()
+          useAssistantStore.getState().reset()
+          useFeedbackStore.getState().reset()
+
+          messageApi?.info(i18n.t('tokenExpired', { ns: 'api' }))
+        }
       } else {
-        messageApi?.error(serverMessage)
+        messageApi?.error(serverMessage ?? i18n.t('networkError', { ns: 'api' }))
       }
+    } else {
+      messageApi?.error(i18n.t('unknownError', { ns: 'api' }))
     }
 
     return Promise.reject(err)
