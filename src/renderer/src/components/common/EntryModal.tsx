@@ -5,7 +5,6 @@ export default function EntryModal({
   open,
   onCancel,
   title,
-  type,
   amount,
   imgPath,
   description
@@ -26,13 +25,10 @@ export default function EntryModal({
       }}
     >
       <div
-        className="w-full h-24 flex justify-between p-4 bg-neutral-100 dark:bg-neutral-800 overflow-hidden my-6"
+        className="w-full h-24 flex justify-between items-center p-4 bg-neutral-100 dark:bg-neutral-800 overflow-hidden my-6"
         style={{ borderRadius: borderRadius }}
       >
-        <div className="flex flex-col justify-between">
-          <span>{type}</span>
-          <span>x {amount}</span>
-        </div>
+        <span className="text-xl font-semibold mt-auto">x{amount}</span>
         <img src={imgPath} className="h-full object-contain" draggable={false}></img>
       </div>
 

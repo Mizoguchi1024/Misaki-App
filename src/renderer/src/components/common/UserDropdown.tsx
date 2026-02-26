@@ -32,22 +32,22 @@ export default function UserDropdown(): React.JSX.Element {
 
   const list: MenuProps['items'] = [
     {
-      key: '/profile',
+      key: 'profile',
       label: t('profile'),
       icon: <UserOutlined />
     },
     {
-      key: '/settings',
+      key: 'settings',
       label: t('settings'),
       icon: <SettingOutlined />
     },
     {
-      key: '/feedback',
+      key: 'feedback',
       label: t('feedback'),
       icon: <SendOutlined />
     },
     {
-      key: '/about',
+      key: 'about',
       label: t('about'),
       icon: <InfoCircleOutlined />
     },
@@ -55,27 +55,28 @@ export default function UserDropdown(): React.JSX.Element {
       type: 'divider'
     },
     {
-      key: '/logout',
+      key: 'logout',
       label: t('logout'),
-      icon: <LogoutOutlined />
+      icon: <LogoutOutlined />,
+      danger: true
     }
   ]
 
   const onClick: MenuProps['onClick'] = ({ key }) => {
     switch (key) {
-      case '/profile':
+      case 'profile':
         setIsProfileModalOpen(true)
         break
-      case '/settings':
+      case 'settings':
         setIsSettingsModalOpen(true)
         break
-      case '/feedback':
+      case 'feedback':
         setIsFeedbackModalOpen(true)
         break
-      case '/about':
+      case 'about':
         setIsAboutModalOpen(true)
         break
-      case '/logout':
+      case 'logout':
         resetUserStore()
         resetSettingsStore()
         resetChatStore()
@@ -101,7 +102,6 @@ export default function UserDropdown(): React.JSX.Element {
           ) : (
             <Avatar size="small" icon={<UserOutlined />} />
           )}
-
           {username}
         </Button>
       </Dropdown>

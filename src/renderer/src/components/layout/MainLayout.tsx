@@ -24,6 +24,7 @@ import { useAssistantStore } from '@renderer/store/assistantStore'
 import clsx from 'clsx'
 import dayjs from 'dayjs'
 import { messageApi } from '@renderer/messageApi'
+import { useFeedbackStore } from '@renderer/store/feedbackStore'
 
 const { Header, Content, Sider } = Layout
 
@@ -32,11 +33,18 @@ export default function MainLayout(): React.JSX.Element {
   const [collapsed, setCollapsed] = useState(false)
   const location = useLocation()
   const navigate = useNavigate()
-  const { jwt, setProfile } = useUserStore()
-  const { backgroundPath, backgroundOpacity, backgroundBlur, getOssBaseUrl, setSettings } =
-    useSettingsStore()
-  const { chats, setChats } = useChatStore()
-  const { setAssistants } = useAssistantStore()
+  const { jwt, rememberMe, setProfile, reset:resetUserStore } = useUserStore()
+  const {
+    backgroundPath,
+    backgroundOpacity,
+    backgroundBlur,
+    getOssBaseUrl,
+    setSettings,
+    reset: resetSettingsStore
+  } = useSettingsStore()
+  const { chats, setChats, reset: resetChatStore } = useChatStore()
+  const { setAssistants, reset: resetAssistantStore } = useAssistantStore()
+  const { reset: resetFeedbackStore } = useFeedbackStore()
 
   const matches = useMatches() as UIMatch<unknown, { page?: string }>[]
   const currentPage = matches.at(-1)?.handle?.page
@@ -44,6 +52,14 @@ export default function MainLayout(): React.JSX.Element {
   useEffect(() => {
     const load = async (): Promise<void> => {
       if (jwt) {
+        if (!rememberMe) {
+          resetUserStore()
+          resetSettingsStore()
+          resetChatStore()
+          resetAssistantStore()
+          resetFeedbackStore()
+          return
+        }
         try {
           const [profileRes, settingsRes, chatsRes, assistantsRes] = await Promise.all([
             getProfile(),

@@ -44,7 +44,7 @@ export default function ProfileModal({ open, onCancel }): React.JSX.Element {
       })
       const profileRes = await getProfile()
       setProfile(profileRes.data)
-      messageApi?.success(t('updateSuccess'))
+      messageApi?.success(t('saveSuccess'))
     } catch {
       return
     }
@@ -61,7 +61,7 @@ export default function ProfileModal({ open, onCancel }): React.JSX.Element {
         destroyOnHidden
         className="select-none"
       >
-        <div className=" flex flex-col p-2 items-center gap-4 overflow-y-auto scrollbar-none ">
+        <div className=" flex flex-col p-2 items-center gap-4 h-160 overflow-y-auto scrollbar-none">
           <ImageUpload
             imgPath={avatarPath}
             onSuccess={async (data: UploadResponse) => {
@@ -79,15 +79,16 @@ export default function ProfileModal({ open, onCancel }): React.JSX.Element {
             name="basic"
             autoComplete="off"
             validateTrigger="onSubmit"
-            labelCol={{ span: 8 }}
-            wrapperCol={{ span: 16 }}
+            colon={false}
+            labelCol={{ span: 4 }}
+            wrapperCol={{ span: 20 }}
             labelAlign="left"
             requiredMark={false}
             onFinish={onFinish}
             onFinishFailed={(errorInfo) => {
               console.log('Failed:', errorInfo)
             }}
-            validateMessages={{ required: t('requireTemplate') }}
+            validateMessages={{ required: t('requiredTemplate') }}
             className="w-full"
           >
             <Form.Item name="id" label={t('id')}>
@@ -108,7 +109,7 @@ export default function ProfileModal({ open, onCancel }): React.JSX.Element {
               name="gender"
               label={t('gender')}
               initialValue={gender}
-              rules={[{ required: true, message: t('genderRequired') }]}
+              rules={[{ required: true }]}
             >
               <Radio.Group>
                 <Radio.Button value={0}>{t('unknown')}</Radio.Button>
@@ -120,7 +121,6 @@ export default function ProfileModal({ open, onCancel }): React.JSX.Element {
               name="birthday"
               label={t('birthday')}
               initialValue={dayjs(birthday)}
-              rules={[{ required: true, message: t('birthdayRequired') }]}
             >
               <DatePicker
                 placeholder={t('birthday')}
@@ -136,7 +136,7 @@ export default function ProfileModal({ open, onCancel }): React.JSX.Element {
               <Input placeholder={t('occupation')} maxLength={20} showCount />
             </Form.Item>
             <Form.Item<FieldType> name="detail" label={t('detail')} initialValue={detail}>
-              <Input.TextArea placeholder={t('detail')} showCount maxLength={100}></Input.TextArea>
+              <Input.TextArea placeholder={t('detail')} showCount maxLength={100} autoSize={{ minRows: 2, maxRows: 4 }}></Input.TextArea>
             </Form.Item>
             <Form.Item name="createTime" label={t('createTime')}>
               <span>{createTime}</span>

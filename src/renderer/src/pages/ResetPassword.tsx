@@ -29,7 +29,7 @@ export default function ResetPassword(): React.JSX.Element {
   const [sendVerifyCodeLoading, setSendVerifyCodeLoading] = useState(false)
   const [finishLoading, setFinishLoading] = useState(false)
   const { t } = useTranslation('resetPassword')
-    const { language } = useSettingsStore()
+  const { language } = useSettingsStore()
 
   const onSendVerifyCode = async (): Promise<void> => {
     try {
