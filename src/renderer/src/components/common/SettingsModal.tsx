@@ -1,4 +1,4 @@
-import { getSettings, updateSettings } from '@renderer/api/front/user'
+import { deleteUser, getSettings, updateSettings } from '@renderer/api/front/user'
 import { LanguageMap, useSettingsStore } from '@renderer/store/settingsStore'
 import { useUserStore } from '@renderer/store/userStore'
 import {
@@ -18,9 +18,11 @@ import { useTranslation } from 'react-i18next'
 import ImageUpload from './ImageUpload'
 import { UploadResponse } from '@renderer/types/api/common'
 import { messageApi } from '@renderer/messageApi'
+import { useNavigate } from 'react-router-dom'
 
 export default function SettingsModal({ open, onCancel }): React.JSX.Element {
   const { t } = useTranslation('settingsModal')
+  const navigate = useNavigate()
   const { jwt } = useUserStore()
   const {
     baseUrl,
@@ -267,6 +269,35 @@ export default function SettingsModal({ open, onCancel }): React.JSX.Element {
       ? [
           {
             key: '3',
+            label: t('account'),
+            children: (
+              <div className="h-80 w-full flex flex-col gap-4 pl-6 pt-2 pr-2 pb-2 overflow-y-auto scrollbar-none">
+                <div className="flex justify-between items-center">
+                  <span>{t('resetPassword')}</span>
+                  <Button
+                    type="default"
+                    onClick={() => navigate('/reset-password', { viewTransition: true })}
+                  >
+                    {t('reset')}
+                  </Button>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span>{t('deleteAccount')}</span>
+                  <Button
+                    color="danger"
+                    variant="outlined"
+                    onClick={() => {
+                      deleteUser()
+                    }}
+                  >
+                    {t('delete')}
+                  </Button>
+                </div>
+              </div>
+            )
+          },
+          {
+            key: '4',
             label: t('chat'),
             children: (
               <div className="h-80 w-full flex flex-col gap-4 pl-6 pt-2 pr-2 pb-2 overflow-y-auto scrollbar-none">

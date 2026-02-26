@@ -3,6 +3,7 @@ import { resetPassword, sendVerifyCode } from '@renderer/api/common/auth'
 import { getProfile } from '@renderer/api/front/user'
 import GlassBox from '@renderer/components/common/GlassBox'
 import { messageApi } from '@renderer/messageApi'
+import { useSettingsStore } from '@renderer/store/settingsStore'
 import { useUserStore } from '@renderer/store/userStore'
 import { Button, Form, FormProps, Input, Space, Tooltip } from 'antd'
 import clsx from 'clsx'
@@ -23,17 +24,18 @@ const onFinishFailed: FormProps<FieldType>['onFinishFailed'] = (errorInfo) => {
 export default function ResetPassword(): React.JSX.Element {
   const [passwordFocus, setPasswordFocus] = useState(false)
   const navigator = useNavigate()
-  const { setProfile } = useUserStore()
+  const { jwt, setProfile } = useUserStore()
   const [form] = Form.useForm<FieldType>()
   const [sendVerifyCodeLoading, setSendVerifyCodeLoading] = useState(false)
   const [finishLoading, setFinishLoading] = useState(false)
   const { t } = useTranslation('resetPassword')
+    const { language } = useSettingsStore()
 
   const onSendVerifyCode = async (): Promise<void> => {
     try {
       const { email } = await form.validateFields(['email'])
       setSendVerifyCodeLoading(true)
-      await sendVerifyCode(email)
+      await sendVerifyCode(email, language)
       messageApi?.success(t('sendVerifyCodeSuccess'))
     } finally {
       setTimeout(() => {
@@ -50,8 +52,10 @@ export default function ResetPassword(): React.JSX.Element {
         password: values.password,
         verifyCode: values.verifyCode
       })
-      const profileRes = await getProfile()
-      setProfile(profileRes.data)
+      if (jwt) {
+        const profileRes = await getProfile()
+        setProfile(profileRes.data)
+      }
       messageApi?.success(t('resetSuccess'))
       setFinishLoading(false)
       navigator('/', { viewTransition: true })

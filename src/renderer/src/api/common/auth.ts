@@ -16,5 +16,5 @@ export const register = (data: RegisterRequest): Promise<Result<void>> =>
 export const resetPassword = (data: ResetPasswordRequest): Promise<Result<void>> =>
   api.post<Result<void>>('/auth/reset-password', data).then((res) => res.data)
 
-export const sendVerifyCode = (email: string): Promise<Result<void>> =>
-  api.post<Result<void>>(`/auth/verify/${email}`).then((res) => res.data)
+export const sendVerifyCode = (email: string, lang: number): Promise<Result<void>> =>
+  api.post<Result<void>>(`/auth/verify/${email}`, { params: { lang } }).then((res) => res.data)

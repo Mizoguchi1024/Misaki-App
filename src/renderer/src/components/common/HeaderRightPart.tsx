@@ -50,6 +50,7 @@ export default function HeaderRightPart({ currentPage }): React.JSX.Element {
           <UserDropdown />
         </div>
       )
+    case 'reset-password':
     case 'not-found':
       return (
         <div className="flex items-center gap-4">

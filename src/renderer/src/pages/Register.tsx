@@ -2,6 +2,7 @@ import { InfoCircleOutlined, LockOutlined, MailOutlined, UserOutlined } from '@a
 import { register, sendVerifyCode } from '@renderer/api/common/auth'
 import GlassBox from '@renderer/components/common/GlassBox'
 import { messageApi } from '@renderer/messageApi'
+import { useSettingsStore } from '@renderer/store/settingsStore'
 import { Button, Form, FormProps, Input, Space, Tooltip } from 'antd'
 import clsx from 'clsx'
 import { useState } from 'react'
@@ -26,12 +27,13 @@ export default function Register(): React.JSX.Element {
   const [sendVerifyCodeLoading, setSendVerifyCodeLoading] = useState(false)
   const [finishLoading, setFinishLoading] = useState(false)
   const { t } = useTranslation('register')
+  const { language } = useSettingsStore()
 
   const handleSendVerifyCode = async (): Promise<void> => {
     try {
       const { email } = await form.validateFields(['email'])
       setSendVerifyCodeLoading(true)
-      await sendVerifyCode(email)
+      await sendVerifyCode(email, language)
       messageApi?.success(t('sendVerifyCodeSuccess'))
     } finally {
       setTimeout(() => {
