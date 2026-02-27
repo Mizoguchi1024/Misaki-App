@@ -24,7 +24,7 @@ export default function ImageUpload({ imgPath, onSuccess }): React.JSX.Element {
   }
 
   return (
-    <Tooltip title={t('sizeLimit')}>
+    <Tooltip title={t('sizeLimit')} arrow={false}>
       <Upload
         listType="picture-card"
         showUploadList={false}

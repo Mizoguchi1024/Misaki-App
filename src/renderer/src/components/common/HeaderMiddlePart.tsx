@@ -1,7 +1,7 @@
 import { useChatStore } from '@renderer/store/chatStore'
 import { Input } from 'antd'
 import { useParams } from 'react-router-dom'
-import AssistantTabs from './AssistantTabs'
+import AssistantScrollList from './AssistantScrollList'
 
 export default function HeaderMiddlePart({ currentPage }): React.JSX.Element {
   const { chats } = useChatStore()
@@ -21,7 +21,7 @@ export default function HeaderMiddlePart({ currentPage }): React.JSX.Element {
     case 'misaki':
       return (
         <div className="absolute left-1/2 -translate-x-1/2 max-w-180">
-          <AssistantTabs />
+          <AssistantScrollList />
         </div>
       )
     default:

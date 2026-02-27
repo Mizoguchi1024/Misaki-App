@@ -87,7 +87,7 @@ ipcMain.handle('get-versions', () => {
     misaki: app.getVersion(),
     electron: process.versions.electron,
     node: process.versions.node,
-    chrome: process.versions.chrome
+    chromium: process.versions.chrome
   }
 })
 

@@ -13,7 +13,7 @@ export default function AboutModal({ open, onCancel }): React.JSX.Element {
   const [versions, setVersions] = useState({
     misaki: '',
     node: '',
-    chrome: '',
+    chromium: '',
     electron: ''
   })
   const [likes, setLikes] = useState(0)
@@ -55,8 +55,8 @@ export default function AboutModal({ open, onCancel }): React.JSX.Element {
             <span>{versions.electron}</span>
           </div>
           <div className="w-full flex justify-between">
-            <span>{t('chromeVersion')}</span>
-            <span>{versions.chrome}</span>
+            <span>{t('chromiumVersion')}</span>
+            <span>{versions.chromium}</span>
           </div>
           <div className="w-full flex justify-between">
             <span>{t('reactVersion')}</span>
