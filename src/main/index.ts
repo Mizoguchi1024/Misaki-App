@@ -91,8 +91,8 @@ ipcMain.handle('get-versions', () => {
   }
 })
 
-ipcMain.handle('system-theme', () => {
-  return nativeTheme.shouldUseDarkColors
+ipcMain.on('system-theme', (event) => {
+  event.returnValue = nativeTheme.shouldUseDarkColors
 })
 
 ipcMain.handle('mcp-list-tools', async () => {

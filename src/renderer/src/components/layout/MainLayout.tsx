@@ -25,6 +25,8 @@ import clsx from 'clsx'
 import dayjs from 'dayjs'
 import { messageApi } from '@renderer/messageApi'
 import { useFeedbackStore } from '@renderer/store/feedbackStore'
+import { listModels } from '@renderer/api/front/model'
+import { useModelStore } from '@renderer/store/modelStore'
 
 const { Header, Content, Sider } = Layout
 
@@ -33,7 +35,7 @@ export default function MainLayout(): React.JSX.Element {
   const [collapsed, setCollapsed] = useState(false)
   const location = useLocation()
   const navigate = useNavigate()
-  const { jwt, rememberMe, setProfile, reset:resetUserStore } = useUserStore()
+  const { jwt, rememberMe, setProfile, reset: resetUserStore } = useUserStore()
   const {
     backgroundPath,
     backgroundOpacity,
@@ -44,6 +46,7 @@ export default function MainLayout(): React.JSX.Element {
   } = useSettingsStore()
   const { chats, setChats, reset: resetChatStore } = useChatStore()
   const { setAssistants, reset: resetAssistantStore } = useAssistantStore()
+  const { setModels, reset: resetModelStore } = useModelStore()
   const { reset: resetFeedbackStore } = useFeedbackStore()
 
   const matches = useMatches() as UIMatch<unknown, { page?: string }>[]
@@ -57,20 +60,23 @@ export default function MainLayout(): React.JSX.Element {
           resetSettingsStore()
           resetChatStore()
           resetAssistantStore()
+          resetModelStore()
           resetFeedbackStore()
           return
         }
         try {
-          const [profileRes, settingsRes, chatsRes, assistantsRes] = await Promise.all([
+          const [profileRes, settingsRes, chatsRes, assistantsRes, modelsRes] = await Promise.all([
             getProfile(),
             getSettings(),
             listChats(),
-            listAssistants()
+            listAssistants(),
+            listModels()
           ])
           setProfile(profileRes.data)
           setSettings(settingsRes.data)
           setChats(chatsRes.data)
           setAssistants(assistantsRes.data)
+          setModels(modelsRes.data)
 
           const isToday = dayjs(profileRes.data.lastCheckInDate, 'YYYY-MM-DD').isSame(
             dayjs(),
@@ -143,7 +149,7 @@ export default function MainLayout(): React.JSX.Element {
       )}
       <Header
         className={clsx(
-          'flex items-center justify-between px-10',
+          'flex items-center justify-between h-16 px-10',
           backgroundPath
             ? 'bg-white/40 dark:bg-neutral-900/40 backdrop-blur-2xl border-b border-white/60 dark:border-white/16'
             : 'bg-white dark:bg-neutral-900'

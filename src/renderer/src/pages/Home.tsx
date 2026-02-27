@@ -123,7 +123,7 @@ export default function Home(): React.JSX.Element {
             maxLength={8}
             spellCheck="false"
             className={clsx(
-              'text-8xl font-semibold text-neutral-900 dark:text-neutral-200 field-sizing-content',
+              'text-8xl font-semibold text-neutral-900 dark:text-neutral-100 field-sizing-content',
               jwt && 'cursor-text'
             )}
             onChange={(e) => setAssistantNameInputValue(e.target.value)}

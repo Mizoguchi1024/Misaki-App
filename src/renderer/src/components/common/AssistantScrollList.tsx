@@ -1,15 +1,26 @@
 import { createDraggable, createScope, Scope } from 'animejs'
-import { HeartOutlined } from '@ant-design/icons'
-import { Avatar } from 'antd'
+import { HeartOutlined, PlusOutlined } from '@ant-design/icons'
+import { Avatar, Tooltip } from 'antd'
 import { useEffect, useRef } from 'react'
+import { useTranslation } from 'react-i18next'
+import { useAssistantStore } from '@renderer/store/assistantStore'
+import { useModelStore } from '@renderer/store/modelStore'
+import { useSettingsStore } from '@renderer/store/settingsStore'
+import clsx from 'clsx'
 
-export default function AssistantScrollList(onChange): React.JSX.Element {
+export default function AssistantScrollList(): React.JSX.Element {
+  const { t } = useTranslation('assistantScrollList')
+  const { mainColor, getOssBaseUrl } = useSettingsStore()
+  const { assistants, assistant, setAssistant } = useAssistantStore()
+  const { models } = useModelStore()
   const root = useRef<HTMLDivElement>(null)
   const scope = useRef<Scope>(null)
   const avatarList = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    scope.current = createScope({ root }).add(() => {
+    setAssistant(assistants?.[0])
+
+    scope.current = createScope({ root }).add(() => {  // TODO 需要改挂载一次性？
       const rootObj = root.current
       const avatarListObj = avatarList.current
 
@@ -17,78 +28,79 @@ export default function AssistantScrollList(onChange): React.JSX.Element {
       const windowWidth = rootObj.offsetWidth
       const avatarListWidth = avatarListObj.scrollWidth
 
-      console.log('windowWidth:', windowWidth)
-      console.log('avatarListWidth:', avatarListWidth)
+      console.log(windowWidth, avatarListWidth)
 
       createDraggable(avatarListObj, {
         y: false,
-        container: [0, 0, 0, windowWidth - avatarListWidth - 40]
+        container: [
+          0,
+          0,
+          0,
+          windowWidth === avatarListWidth ? 0 : windowWidth - avatarListWidth - 40
+        ]
       })
     })
 
     return () => scope.current!.revert()
-  }, [])
-
-  const list = [
-    {
-      key: '1',
-      icon: <HeartOutlined />
-    },
-    {
-      key: '2',
-      icon: <HeartOutlined />
-    },
-    {
-      key: '3',
-      icon: <HeartOutlined />
-    },
-    {
-      key: '4',
-      icon: <HeartOutlined />
-    },
-    {
-      key: '5',
-      icon: <HeartOutlined />
-    },
-    {
-      key: '6',
-      icon: <HeartOutlined />
-    },
-    {
-      key: '7',
-      icon: <HeartOutlined />
-    },
-    {
-      key: '8',
-      icon: <HeartOutlined />
-    },
-    {
-      key: '9',
-      icon: <HeartOutlined />
-    },
-    {
-      key: '10',
-      icon: <HeartOutlined />
-    }
-  ]
+  }, [assistants])
 
   return (
     <div
       ref={root}
-      className="w-120 overflow-hidden mask-[linear-gradient(to_right,transparent,black_40px,black_calc(100%-40px),transparent)]
+      className="w-120 h-full overflow-hidden mask-[linear-gradient(to_right,transparent,black_40px,black_calc(100%-40px),transparent)]
     [-webkit-mask-image:linear-gradient(to_right,transparent,black_40px,black_calc(100%-40px),transparent)]"
     >
-      <div ref={avatarList} className="flex pl-10 gap-6">
-        {list.map((item) => (
+      <div ref={avatarList} className="flex items-center h-full pl-10 gap-6">
+        {assistants?.map((item) => (
+          <Tooltip
+            key={item.id}
+            title={item.name}
+            arrow={false}
+            classNames={{
+              container: 'select-none'
+            }}
+          >
+            <Avatar
+              src={
+                models?.find((model) => model.id === item.modelId)?.avatarPath
+                  ? getOssBaseUrl() + models?.find((model) => model.id === item.modelId)?.avatarPath
+                  : null
+              }
+              icon={
+                models?.find((model) => model.id === item.modelId)?.avatarPath ? null : (
+                  <HeartOutlined />
+                )
+              }
+              className={clsx(
+                'flex-none cursor-pointer select-none border-0 duration-250',
+                item.id === assistant?.id && 'outline-4'
+              )}
+              style={{ outlineColor: mainColor }}
+              onClick={() => {
+                setAssistant(assistants?.find((assistant) => assistant.id === item.id) || null)
+              }}
+            />
+          </Tooltip>
+        ))}
+        <Tooltip
+          title={t('create')}
+          arrow={false}
+          classNames={{
+            container: 'select-none'
+          }}
+        >
           <Avatar
-            key={item.key}
-            icon={item.icon}
-            className="flex-none"
+            icon={<PlusOutlined />}
+            className={clsx(
+              'flex-none cursor-pointer border-0 duration-250',
+              !assistant && 'outline-4'
+            )}
+            style={{ outlineColor: mainColor }}
             onClick={() => {
-              onChange(item.key)
+              setAssistant(null)
             }}
           />
-        ))}
+        </Tooltip>
       </div>
     </div>
   )

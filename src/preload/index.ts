@@ -5,7 +5,7 @@ import { electronAPI } from '@electron-toolkit/preload'
 const api = {
   getVersions: () => ipcRenderer.invoke('get-versions'),
   listMcpTools: () => ipcRenderer.invoke('mcp-list-tools'),
-  getSystemTheme: () => ipcRenderer.invoke('system-theme'),
+  getSystemTheme: () => ipcRenderer.sendSync('system-theme'),
   onSystemThemeChange: (callback) =>
     ipcRenderer.on('system-theme-change', (_, dark) => callback(dark))
 }

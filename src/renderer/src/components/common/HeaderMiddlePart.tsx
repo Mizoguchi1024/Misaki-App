@@ -10,7 +10,7 @@ export default function HeaderMiddlePart({ currentPage }): React.JSX.Element {
   switch (currentPage) {
     case 'chat':
       return (
-        <div className="absolute left-1/2 -translate-x-1/2 w-160">
+        <div className="absolute left-1/2 -translate-x-1/2 h-16 w-160">
           <Input
             variant="borderless"
             className="text-center font-medium"
@@ -20,7 +20,7 @@ export default function HeaderMiddlePart({ currentPage }): React.JSX.Element {
       )
     case 'misaki':
       return (
-        <div className="absolute left-1/2 -translate-x-1/2 max-w-180">
+        <div className="absolute left-1/2 -translate-x-1/2 h-16">
           <AssistantScrollList />
         </div>
       )
