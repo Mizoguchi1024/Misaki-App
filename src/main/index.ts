@@ -18,8 +18,9 @@ function createWindow(): void {
     icon: icon,
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
-      sandbox: false,
-      webSecurity: false
+      webSecurity: true,
+      contextIsolation: true,
+      nodeIntegration: false
     }
   })
 
@@ -80,6 +81,24 @@ app.whenReady().then(async () => {
     // dock icon is clicked and there are no other windows open.
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
   })
+})
+
+ipcMain.handle('http:request', async (event, config) => {
+  console.log(config)
+  const response = await fetch(config.baseURL + config.url, {
+    method: config.method,
+    headers: config.headers,
+    body: config.data
+  })
+
+  const data = await response.text()
+
+  return {
+    data,
+    status: response.status,
+    statusText: response.statusText,
+    headers: Object.fromEntries(response.headers.entries())
+  }
 })
 
 ipcMain.handle('get-versions', () => {

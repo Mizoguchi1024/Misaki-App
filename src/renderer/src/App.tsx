@@ -8,11 +8,10 @@ import { StyleProvider } from '@ant-design/cssinjs'
 export default function App({ children }: { children?: React.ReactNode }): React.JSX.Element {
   const { appearance, fontSize, mainColor, borderRadius, language } = useSettingsStore()
   const [messageInstance, contextHolder] = message.useMessage()
-  const [isSystemDark, setIsSystemDark] = useState( window.api.getSystemTheme())
+  const [isSystemDark, setIsSystemDark] = useState(window.api.getSystemTheme())
 
   useEffect(() => {
     setMessageApi(messageInstance)
-
 
     window.api.onSystemThemeChange((dark) => {
       setIsSystemDark(dark)

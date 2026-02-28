@@ -1,8 +1,8 @@
 import { contextBridge, ipcRenderer } from 'electron'
-import { electronAPI } from '@electron-toolkit/preload'
 
 // Custom APIs for renderer
 const api = {
+  request: (config) => ipcRenderer.invoke('http:request', config),
   getVersions: () => ipcRenderer.invoke('get-versions'),
   listMcpTools: () => ipcRenderer.invoke('mcp-list-tools'),
   getSystemTheme: () => ipcRenderer.sendSync('system-theme'),
@@ -16,14 +16,11 @@ export type API = typeof api
 // just add to the DOM global.
 if (process.contextIsolated) {
   try {
-    contextBridge.exposeInMainWorld('electron', electronAPI)
     contextBridge.exposeInMainWorld('api', api)
   } catch (error) {
     console.error(error)
   }
 } else {
-  // @ts-ignore (define in dts)
-  window.electron = electronAPI
   // @ts-ignore (define in dts)
   window.api = api
 }

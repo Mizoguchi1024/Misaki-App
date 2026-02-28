@@ -15,6 +15,12 @@ export default function Misaki(): React.JSX.Element {
   const root = useRef<HTMLDivElement>(null)
   const scope = useRef<Scope>(null)
 
+  const genderMap = {
+    0: t('unknown'),
+    1: t('male'),
+    2: t('female')
+  }
+
   useEffect(() => {
     const load = async (): Promise<void> => {
       const assistantsRes = await listAssistants()
@@ -29,8 +35,9 @@ export default function Misaki(): React.JSX.Element {
     if (scope.current) {
       scope.current.add(() => {
         animate('.loading-blur', {
-          filter: ['blur(0px)', 'blur(8px)', 'blur(0px)'],
-          duration: 600,
+          opacity: [1, 0.6, 1],
+          filter: ['blur(0px)', 'blur(6px)', 'blur(0px)'],
+          duration: 800,
           easing: 'easeInOutQuad'
         })
       })
@@ -48,7 +55,7 @@ export default function Misaki(): React.JSX.Element {
         <div className="loading-blur">
           <div className="flex justify-between w-full mb-4">
             <span className="text-2xl font-semibold">{assistant?.name}</span>
-            <Button type="primary" onClick={() => setIsEditing(!isEditing)}>
+            <Button type="primary" variant='filled' onClick={() => setIsEditing(!isEditing)}>
               {t('edit')}
             </Button>
           </div>
@@ -57,7 +64,7 @@ export default function Misaki(): React.JSX.Element {
               {
                 key: '1',
                 label: t('gender'),
-                children: assistant?.gender
+                children: genderMap[assistant?.gender || 0]
               },
               {
                 key: '2',
@@ -72,7 +79,7 @@ export default function Misaki(): React.JSX.Element {
               {
                 key: '4',
                 label: t('detail'),
-                children: assistant?.detail || t('null')
+                children: assistant?.detail || t('none')
               },
               {
                 key: '5',
