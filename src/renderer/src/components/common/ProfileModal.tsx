@@ -7,6 +7,15 @@ import { UploadResponse } from '@renderer/types/api/common'
 import { getProfile, updateProfile } from '@renderer/api/front/user'
 import { messageApi } from '@renderer/messageApi'
 
+type FieldType = {
+  username: string
+  gender: number
+  birthday: dayjs.Dayjs
+  avatarPath: string
+  occupation: string
+  detail: string
+}
+
 export default function ProfileModal({ open, onCancel }): React.JSX.Element {
   const { t } = useTranslation('profileModal')
   const {
@@ -23,14 +32,6 @@ export default function ProfileModal({ open, onCancel }): React.JSX.Element {
     setProfile
   } = useUserStore()
 
-  type FieldType = {
-    username: string
-    gender: number
-    birthday: dayjs.Dayjs
-    avatarPath: string
-    occupation: string
-    detail: string
-  }
   const onFinish: FormProps<FieldType>['onFinish'] = async (values) => {
     try {
       await updateProfile({
@@ -76,6 +77,7 @@ export default function ProfileModal({ open, onCancel }): React.JSX.Element {
             }}
           />
           <Form
+            variant="filled"
             name="basic"
             autoComplete="off"
             validateTrigger="onSubmit"

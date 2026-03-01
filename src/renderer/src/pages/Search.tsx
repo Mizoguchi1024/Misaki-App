@@ -1,11 +1,11 @@
-import { MessageOutlined, SearchOutlined } from '@ant-design/icons'
+import { LoadingOutlined, MessageOutlined, SearchOutlined } from '@ant-design/icons'
 import { Sender } from '@ant-design/x'
 import { searchChats } from '@renderer/api/front/chat'
 import EmptyState from '@renderer/components/common/EmptyState'
 import { useChatStore } from '@renderer/store/chatStore'
 import { useSettingsStore } from '@renderer/store/settingsStore'
 import { ChatFrontResponse } from '@renderer/types/api/chat'
-import { Card } from 'antd'
+import { Card, Spin } from 'antd'
 import clsx from 'clsx'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -24,40 +24,32 @@ export default function Search(): React.JSX.Element {
     setResults(chats)
   }, [chats])
 
-  const renderCards = () => {
-    if (loading) {
-      return Array.from({ length: 3 }).map((_, index) => (
-        <Card key={`loading-${index}`} loading={true} className="flex-none w-2/3" />
-      ))
-    }
-
-    if (results && results.length > 0) {
-      return results.map((item) => (
-        <Card
-          key={item.id}
-          onClick={() => navigate(`/chat/${item.id}`, { viewTransition: true })}
-          className={clsx(
-            backgroundPath &&
-              'bg-white/20 dark:bg-neutral-800/20 border-white/60 dark:border-white/16 backdrop-blur-xl hover:backdrop-blur-3xl',
-            'w-2/3 select-none cursor-pointer hover:shadow-xl inset-shadow-[0_0_6px_rgba(255,255,255,0.25)] dark:hover:shadow-neutral-600 ease-in-out duration-500'
-          )}
-        >
-          <Card.Meta
-            avatar={<MessageOutlined className="text-2xl h-full" />}
-            title={item.title || t('newChat')}
-            description={item.updateTime}
-          />
-        </Card>
-      ))
-    }
-
-    return <EmptyState className="text-3xl" />
-  }
-
   return (
     <div className="h-full relative">
       <div className="h-full pt-16 pb-40 flex flex-col items-center gap-5 overflow-y-auto scrollbar-style">
-        {renderCards()}
+        {results && results.length > 0 ? (
+          results.map((item) => (
+            <Card
+              key={item.id}
+              onClick={() => navigate(`/chat/${item.id}`, { viewTransition: true })}
+              className={clsx(
+                backgroundPath &&
+                  'bg-white/20 dark:bg-neutral-800/20 border-white/60 dark:border-white/16 backdrop-blur-xl hover:backdrop-blur-3xl',
+                'w-2/3 select-none cursor-pointer hover:shadow-xl inset-shadow-[0_0_6px_rgba(255,255,255,0.25)] dark:hover:shadow-neutral-600 ease-in-out duration-500'
+              )}
+            >
+              <Spin spinning={loading} delay={250} indicator={<LoadingOutlined spin />}>
+                <Card.Meta
+                  avatar={<MessageOutlined className="text-2xl h-full" />}
+                  title={item.title || t('newChat')}
+                  description={item.updateTime}
+                />
+              </Spin>
+            </Card>
+          ))
+        ) : (
+          <EmptyState className="text-2xl" />
+        )}
       </div>
       <div className="absolute bottom-1/12 left-1/2 -translate-x-1/2 w-4/7">
         <Sender

@@ -1,6 +1,8 @@
 {
-  "login": "ログイン",
-  "register": "登録",
-  "settings": "設定",
-  "about": "アプリ情報"
+  "startNewChat": "チャットを新規作成",
+  "searchChats": "チャットを検索",
+  "mcpServer": "MCPサーバー",
+  "script": "スクリプト",
+  "fileManager": "ファイル管理",
+  "newChat": "新しいチャット"
 }

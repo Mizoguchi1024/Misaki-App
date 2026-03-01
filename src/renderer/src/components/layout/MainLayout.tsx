@@ -98,27 +98,27 @@ export default function MainLayout(): React.JSX.Element {
   const agentItems: MenuProps['items'] = [
     {
       key: '/',
-      label: '新建会话',
+      label: t('startNewChat'),
       icon: <FormOutlined />
     },
     {
       key: '/search',
-      label: '搜索会话',
+      label: t('searchChats'),
       icon: <SearchOutlined />
     },
     {
       key: '/mcp-server',
-      label: 'MCP服务',
+      label: t('mcpServer'),
       icon: <DatabaseOutlined />
     },
     {
       key: '/script',
-      label: '快捷指令',
+      label: t('script'),
       icon: <CodeOutlined />
     },
     {
       key: '6',
-      label: '文件处理',
+      label: t('fileManager'),
       icon: <FolderOutlined />
     },
     {
@@ -129,7 +129,7 @@ export default function MainLayout(): React.JSX.Element {
   const chatItems =
     chats?.map((item) => ({
       key: '/chat/' + item.id.toString(),
-      label: item.title ? item.title : t('New Chat'),
+      label: item.title ? item.title : t('newChat'),
       icon: <MessageOutlined />
     })) ?? []
 

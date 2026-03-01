@@ -1,7 +1,8 @@
 {
-  "login": "登录",
-  "register": "注册",
-  "settings": "设置",
-  "about": "关于",
-  "wish": "祈愿"
+  "startNewChat": "新建聊天",
+  "searchChats": "搜索聊天",
+  "mcpServer": "MCP服务",
+  "script": "脚本",
+  "fileManager": "文件管理",
+  "newChat": "新聊天"
 }

@@ -1,6 +1,8 @@
 {
-  "login": "Sign in",
-  "register": "Sign up",
-  "settings": "Settings",
-  "about": "About"
+  "startNewChat": "Start chat",
+  "searchChats": "Search",
+  "mcpServer": "MCP Server",
+  "script": "Script",
+  "fileManager": "File manager",
+  "newChat": "New chat"
 }
