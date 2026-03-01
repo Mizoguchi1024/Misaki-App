@@ -7,32 +7,12 @@ import { useAssistantStore } from '@renderer/store/assistantStore'
 import i18n from '@renderer/i18n'
 import { useFeedbackStore } from '@renderer/store/feedbackStore'
 
-const ipcAdapter = async (config): Promise<any> => {
-  const response = await window.api.request({
-    baseURL: config.baseURL,
-    url: config.url,
-    method: config.method,
-    headers: config.headers,
-    data: config.data
-  })
-
-  return {
-    data: response.data,
-    status: response.status,
-    statusText: response.statusText,
-    headers: response.headers,
-    config,
-    request: {}
-  }
-}
-
 const api = axios.create({
-  adapter: ipcAdapter,
   timeout: 5000
 })
 
 api.interceptors.request.use((config) => {
-  config.baseURL = useSettingsStore.getState().getApiBaseUrl()
+  // config.baseURL = useSettingsStore.getState().getApiBaseUrl()  使用vite proxy
   const jwt = useUserStore.getState().jwt
   if (jwt) config.headers.Authorization = `Bearer ${jwt}`
   config.headers['X-Timestamp'] = Date.now().toString()

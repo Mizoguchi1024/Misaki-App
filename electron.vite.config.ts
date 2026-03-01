@@ -21,6 +21,23 @@ export default defineConfig({
       }),
       tailwindcss(),
       svgr()
-    ]
+    ],
+    server: {
+      // 开发时使用
+      proxy: {
+        '/common': {
+          target: 'http://localhost:8080/api',
+          changeOrigin: true
+        },
+        '/front': {
+          target: 'http://localhost:8080/api',
+          changeOrigin: true
+        },
+        '/auth': {
+          target: 'http://localhost:8080/api',
+          changeOrigin: true
+        }
+      }
+    }
   }
 })

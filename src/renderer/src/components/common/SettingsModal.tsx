@@ -52,10 +52,10 @@ export default function SettingsModal({ open, onCancel }): React.JSX.Element {
       key: '1',
       label: t('general'),
       children: (
-        <div className="h-80 w-full flex flex-col gap-4 pl-6 pt-2 pr-2 pb-2 overflow-y-auto scrollbar-none">
+        <div className="h-80 w-full flex flex-col gap-4 p-2 ml-4 overflow-y-auto scrollbar-none">
           <div className="flex justify-between items-center">
             <span>{t('baseUrl')}</span>
-            <Space.Compact className="w-64">
+            <Space.Compact className="w-2/3">
               <Space.Addon>http://</Space.Addon>
               <Input
                 value={baseUrlInputValue}
@@ -106,7 +106,7 @@ export default function SettingsModal({ open, onCancel }): React.JSX.Element {
       key: '2',
       label: t('appearance'),
       children: (
-        <div className="h-80 w-full flex flex-col gap-4 pl-6 pt-2 pr-2 pb-2 overflow-y-auto scrollbar-none">
+        <div className="h-80 w-full flex flex-col gap-4 p-2 ml-4 overflow-y-auto scrollbar-none">
           <div className="flex justify-between items-center">
             <span>{t('appearance')}</span>
             <Segmented<string>
@@ -183,7 +183,6 @@ export default function SettingsModal({ open, onCancel }): React.JSX.Element {
                 imgPath={backgroundPath}
                 onSuccess={async (data: UploadResponse) => {
                   try {
-                    console.log(data)
                     await updateSettings({
                       backgroundPath: data.path,
                       version: settingsVersion!
@@ -271,7 +270,7 @@ export default function SettingsModal({ open, onCancel }): React.JSX.Element {
             key: '3',
             label: t('account'),
             children: (
-              <div className="h-80 w-full flex flex-col gap-4 pl-6 pt-2 pr-2 pb-2 overflow-y-auto scrollbar-none">
+              <div className="h-80 w-full flex flex-col gap-4 p-2 ml-4 overflow-y-auto scrollbar-none">
                 <div className="flex justify-between items-center">
                   <span>{t('resetPassword')}</span>
                   <Button
@@ -300,7 +299,7 @@ export default function SettingsModal({ open, onCancel }): React.JSX.Element {
             key: '4',
             label: t('chat'),
             children: (
-              <div className="h-80 w-full flex flex-col gap-4 pl-6 pt-2 pr-2 pb-2 overflow-y-auto scrollbar-none">
+              <div className="h-80 w-full flex flex-col gap-4 p-2 ml-4 overflow-y-auto scrollbar-none">
                 <div className="flex justify-between items-center">
                   <span>{t('ttsAutoplay')}</span>
                   <Switch
@@ -321,7 +320,7 @@ export default function SettingsModal({ open, onCancel }): React.JSX.Element {
 
   return (
     <Modal
-      title={t('title')}
+      title={t('settings')}
       centered
       footer={null}
       open={open}
@@ -334,7 +333,7 @@ export default function SettingsModal({ open, onCancel }): React.JSX.Element {
         centered
         tabPlacement="start"
         classNames={{
-          header: 'pt-2',
+          header: 'pt-1',
           content: 'p-0'
         }}
       />

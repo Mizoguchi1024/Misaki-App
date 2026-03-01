@@ -1,0 +1,19 @@
+{
+  "profile": "プロフィール",
+  "uploadSuccess": "アップロード成功",
+  "saveSuccess": "セーブ成功",
+  "requiredTemplate": "'${label}' は必須項目です",
+  "id": "ID",
+  "email": "メール",
+  "username": "ユーザーネーム",
+  "gender": "性別",
+  "unknown": "保密",
+  "male": "男",
+  "female": "女",
+  "birthday": "誕生日",
+  "avatar": "アバター",
+  "occupation": "職業",
+  "detail": "詳細",
+  "createTime": "作成日時",
+  "save": "セーブ"
+}

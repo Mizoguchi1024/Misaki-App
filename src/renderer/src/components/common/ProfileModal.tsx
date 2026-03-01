@@ -80,8 +80,8 @@ export default function ProfileModal({ open, onCancel }): React.JSX.Element {
             autoComplete="off"
             validateTrigger="onSubmit"
             colon={false}
-            labelCol={{ span: 4 }}
-            wrapperCol={{ span: 20 }}
+            labelCol={{ span: 6 }}
+            wrapperCol={{ span: 18 }}
             labelAlign="left"
             requiredMark={false}
             onFinish={onFinish}

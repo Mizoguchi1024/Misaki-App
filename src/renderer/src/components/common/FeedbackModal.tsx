@@ -1,6 +1,7 @@
 import {
   CheckCircleOutlined,
   CloseCircleOutlined,
+  DeleteOutlined,
   InfoCircleOutlined,
   StopOutlined,
   SyncOutlined
@@ -73,46 +74,47 @@ export default function FeedbackModal({ open, onCancel }): React.JSX.Element {
           name="basic"
           autoComplete="off"
           validateTrigger="onSubmit"
-          className="h-120 pl-6 pt-2 pr-2 overflow-y-auto scrollbar-none"
+          className="h-120 p-2 ml-4 flex flex-col justify-between overflow-y-auto scrollbar-none"
           onFinish={onFinish}
           onFinishFailed={(errorInfo) => {
             console.log('Failed:', errorInfo)
           }}
           validateMessages={{ required: t('requiredTemplate') }}
         >
-          <Form.Item<FieldType> name="title" rules={[{ required: true }]}>
-            <Input placeholder={t('title')} showCount maxLength={50}></Input>
-          </Form.Item>
-          <Form.Item<FieldType> name="type" rules={[{ required: true }]}>
-            <Select
-              placeholder={t('type')}
-              options={[
-                { value: 0, label: feedbackTypeMap[0] },
-                { value: 1, label: feedbackTypeMap[1] },
-                { value: 2, label: feedbackTypeMap[2] },
-                { value: 3, label: feedbackTypeMap[3] },
-                { value: 4, label: feedbackTypeMap[4] }
-              ]}
-            ></Select>
-          </Form.Item>
-          <Form.Item<FieldType> name="content" rules={[{ required: true }]}>
-            <Input.TextArea
-              autoSize={{ minRows: 7, maxRows: 9 }}
-              placeholder={t('content')}
-              showCount
-              maxLength={1000}
-            ></Input.TextArea>
-          </Form.Item>
-          <Form.Item>
-            <Button type="primary" block htmlType="submit">
-              {t('submit')}
-            </Button>
-          </Form.Item>
-          <Form.Item>
-            <Button type="default" block htmlType="reset">
+          <div>
+            <Form.Item<FieldType> name="title" rules={[{ required: true }]}>
+              <Input placeholder={t('title')} showCount maxLength={50}></Input>
+            </Form.Item>
+            <Form.Item<FieldType> name="type" rules={[{ required: true }]}>
+              <Select
+                placeholder={t('type')}
+                options={[
+                  { value: 0, label: feedbackTypeMap[0] },
+                  { value: 1, label: feedbackTypeMap[1] },
+                  { value: 2, label: feedbackTypeMap[2] },
+                  { value: 3, label: feedbackTypeMap[3] },
+                  { value: 4, label: feedbackTypeMap[4] }
+                ]}
+              ></Select>
+            </Form.Item>
+            <Form.Item<FieldType> name="content" rules={[{ required: true }]}>
+              <Input.TextArea
+                autoSize={{ minRows: 10, maxRows: 12 }}
+                placeholder={t('content')}
+                showCount
+                maxLength={1000}
+                className="scrollbar-style dark:scrollbar-style"
+              />
+            </Form.Item>
+          </div>
+          <div className="flex justify-around">
+            <Button type="default" htmlType="reset">
               {t('clear')}
             </Button>
-          </Form.Item>
+            <Button type="primary" htmlType="submit">
+              {t('submit')}
+            </Button>
+          </div>
         </Form>
       )
     },
@@ -120,7 +122,7 @@ export default function FeedbackModal({ open, onCancel }): React.JSX.Element {
       key: '2',
       label: t('history'),
       children: (
-        <div className="h-120 pl-6 pt-2 pr-2 pb-2 flex flex-col gap-4 overflow-y-auto scrollbar-none">
+        <div className="h-120 pl-6 pt-2 pr-2 pb-2 flex flex-col gap-4 overflow-y-auto scrollbar-style dark:scrollbar-style">
           {feedbacks?.length === 0 && <EmptyState className="text-lg" />}
           {feedbacks?.map((item) => (
             <Card
@@ -138,10 +140,9 @@ export default function FeedbackModal({ open, onCancel }): React.JSX.Element {
                 </div>
               }
               actions={[
-                <Button
+                <DeleteOutlined
                   key="delete"
-                  color="danger"
-                  variant="outlined"
+                  className="text-red-500"
                   onClick={async () => {
                     try {
                       await deleteFeedback(item.id)
@@ -152,21 +153,18 @@ export default function FeedbackModal({ open, onCancel }): React.JSX.Element {
                       console.error(e)
                     }
                   }}
-                >
-                  {t('delete')}
-                </Button>
+                />
               ]}
-              onClick={() => {}}
-              className="shadow-sm hover:shadow-lg dark:hover:shadow-neutral-700 dark:hover:shadow-lg ease-in-out duration-500"
             >
-              <Card.Grid className="w-full" hoverable={false}>
-                {item.content}
-              </Card.Grid>
-              {item.reply && (
-                <Card.Grid className="w-full" hoverable={false}>
-                  {item.reply}
-                </Card.Grid>
-              )}
+              <div className="flex flex-col gap-4">
+                <div className="w-full">{item.content}</div>
+                {item.reply && (
+                  <>
+                    <hr className="border-neutral-100 dark:border-neutral-700" />
+                    <div className="w-full">{item.reply}</div>
+                  </>
+                )}
+              </div>
             </Card>
           ))}
         </div>

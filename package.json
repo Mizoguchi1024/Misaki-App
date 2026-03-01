@@ -39,9 +39,11 @@
     "i18next-http-backend": "^3.0.2",
     "jwt-decode": "^4.0.0",
     "minimatch": "^10.2.1",
+    "pixi.js": "^8.16.0",
     "react-i18next": "^16.5.4",
     "react-router-dom": "^7.13.1",
     "tailwindcss": "^4.2.1",
+    "untitled-pixi-live2d-engine": "^1.0.1",
     "zod": "^4.3.6",
     "zustand": "^5.0.11"
   },

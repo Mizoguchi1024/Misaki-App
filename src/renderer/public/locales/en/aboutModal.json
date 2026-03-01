@@ -1,3 +1,12 @@
 {
-    "title": "About"
+  "about": "About Misaki",
+  "misakiVersion": "Misaki version",
+  "nodeVersion": "Node version",
+  "chromiumVersion": "Chromium version",
+  "electronVersion": "Electron version",
+  "reactVersion": "React version",
+  "story": "This project is inspired by the Japanese novel Welcome to the NHK! and its TV anime adaptation of the same name. The project’s name is taken from the original heroine, Misaki Nakahara, and its icon is derived from the puzzle piece she holds at the end of the opening theme song Puzzle. Although Misaki still will not descend upon us this year, I hope that such an AI assistant can stay by our side and become the final missing piece in our hearts.",
+  "likesDescription": "Press the like button if you like this project!",
+  "thanks": "Thanks (≧▽≦)",
+  "sad": "Noooo (T_T)"
 }

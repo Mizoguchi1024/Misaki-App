@@ -1,5 +1,6 @@
 import { listAssistants } from '@renderer/api/front/assistant'
 import GlassBox from '@renderer/components/common/GlassBox'
+import Live2DCanvas from '@renderer/components/common/Live2DCanvas'
 import { useAssistantStore } from '@renderer/store/assistantStore'
 import { animate, createScope, Scope } from 'animejs'
 import { Button, Descriptions } from 'antd'
@@ -46,6 +47,7 @@ export default function Misaki(): React.JSX.Element {
 
   return (
     <div className="flex flex-col items-center h-full w-full relative" ref={root}>
+      <Live2DCanvas modelUrl={'/hiyori_free_en/runtime/hiyori_free_t08.model3.json'} />
       <GlassBox
         className={clsx(
           isEditing ? 'h-5/6' : 'h-40',
@@ -55,7 +57,7 @@ export default function Misaki(): React.JSX.Element {
         <div className="loading-blur">
           <div className="flex justify-between w-full mb-4">
             <span className="text-2xl font-semibold">{assistant?.name}</span>
-            <Button type="primary" variant='filled' onClick={() => setIsEditing(!isEditing)}>
+            <Button type="primary" variant="filled" onClick={() => setIsEditing(!isEditing)}>
               {t('edit')}
             </Button>
           </div>

@@ -1,0 +1,19 @@
+{
+  "profile": "Profile",
+  "uploadSuccess": "Upload success",
+  "saveSuccess": "Save success",
+  "requiredTemplate": "'${label}' is required",
+  "id": "ID",
+  "email": "Email",
+  "username": "Username",
+  "gender": "Gender",
+  "unknown": "Unknown",
+  "male": "Male",
+  "female": "Female",
+  "birthday": "Birthday",
+  "avatar": "Avatar",
+  "occupation": "Occupation",
+  "detail": "Detail",
+  "createTime": "Create Time",
+  "save": "Save"
+}

@@ -28,8 +28,6 @@ export default function AssistantScrollList(): React.JSX.Element {
       const windowWidth = rootObj.offsetWidth
       const avatarListWidth = avatarListObj.scrollWidth
 
-      console.log(windowWidth, avatarListWidth)
-
       createDraggable(avatarListObj, {
         y: false,
         container: [
@@ -73,7 +71,7 @@ export default function AssistantScrollList(): React.JSX.Element {
               }
               className={clsx(
                 'flex-none cursor-pointer select-none border-0 duration-250',
-                item.id === assistant?.id && 'outline-4'
+                item.id === assistant?.id && 'outline-5'
               )}
               style={{ outlineColor: mainColor }}
               onClick={() => {
@@ -93,7 +91,7 @@ export default function AssistantScrollList(): React.JSX.Element {
             icon={<PlusOutlined />}
             className={clsx(
               'flex-none cursor-pointer border-0 duration-250',
-              !assistant && 'outline-4'
+              !assistant && 'outline-5'
             )}
             style={{ outlineColor: mainColor }}
             onClick={() => {

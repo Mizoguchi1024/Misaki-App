@@ -33,14 +33,14 @@ export default function AboutModal({ open, onCancel }): React.JSX.Element {
 
   return (
     <Modal
-      title={t('title')}
+      title={t('about')}
       centered
       footer={null}
       open={open}
       onCancel={onCancel}
       className="select-none"
     >
-      <div className="max-h-120 p-2 overflow-y-auto scrollbar-none">
+      <div className="max-h-120 py-2 overflow-y-auto scrollbar-none">
         <div className=" flex flex-col gap-2 mb-4">
           <div className="w-full flex justify-between">
             <span>{t('misakiVersion')}</span>

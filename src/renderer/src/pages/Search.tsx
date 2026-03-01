@@ -56,7 +56,7 @@ export default function Search(): React.JSX.Element {
 
   return (
     <div className="h-full relative">
-      <div className="h-full px-32 pt-8 pb-32 flex flex-col gap-4 overflow-y-auto">
+      <div className="h-full px-32 pt-8 pb-32 flex flex-col gap-4 overflow-y-auto scrollbar-style dark:scrollbar-style">
         {renderCards()}
       </div>
       <div className="absolute bottom-12 left-1/2 -translate-x-1/2 w-4/7">

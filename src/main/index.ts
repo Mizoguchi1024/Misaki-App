@@ -83,24 +83,6 @@ app.whenReady().then(async () => {
   })
 })
 
-ipcMain.handle('http:request', async (event, config) => {
-  console.log(config)
-  const response = await fetch(config.baseURL + config.url, {
-    method: config.method,
-    headers: config.headers,
-    body: config.data
-  })
-
-  const data = await response.text()
-
-  return {
-    data,
-    status: response.status,
-    statusText: response.statusText,
-    headers: Object.fromEntries(response.headers.entries())
-  }
-})
-
 ipcMain.handle('get-versions', () => {
   return {
     misaki: app.getVersion(),
