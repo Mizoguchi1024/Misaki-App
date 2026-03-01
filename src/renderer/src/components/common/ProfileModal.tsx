@@ -61,7 +61,7 @@ export default function ProfileModal({ open, onCancel }): React.JSX.Element {
         destroyOnHidden
         className="select-none"
       >
-        <div className=" flex flex-col p-2 items-center gap-4 h-160 overflow-y-auto scrollbar-none">
+        <div className=" flex flex-col p-2 items-center justify-between gap-4 h-160 overflow-y-auto scrollbar-style">
           <ImageUpload
             imgPath={avatarPath}
             onSuccess={async (data: UploadResponse) => {

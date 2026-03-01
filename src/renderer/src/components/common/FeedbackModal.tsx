@@ -103,7 +103,7 @@ export default function FeedbackModal({ open, onCancel }): React.JSX.Element {
                 placeholder={t('content')}
                 showCount
                 maxLength={1000}
-                className="scrollbar-style dark:scrollbar-style"
+                className="scrollbar-style"
               />
             </Form.Item>
           </div>
@@ -122,7 +122,7 @@ export default function FeedbackModal({ open, onCancel }): React.JSX.Element {
       key: '2',
       label: t('history'),
       children: (
-        <div className="h-120 pl-6 pt-2 pr-2 pb-2 flex flex-col gap-4 overflow-y-auto scrollbar-style dark:scrollbar-style">
+        <div className="h-120 pl-6 pt-2 pr-2 pb-2 flex flex-col gap-4 overflow-y-auto scrollbar-style">
           {feedbacks?.length === 0 && <EmptyState className="text-lg" />}
           {feedbacks?.map((item) => (
             <Card

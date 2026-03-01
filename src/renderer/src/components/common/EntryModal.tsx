@@ -1,4 +1,4 @@
-import { useSettingsStore } from '@renderer/store/settingsStore'
+import { LanguageI18nMap, useSettingsStore } from '@renderer/store/settingsStore'
 import { Modal } from 'antd'
 
 export default function EntryModal({
@@ -9,7 +9,7 @@ export default function EntryModal({
   imgPath,
   description
 }): React.JSX.Element {
-  const { borderRadius } = useSettingsStore()
+  const { language, borderRadius } = useSettingsStore()
   return (
     <Modal
       open={open}
@@ -24,15 +24,19 @@ export default function EntryModal({
         title: 'font-serif'
       }}
     >
-      <div
-        className="w-full h-24 flex justify-between items-center p-4 bg-neutral-100 dark:bg-neutral-800 overflow-hidden my-6"
-        style={{ borderRadius: borderRadius }}
-      >
-        <span className="text-xl font-semibold mt-auto">x{amount}</span>
-        <img src={imgPath} className="h-full object-contain" draggable={false}></img>
-      </div>
+      <div className="py-2">
+        <div
+          className="w-full h-24 flex justify-between items-center p-4 bg-neutral-100 dark:bg-neutral-800 overflow-hidden mb-4"
+          style={{ borderRadius: borderRadius }}
+        >
+          <span className="text-xl font-semibold mt-auto">{amount.toLocaleString()}</span>
+          <img src={imgPath} className="h-full object-contain" draggable={false}></img>
+        </div>
 
-      <div className="font-serif">{description}</div>
+        <div className="font-serif indent-8 hyphens-auto text-pretty" lang={LanguageI18nMap[language]}>
+          {description}
+        </div>
+      </div>
     </Modal>
   )
 }

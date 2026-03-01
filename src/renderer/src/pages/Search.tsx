@@ -27,7 +27,7 @@ export default function Search(): React.JSX.Element {
   const renderCards = () => {
     if (loading) {
       return Array.from({ length: 3 }).map((_, index) => (
-        <Card key={`loading-${index}`} loading={true} className="flex-none shadow-sm" />
+        <Card key={`loading-${index}`} loading={true} className="flex-none w-2/3" />
       ))
     }
 
@@ -39,13 +39,13 @@ export default function Search(): React.JSX.Element {
           className={clsx(
             backgroundPath &&
               'bg-white/20 dark:bg-neutral-800/20 border-white/60 dark:border-white/16 backdrop-blur-xl hover:backdrop-blur-3xl',
-            'flex-none select-none cursor-pointer shadow-sm hover:shadow-lg dark:hover:shadow-neutral-700 transition-all duration-500'
+            'w-2/3 select-none cursor-pointer hover:shadow-xl inset-shadow-[0_0_6px_rgba(255,255,255,0.25)] dark:hover:shadow-neutral-600 ease-in-out duration-500'
           )}
         >
           <Card.Meta
             avatar={<MessageOutlined className="text-2xl h-full" />}
             title={item.title || t('newChat')}
-            description={t('lastTalk') + ': ' + item.updateTime}
+            description={item.updateTime}
           />
         </Card>
       ))
@@ -56,10 +56,10 @@ export default function Search(): React.JSX.Element {
 
   return (
     <div className="h-full relative">
-      <div className="h-full px-32 pt-8 pb-32 flex flex-col gap-4 overflow-y-auto scrollbar-style dark:scrollbar-style">
+      <div className="h-full pt-16 pb-40 flex flex-col items-center gap-5 overflow-y-auto scrollbar-style">
         {renderCards()}
       </div>
-      <div className="absolute bottom-12 left-1/2 -translate-x-1/2 w-4/7">
+      <div className="absolute bottom-1/12 left-1/2 -translate-x-1/2 w-4/7">
         <Sender
           className={clsx(
             backgroundPath
@@ -79,8 +79,6 @@ export default function Search(): React.JSX.Element {
               setResults([])
               const chatsRes = await searchChats(value)
               setResults(chatsRes.data)
-            } catch (error) {
-              console.error('Search failed:', error)
             } finally {
               setLoading(false)
             }

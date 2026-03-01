@@ -26,7 +26,7 @@ export default function GlassBox({ children, className = '', ...rest }): React.J
         `group overflow-hidden flex flex-col items-center justify-center
         px-12 py-10 backdrop-blur-sm hover:backdrop-blur-md bg-white/20 border-white
          dark:bg-white/12 dark:border-white/16 border-2
-         shadow-2xl shadow-black/20 dark:inset-shadow-[0_0_6px_rgba(255,255,255,0.25)] dark:text-shadow-[0_0_6px_rgb(0,0,0,0.5)]
+         shadow-2xl shadow-black/20 inset-shadow-[0_0_6px_rgba(255,255,255,0.25)] dark:text-shadow-[0_0_6px_rgb(0,0,0,0.5)]
          ease-in-out duration-500`,
         className
       )}
