@@ -65,7 +65,7 @@ const Live2DCanvas = ({ modelUrl }): React.JSX.Element => {
     }
   }, [modelUrl])
 
-  return <div ref={containerRef} style={{ width: '100%', height: '100vh' }} />
+  return <div ref={containerRef} className="w-full h-full" />
 }
 
 export default Live2DCanvas
