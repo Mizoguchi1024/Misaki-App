@@ -48,7 +48,7 @@ export default function Search(): React.JSX.Element {
             </Card>
           ))
         ) : (
-          <EmptyState className="text-2xl" />
+          <EmptyState className="w-full h-full text-2xl" />
         )}
       </div>
       <div className="absolute bottom-1/12 left-1/2 -translate-x-1/2 w-4/7">

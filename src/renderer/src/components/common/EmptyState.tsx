@@ -8,12 +8,7 @@ export default function EmptyState({ className = '' }): React.JSX.Element {
   const { mainColor } = useSettingsStore()
 
   return (
-    <div
-      className={clsx(
-        'flex flex-col items-center justify-center w-full h-full gap-4 select-none',
-        className
-      )}
-    >
+    <div className={clsx('flex flex-col items-center justify-center gap-4 select-none', className)}>
       <DashedMisakiLogo className="w-1/5 h-auto" style={{ color: mainColor }} />
       <span>{t('noData')}</span>
     </div>

@@ -85,6 +85,8 @@ export default function MainLayout(): React.JSX.Element {
           if (!isToday) {
             await checkIn()
             messageApi?.success(t('checkInSuccess'))
+            const newProfileRes = await getProfile()
+            setProfile(newProfileRes.data)
           }
         } catch {
           return

@@ -1,12 +1,20 @@
 import {
+  ArrowLeftOutlined,
   CheckOutlined,
   CloseOutlined,
   EditOutlined,
   LockOutlined,
+  ShopOutlined,
   UnlockOutlined
 } from '@ant-design/icons'
-import { createAssistant, listAssistants, updateAssistant } from '@renderer/api/front/assistant'
+import {
+  createAssistant,
+  listAssistants,
+  listPublicAssistants,
+  updateAssistant
+} from '@renderer/api/front/assistant'
 import { getSettings, updateSettings } from '@renderer/api/front/user'
+import EmptyState from '@renderer/components/common/EmptyState'
 import GlassBox from '@renderer/components/common/GlassBox'
 import Live2DCanvas from '@renderer/components/common/Live2DCanvas'
 import { messageApi } from '@renderer/messageApi'
@@ -14,7 +22,19 @@ import { useAssistantStore } from '@renderer/store/assistantStore'
 import { useModelStore } from '@renderer/store/modelStore'
 import { useSettingsStore } from '@renderer/store/settingsStore'
 import { animate, createScope, Scope } from 'animejs'
-import { Button, DatePicker, Descriptions, Form, Input, Radio, Select, Switch, Tooltip } from 'antd'
+import {
+  Button,
+  Card,
+  DatePicker,
+  Descriptions,
+  Form,
+  Input,
+  Pagination,
+  Radio,
+  Select,
+  Switch,
+  Tooltip
+} from 'antd'
 import clsx from 'clsx'
 import dayjs from 'dayjs'
 import { useEffect, useRef, useState } from 'react'
@@ -33,9 +53,17 @@ type FieldType = {
 export default function Misaki(): React.JSX.Element {
   const { t } = useTranslation('misaki')
   const { enabledAssistantId, version: settingsVersion, setSettings } = useSettingsStore()
-  const { assistant, setAssistants } = useAssistantStore()
+  const {
+    assistant,
+    assistants,
+    publicAssistants,
+    setAssistant,
+    setAssistants,
+    setPublicAssistants
+  } = useAssistantStore()
   const { models } = useModelStore()
   const [isEditing, setIsEditing] = useState(false)
+  const [isShopOpen, setIsShopOpen] = useState(false)
 
   const root = useRef<HTMLDivElement>(null)
   const scope = useRef<Scope>(null)
@@ -59,6 +87,9 @@ export default function Misaki(): React.JSX.Element {
   useEffect(() => {
     if (!assistant) {
       setIsEditing(true)
+    } else {
+      setIsEditing(false)
+      setIsShopOpen(false)
     }
   }, [assistant])
 
@@ -74,6 +105,16 @@ export default function Misaki(): React.JSX.Element {
       })
     }
   }, [isEditing])
+
+  useEffect(() => {
+    const load = async (): Promise<void> => {
+      const publicAssistantsRes = await listPublicAssistants(1, 6)
+      setPublicAssistants(publicAssistantsRes.data)
+    }
+    if (isShopOpen) {
+      load()
+    }
+  }, [isShopOpen])
 
   const onFinish = async (values: FieldType): Promise<void> => {
     try {
@@ -121,140 +162,201 @@ export default function Misaki(): React.JSX.Element {
       >
         {isEditing ? (
           <div className="loading-blur w-full h-full">
-            <Form
-              id="updateAssistantForm"
-              name="basic"
-              autoComplete="off"
-              validateTrigger="onSubmit"
-              colon={false}
-              labelCol={{ span: 4 }}
-              wrapperCol={{ span: 20 }}
-              labelAlign="left"
-              requiredMark={false}
-              onFinish={onFinish}
-              validateMessages={{ required: t('requiredTemplate') }}
-              variant="filled"
-              className="w-full h-full flex flex-col justify-between select-none"
-            >
-              <div className="flex items-center justify-between w-full">
-                <Form.Item
-                  name="name"
-                  rules={[{ required: true }]}
-                  initialValue={assistant?.name}
-                  wrapperCol={{ span: 24 }}
-                  className="m-0"
-                >
-                  <Input
-                    placeholder={t('name')}
-                    maxLength={20}
-                    className="field-sizing-content text-2xl font-semibold"
-                  />
-                </Form.Item>
-                <div className="flex gap-4">
-                  <Tooltip
-                    title={t('cancel')}
-                    arrow={false}
-                    classNames={{
-                      container: 'select-none'
-                    }}
-                  >
-                    <Button
-                      color="default"
-                      variant="filled"
-                      shape="circle"
-                      icon={<CloseOutlined />}
-                      onClick={() => setIsEditing(!isEditing)}
-                    />
-                  </Tooltip>
-                  <Tooltip
-                    title={assistant ? t('save') : t('create')}
-                    arrow={false}
-                    classNames={{
-                      container: 'select-none'
-                    }}
-                  >
-                    <Button
-                      form="updateAssistantForm"
-                      htmlType="submit"
-                      color="primary"
-                      variant="filled"
-                      shape="circle"
-                      icon={<CheckOutlined />}
-                    />
-                  </Tooltip>
+            {isShopOpen ? (
+              <div className="w-full h-full flex flex-col justify-between select-none">
+                <div className="flex items-center justify-between w-full">
+                  <span className="text-2xl font-semibold">{t('shop')}</span>
+                  <div className="flex gap-4">
+                    <Tooltip
+                      title={t('back')}
+                      arrow={false}
+                      classNames={{
+                        container: 'select-none'
+                      }}
+                    >
+                      <Button
+                        color="default"
+                        variant="filled"
+                        shape="circle"
+                        icon={<ArrowLeftOutlined />}
+                        onClick={() => setIsShopOpen(!isShopOpen)}
+                      />
+                    </Tooltip>
+                  </div>
+                </div>
+                <div className="h-100 flex flex-col items-center justify-between">
+                  {!publicAssistants || publicAssistants.length === 0 ? (
+                    <EmptyState className="text-2xl" />
+                  ) : (
+                    publicAssistants?.map((assistant) => (
+                      <Card key={assistant.id} content={assistant.personality} />
+                    ))
+                  )}
+                  <Pagination defaultPageSize={6} />
                 </div>
               </div>
-              <Form.Item<FieldType>
-                name="gender"
-                label={t('gender')}
-                initialValue={assistant?.gender}
-                rules={[{ required: true }]}
+            ) : (
+              <Form
+                id="updateAssistantForm"
+                name="basic"
+                autoComplete="off"
+                validateTrigger="onSubmit"
+                colon={false}
+                labelCol={{ span: 4 }}
+                wrapperCol={{ span: 20 }}
+                labelAlign="left"
+                requiredMark={false}
+                onFinish={onFinish}
+                validateMessages={{ required: t('requiredTemplate') }}
+                variant="filled"
+                className="w-full h-full flex flex-col justify-between select-none"
               >
-                <Radio.Group>
-                  <Radio.Button value={0} className="bg-black/4 dark:bg-white/8 border-none">
-                    {t('unknown')}
-                  </Radio.Button>
-                  <Radio.Button value={1} className="bg-black/4 dark:bg-white/8 border-none">
-                    {t('male')}
-                  </Radio.Button>
-                  <Radio.Button value={2} className="bg-black/4 dark:bg-white/8 border-none">
-                    {t('female')}
-                  </Radio.Button>
-                </Radio.Group>
-              </Form.Item>
-              <Form.Item<FieldType>
-                name="birthday"
-                label={t('birthday')}
-                initialValue={dayjs(assistant?.birthday)}
-              >
-                <DatePicker
-                  placeholder={t('birthday')}
-                  form="YYYY-MM-DD"
-                  disabledDate={(current) => current && current > dayjs().endOf('day')}
-                />
-              </Form.Item>
-              <Form.Item<FieldType>
-                name="personality"
-                label={t('personality')}
-                initialValue={assistant?.personality}
-              >
-                <Input placeholder={t('occupation')} maxLength={20} showCount />
-              </Form.Item>
-              <Form.Item<FieldType>
-                name="detail"
-                label={t('detail')}
-                initialValue={assistant?.detail}
-              >
-                <Input.TextArea
-                  placeholder={t('detail')}
-                  showCount
-                  maxLength={100}
-                  autoSize={{ minRows: 2, maxRows: 4 }}
-                ></Input.TextArea>
-              </Form.Item>
-              <Form.Item<FieldType>
-                name="modelId"
-                label={t('model')}
-                initialValue={assistant?.modelId}
-                rules={[{ required: true }]}
-              >
-                <Select
-                  placeholder={t('model')}
-                  options={models?.map((model) => ({ label: model.name, value: model.id }))}
-                />
-              </Form.Item>
-              <Form.Item<FieldType>
-                name="publicFlag"
-                label={t('publicFlag')}
-                initialValue={assistant?.publicFlag}
-                rules={[{ required: true }]}
-              >
-                <Switch checkedChildren={<UnlockOutlined />} unCheckedChildren={<LockOutlined />} />
-              </Form.Item>
-              <Form.Item name="createTime" label={t('createTime')} className="m-0">
-                <span>{assistant?.createTime}</span>
-              </Form.Item>
-            </Form>
+                <div className="flex items-center justify-between w-full">
+                  <Form.Item
+                    name="name"
+                    rules={[{ required: true }]}
+                    initialValue={assistant?.name}
+                    wrapperCol={{ span: 24 }}
+                    className="m-0"
+                  >
+                    <Input
+                      placeholder={t('name')}
+                      maxLength={20}
+                      className="field-sizing-content text-2xl font-semibold"
+                    />
+                  </Form.Item>
+                  <div className="flex gap-4">
+                    {!assistant && (
+                      <Tooltip
+                        title={t('shop')}
+                        arrow={false}
+                        classNames={{
+                          container: 'select-none'
+                        }}
+                      >
+                        <Button
+                          color="default"
+                          variant="filled"
+                          shape="circle"
+                          icon={<ShopOutlined />}
+                          onClick={() => setIsShopOpen(!isShopOpen)}
+                        />
+                      </Tooltip>
+                    )}
+
+                    <Tooltip
+                      title={t('cancel')}
+                      arrow={false}
+                      classNames={{
+                        container: 'select-none'
+                      }}
+                    >
+                      <Button
+                        color="default"
+                        variant="filled"
+                        shape="circle"
+                        icon={<CloseOutlined />}
+                        onClick={() => {
+                          if (!assistant) {
+                            setAssistant(assistants?.[0])
+                          }
+                          setIsEditing(!isEditing)
+                        }}
+                      />
+                    </Tooltip>
+                    <Tooltip
+                      title={assistant ? t('save') : t('create')}
+                      arrow={false}
+                      classNames={{
+                        container: 'select-none'
+                      }}
+                    >
+                      <Button
+                        form="updateAssistantForm"
+                        htmlType="submit"
+                        color="primary"
+                        variant="filled"
+                        shape="circle"
+                        icon={<CheckOutlined />}
+                      />
+                    </Tooltip>
+                  </div>
+                </div>
+                <Form.Item<FieldType>
+                  name="gender"
+                  label={t('gender')}
+                  initialValue={assistant?.gender}
+                  rules={[{ required: true }]}
+                >
+                  <Radio.Group>
+                    <Radio.Button value={0} className="bg-black/4 dark:bg-white/8 border-none">
+                      {t('unknown')}
+                    </Radio.Button>
+                    <Radio.Button value={1} className="bg-black/4 dark:bg-white/8 border-none">
+                      {t('male')}
+                    </Radio.Button>
+                    <Radio.Button value={2} className="bg-black/4 dark:bg-white/8 border-none">
+                      {t('female')}
+                    </Radio.Button>
+                  </Radio.Group>
+                </Form.Item>
+                <Form.Item<FieldType>
+                  name="birthday"
+                  label={t('birthday')}
+                  initialValue={dayjs(assistant?.birthday)}
+                >
+                  <DatePicker
+                    placeholder={t('birthday')}
+                    form="YYYY-MM-DD"
+                    disabledDate={(current) => current && current > dayjs().endOf('day')}
+                  />
+                </Form.Item>
+                <Form.Item<FieldType>
+                  name="personality"
+                  label={t('personality')}
+                  initialValue={assistant?.personality}
+                >
+                  <Input placeholder={t('occupation')} maxLength={20} showCount />
+                </Form.Item>
+                <Form.Item<FieldType>
+                  name="detail"
+                  label={t('detail')}
+                  initialValue={assistant?.detail}
+                >
+                  <Input.TextArea
+                    placeholder={t('detail')}
+                    showCount
+                    maxLength={100}
+                    autoSize={{ minRows: 2, maxRows: 4 }}
+                  ></Input.TextArea>
+                </Form.Item>
+                <Form.Item<FieldType>
+                  name="modelId"
+                  label={t('model')}
+                  initialValue={assistant?.modelId}
+                  rules={[{ required: true }]}
+                >
+                  <Select
+                    placeholder={t('model')}
+                    options={models?.map((model) => ({ label: model.name, value: model.id }))}
+                  />
+                </Form.Item>
+                <Form.Item<FieldType>
+                  name="publicFlag"
+                  label={t('publicFlag')}
+                  initialValue={assistant?.publicFlag}
+                  rules={[{ required: true }]}
+                >
+                  <Switch
+                    checkedChildren={<UnlockOutlined />}
+                    unCheckedChildren={<LockOutlined />}
+                  />
+                </Form.Item>
+                <Form.Item name="createTime" label={t('createTime')} className="m-0">
+                  <span>{assistant?.createTime}</span>
+                </Form.Item>
+              </Form>
+            )}
           </div>
         ) : (
           <div className="loading-blur w-full h-full flex flex-col items-center justify-between">
@@ -270,7 +372,13 @@ export default function Misaki(): React.JSX.Element {
               </Tooltip>
               <div className="flex gap-4">
                 {assistant?.id !== enabledAssistantId && (
-                  <Tooltip title={t('enable')} arrow={false}>
+                  <Tooltip
+                    title={t('enable')}
+                    arrow={false}
+                    classNames={{
+                      container: 'select-none'
+                    }}
+                  >
                     <Button
                       color={assistant?.id === enabledAssistantId ? 'green' : 'default'}
                       variant="filled"

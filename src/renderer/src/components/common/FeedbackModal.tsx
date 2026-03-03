@@ -123,7 +123,7 @@ export default function FeedbackModal({ open, onCancel }): React.JSX.Element {
       label: t('history'),
       children: (
         <div className="h-120 pl-6 pt-2 pr-2 pb-2 flex flex-col gap-4 overflow-y-auto scrollbar-style">
-          {feedbacks?.length === 0 && <EmptyState className="text-lg" />}
+          {feedbacks?.length === 0 && <EmptyState className="w-full h-full text-lg" />}
           {feedbacks?.map((item) => (
             <Card
               key={item.id}
