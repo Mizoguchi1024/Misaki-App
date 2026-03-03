@@ -114,13 +114,13 @@ export default function ProfileModal({ open, onCancel }): React.JSX.Element {
               rules={[{ required: true }]}
             >
               <Radio.Group>
-                <Radio.Button value={0} className="bg-black/4 dark:bg-white/8">
+                <Radio.Button value={0} className="bg-black/4 dark:bg-white/8 border-none">
                   {t('unknown')}
                 </Radio.Button>
-                <Radio.Button value={1} className="bg-black/4 dark:bg-white/8">
+                <Radio.Button value={1} className="bg-black/4 dark:bg-white/8 border-none">
                   {t('male')}
                 </Radio.Button>
-                <Radio.Button value={2} className="bg-black/4 dark:bg-white/8">
+                <Radio.Button value={2} className="bg-black/4 dark:bg-white/8 border-none">
                   {t('female')}
                 </Radio.Button>
               </Radio.Group>

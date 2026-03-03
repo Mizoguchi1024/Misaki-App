@@ -6,13 +6,15 @@ import {
   UnlockOutlined
 } from '@ant-design/icons'
 import { createAssistant, listAssistants, updateAssistant } from '@renderer/api/front/assistant'
+import { getSettings, updateSettings } from '@renderer/api/front/user'
 import GlassBox from '@renderer/components/common/GlassBox'
 import Live2DCanvas from '@renderer/components/common/Live2DCanvas'
 import { messageApi } from '@renderer/messageApi'
 import { useAssistantStore } from '@renderer/store/assistantStore'
 import { useModelStore } from '@renderer/store/modelStore'
+import { useSettingsStore } from '@renderer/store/settingsStore'
 import { animate, createScope, Scope } from 'animejs'
-import { Button, DatePicker, Descriptions, Form, Input, Radio, Select, Switch } from 'antd'
+import { Button, DatePicker, Descriptions, Form, Input, Radio, Select, Switch, Tooltip } from 'antd'
 import clsx from 'clsx'
 import dayjs from 'dayjs'
 import { useEffect, useRef, useState } from 'react'
@@ -30,6 +32,7 @@ type FieldType = {
 
 export default function Misaki(): React.JSX.Element {
   const { t } = useTranslation('misaki')
+  const { enabledAssistantId, version: settingsVersion, setSettings } = useSettingsStore()
   const { assistant, setAssistants } = useAssistantStore()
   const { models } = useModelStore()
   const [isEditing, setIsEditing] = useState(false)
@@ -148,21 +151,37 @@ export default function Misaki(): React.JSX.Element {
                   />
                 </Form.Item>
                 <div className="flex gap-4">
-                  <Button
-                    color="default"
-                    variant="filled"
-                    shape="circle"
-                    icon={<CloseOutlined />}
-                    onClick={() => setIsEditing(!isEditing)}
-                  />
-                  <Button
-                    form="updateAssistantForm"
-                    htmlType="submit"
-                    color="primary"
-                    variant="filled"
-                    shape="circle"
-                    icon={<CheckOutlined />}
-                  />
+                  <Tooltip
+                    title={t('cancel')}
+                    arrow={false}
+                    classNames={{
+                      container: 'select-none'
+                    }}
+                  >
+                    <Button
+                      color="default"
+                      variant="filled"
+                      shape="circle"
+                      icon={<CloseOutlined />}
+                      onClick={() => setIsEditing(!isEditing)}
+                    />
+                  </Tooltip>
+                  <Tooltip
+                    title={assistant ? t('save') : t('create')}
+                    arrow={false}
+                    classNames={{
+                      container: 'select-none'
+                    }}
+                  >
+                    <Button
+                      form="updateAssistantForm"
+                      htmlType="submit"
+                      color="primary"
+                      variant="filled"
+                      shape="circle"
+                      icon={<CheckOutlined />}
+                    />
+                  </Tooltip>
                 </div>
               </div>
               <Form.Item<FieldType>
@@ -172,13 +191,13 @@ export default function Misaki(): React.JSX.Element {
                 rules={[{ required: true }]}
               >
                 <Radio.Group>
-                  <Radio.Button value={0} className="bg-black/4 dark:bg-white/8">
+                  <Radio.Button value={0} className="bg-black/4 dark:bg-white/8 border-none">
                     {t('unknown')}
                   </Radio.Button>
-                  <Radio.Button value={1} className="bg-black/4 dark:bg-white/8">
+                  <Radio.Button value={1} className="bg-black/4 dark:bg-white/8 border-none">
                     {t('male')}
                   </Radio.Button>
-                  <Radio.Button value={2} className="bg-black/4 dark:bg-white/8">
+                  <Radio.Button value={2} className="bg-black/4 dark:bg-white/8 border-none">
                     {t('female')}
                   </Radio.Button>
                 </Radio.Group>
@@ -240,14 +259,57 @@ export default function Misaki(): React.JSX.Element {
         ) : (
           <div className="loading-blur w-full h-full flex flex-col items-center justify-between">
             <div className="flex justify-between w-full">
-              <span className="text-2xl font-semibold">{assistant?.name}</span>
-              <Button
-                color="default"
-                variant="filled"
-                shape="circle"
-                icon={<EditOutlined />}
-                onClick={() => setIsEditing(!isEditing)}
-              />
+              <Tooltip
+                title={t('duplicateName', { count: assistant?.duplicateName })}
+                arrow={false}
+                classNames={{
+                  container: 'select-none'
+                }}
+              >
+                <span className="text-2xl font-semibold">{assistant?.name}</span>
+              </Tooltip>
+              <div className="flex gap-4">
+                {assistant?.id !== enabledAssistantId && (
+                  <Tooltip title={t('enable')} arrow={false}>
+                    <Button
+                      color={assistant?.id === enabledAssistantId ? 'green' : 'default'}
+                      variant="filled"
+                      shape="circle"
+                      icon={<CheckOutlined />}
+                      onClick={async () => {
+                        if (assistant?.id !== enabledAssistantId) {
+                          try {
+                            await updateSettings({
+                              enabledAssistantId: assistant?.id,
+                              version: settingsVersion
+                            })
+                            messageApi?.success(t('enableSuccess'))
+                            const settingsRes = await getSettings()
+                            setSettings(settingsRes.data)
+                          } catch {
+                            return
+                          }
+                        }
+                      }}
+                    />
+                  </Tooltip>
+                )}
+                <Tooltip
+                  title={t('edit')}
+                  arrow={false}
+                  classNames={{
+                    container: 'select-none'
+                  }}
+                >
+                  <Button
+                    color="default"
+                    variant="filled"
+                    shape="circle"
+                    icon={<EditOutlined />}
+                    onClick={() => setIsEditing(!isEditing)}
+                  />
+                </Tooltip>
+              </div>
             </div>
             <Descriptions
               items={[

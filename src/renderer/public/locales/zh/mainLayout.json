@@ -1,8 +1,8 @@
 {
-  "startNewChat": "新建聊天",
-  "searchChats": "搜索聊天",
-  "mcpServer": "MCP服务",
+  "startNewChat": "新建",
+  "searchChats": "搜索",
+  "mcpServer": "MCP",
   "script": "脚本",
-  "fileManager": "文件管理",
+  "fileManager": "文件",
   "newChat": "新聊天"
 }

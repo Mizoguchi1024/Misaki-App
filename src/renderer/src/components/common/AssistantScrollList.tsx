@@ -1,6 +1,6 @@
 import { createDraggable, createScope, Scope } from 'animejs'
-import { HeartOutlined, PlusOutlined } from '@ant-design/icons'
-import { Avatar, Tooltip } from 'antd'
+import { CheckCircleFilled, HeartOutlined, PlusOutlined } from '@ant-design/icons'
+import { Avatar, Badge, Tooltip } from 'antd'
 import { useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useAssistantStore } from '@renderer/store/assistantStore'
@@ -10,7 +10,7 @@ import clsx from 'clsx'
 
 export default function AssistantScrollList(): React.JSX.Element {
   const { t } = useTranslation('assistantScrollList')
-  const { mainColor, getOssBaseUrl } = useSettingsStore()
+  const { mainColor, enabledAssistantId, getOssBaseUrl } = useSettingsStore()
   const { assistants, assistant, setAssistant } = useAssistantStore()
   const { models } = useModelStore()
   const root = useRef<HTMLDivElement>(null)
@@ -20,7 +20,8 @@ export default function AssistantScrollList(): React.JSX.Element {
   useEffect(() => {
     setAssistant(assistants?.[0])
 
-    scope.current = createScope({ root }).add(() => {  // TODO 需要改挂载一次性？
+    scope.current = createScope({ root }).add(() => {
+      // TODO 需要改挂载一次性？
       const rootObj = root.current
       const avatarListObj = avatarList.current
 
@@ -58,26 +59,37 @@ export default function AssistantScrollList(): React.JSX.Element {
               container: 'select-none'
             }}
           >
-            <Avatar
-              src={
-                models?.find((model) => model.id === item.modelId)?.avatarPath
-                  ? getOssBaseUrl() + models?.find((model) => model.id === item.modelId)?.avatarPath
-                  : null
-              }
-              icon={
-                models?.find((model) => model.id === item.modelId)?.avatarPath ? null : (
-                  <HeartOutlined />
+            <Badge
+              count={
+                item.id === enabledAssistantId ? (
+                  <CheckCircleFilled className="text-green-500" />
+                ) : (
+                  0
                 )
               }
-              className={clsx(
-                'flex-none cursor-pointer select-none border-0 duration-250',
-                item.id === assistant?.id && 'outline-5'
-              )}
-              style={{ outlineColor: mainColor }}
-              onClick={() => {
-                setAssistant(assistants?.find((assistant) => assistant.id === item.id) || null)
-              }}
-            />
+            >
+              <Avatar
+                src={
+                  models?.find((model) => model.id === item.modelId)?.avatarPath
+                    ? getOssBaseUrl() +
+                      models?.find((model) => model.id === item.modelId)?.avatarPath
+                    : null
+                }
+                icon={
+                  models?.find((model) => model.id === item.modelId)?.avatarPath ? null : (
+                    <HeartOutlined />
+                  )
+                }
+                className={clsx(
+                  'flex-none cursor-pointer select-none border-0 duration-250',
+                  item.id === assistant?.id && 'outline-5'
+                )}
+                style={{ outlineColor: mainColor }}
+                onClick={() => {
+                  setAssistant(assistants?.find((assistant) => assistant.id === item.id) || null)
+                }}
+              />
+            </Badge>
           </Tooltip>
         ))}
         <Tooltip

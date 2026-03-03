@@ -1,4 +1,5 @@
 {
+    "duplicateName":"重名数：{{count}}",
     "gender":"性别",
     "unknown":"保密",
     "male":"男",
