@@ -2,9 +2,9 @@ import {
   AssistantFrontResponse,
   AddAssistantFrontRequest,
   UpdateAssistantFrontRequest
-} from '@renderer/types/api/assistant'
+} from '@renderer/types/assistant'
 import api from '../index'
-import { Result } from '@renderer/types/api/base'
+import { PageResult, Result } from '@renderer/types/result'
 
 export const getAssistant = (id: string): Promise<Result<AssistantFrontResponse>> =>
   api.get<Result<AssistantFrontResponse>>(`/front/assistants/${id}`).then((res) => res.data)
@@ -15,10 +15,10 @@ export const listAssistants = (): Promise<Result<AssistantFrontResponse[]>> =>
 export const listPublicAssistants = (
   pageIndex: number,
   pageSize: number
-): Promise<Result<AssistantFrontResponse[]>> =>
+): Promise<PageResult<AssistantFrontResponse[]>> =>
   api
     .get<
-      Result<AssistantFrontResponse[]>
+      PageResult<AssistantFrontResponse[]>
     >('/front/assistants/public', { params: { pageIndex, pageSize } })
     .then((res) => res.data)
 

@@ -7,15 +7,15 @@ import {
   SyncOutlined
 } from '@ant-design/icons'
 import { createFeedback, deleteFeedback, listFeedbacks } from '@renderer/api/front/feedback'
-import { messageApi } from '@renderer/messageApi'
 import { useFeedbackStore } from '@renderer/store/feedbackStore'
-import { Button, Card, Form, FormProps, Input, Modal, Select, Tabs, Tag } from 'antd'
+import { App, Button, Card, Form, FormProps, Input, Modal, Select, Tabs, Tag } from 'antd'
 import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import EmptyState from './EmptyState'
 
 export default function FeedbackModal({ open, onCancel }): React.JSX.Element {
   const { t } = useTranslation('feedbackModal')
+  const { message: appMessage } = App.useApp()
   const { feedbacks, setFeedbacks } = useFeedbackStore()
 
   useEffect(() => {
@@ -57,7 +57,7 @@ export default function FeedbackModal({ open, onCancel }): React.JSX.Element {
         type: values.type,
         content: values.content
       })
-      messageApi?.success(t('createSuccess'))
+      appMessage.success(t('createSuccess'))
       const feedbacksRes = await listFeedbacks()
       setFeedbacks(feedbacksRes.data)
     } catch (e) {
@@ -146,7 +146,7 @@ export default function FeedbackModal({ open, onCancel }): React.JSX.Element {
                   onClick={async () => {
                     try {
                       await deleteFeedback(item.id)
-                      messageApi?.success(t('deleteSuccess'))
+                      appMessage.success(t('deleteSuccess'))
                       const feedbacksRes = await listFeedbacks()
                       setFeedbacks(feedbacksRes.data)
                     } catch (e) {

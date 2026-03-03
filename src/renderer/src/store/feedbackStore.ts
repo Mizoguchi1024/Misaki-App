@@ -1,12 +1,11 @@
-import { FeedbackFrontResponse } from '@renderer/types/api/feedback'
-import { Feedback } from '@renderer/types/entity/feedback'
+import { FeedbackFrontResponse } from '@renderer/types/feedback'
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
 interface FeedbackState {
-  feedbacks: Feedback[] | null
+  feedbacks: FeedbackFrontResponse[] | null
 
-  setFeedbacks: (feedbackFrontResponses: FeedbackFrontResponse[]) => void
+  setFeedbacks: (feedbacks: FeedbackFrontResponse[]) => void
   reset: () => void
 }
 
@@ -19,7 +18,7 @@ export const useFeedbackStore = create<FeedbackState>()(
     (set) => ({
       ...initialState,
 
-      setFeedbacks: (feedbackFrontResponses) => set({ feedbacks: feedbackFrontResponses }),
+      setFeedbacks: (feedbacks) => set({ feedbacks }),
       reset: () => set(initialState)
     }),
     {

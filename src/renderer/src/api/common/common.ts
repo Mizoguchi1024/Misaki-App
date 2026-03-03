@@ -1,6 +1,6 @@
-import { TtsRequest, UploadResponse } from '@renderer/types/api/common'
+import { TtsRequest, UploadResponse } from '@renderer/types/common'
 import api from '../index'
-import { Result } from '@renderer/types/api/base'
+import { Result } from '@renderer/types/result'
 
 export const upload = (data: FormData): Promise<Result<UploadResponse>> =>
   api.post<Result<UploadResponse>>('/common/files', data).then((res) => res.data)

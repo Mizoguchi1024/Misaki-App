@@ -1,6 +1,5 @@
-import { messageApi } from '@renderer/messageApi'
 import { useUserStore } from '@renderer/store/userStore'
-import { Button } from 'antd'
+import { App, Button } from 'antd'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import MisakiLogo from '@renderer/assets/img/misaki-logo-symbol.svg?react'
@@ -10,6 +9,7 @@ import { useAssistantStore } from '@renderer/store/assistantStore'
 export default function MisakiButton(): React.JSX.Element {
   const navigate = useNavigate()
   const { t } = useTranslation('misakiButton')
+  const { message: appMessage } = App.useApp()
   const { jwt } = useUserStore()
   const { mainColor, enabledAssistantId } = useSettingsStore()
   const { assistants } = useAssistantStore()
@@ -25,7 +25,7 @@ export default function MisakiButton(): React.JSX.Element {
         if (jwt) {
           navigate('/misaki', { viewTransition: true })
         } else {
-          messageApi?.info(t('Login first'))
+          appMessage.info(t('Login first'))
         }
       }}
     >

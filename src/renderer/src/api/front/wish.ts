@@ -1,6 +1,6 @@
-import { Result } from '@renderer/types/api/base'
+import { PageResult, Result } from '@renderer/types/result'
 import api from '..'
-import { WishFrontResponse } from '@renderer/types/api/wish'
+import { WishFrontResponse } from '@renderer/types/wish'
 
 export const buyPuzzle = (amount: number, currency: string): Promise<Result<void>> =>
   api
@@ -15,7 +15,7 @@ export const gacha = (times: number): Promise<Result<WishFrontResponse[]>> =>
 export const listWishes = (
   pageIndex: number,
   pageSize: number
-): Promise<Result<WishFrontResponse[]>> =>
+): Promise<PageResult<WishFrontResponse[]>> =>
   api
-    .get<Result<WishFrontResponse[]>>('/front/wish/gacha', { params: { pageIndex, pageSize } })
+    .get<PageResult<WishFrontResponse[]>>('/front/wish/gacha', { params: { pageIndex, pageSize } })
     .then((res) => res.data)

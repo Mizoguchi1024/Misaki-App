@@ -2,10 +2,9 @@ import { InfoCircleOutlined, LockOutlined, MailOutlined } from '@ant-design/icon
 import { resetPassword, sendVerifyCode } from '@renderer/api/common/auth'
 import { getProfile } from '@renderer/api/front/user'
 import GlassBox from '@renderer/components/common/GlassBox'
-import { messageApi } from '@renderer/messageApi'
 import { useSettingsStore } from '@renderer/store/settingsStore'
 import { useUserStore } from '@renderer/store/userStore'
-import { Button, Form, FormProps, Input, Space, Tooltip } from 'antd'
+import { App, Button, Form, FormProps, Input, Space, Tooltip } from 'antd'
 import clsx from 'clsx'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -22,6 +21,7 @@ const onFinishFailed: FormProps<FieldType>['onFinishFailed'] = (errorInfo) => {
 }
 
 export default function ResetPassword(): React.JSX.Element {
+  const { message: appMessage } = App.useApp()
   const [passwordFocus, setPasswordFocus] = useState(false)
   const navigator = useNavigate()
   const { jwt, setProfile } = useUserStore()
@@ -36,7 +36,7 @@ export default function ResetPassword(): React.JSX.Element {
       const { email } = await form.validateFields(['email'])
       setSendVerifyCodeLoading(true)
       await sendVerifyCode(email, language)
-      messageApi?.success(t('sendVerifyCodeSuccess'))
+      appMessage.success(t('sendVerifyCodeSuccess'))
     } finally {
       setTimeout(() => {
         setSendVerifyCodeLoading(false)
@@ -56,7 +56,7 @@ export default function ResetPassword(): React.JSX.Element {
         const profileRes = await getProfile()
         setProfile(profileRes.data)
       }
-      messageApi?.success(t('resetSuccess'))
+      appMessage.success(t('resetSuccess'))
       setFinishLoading(false)
       navigator('/', { viewTransition: true })
     } catch {

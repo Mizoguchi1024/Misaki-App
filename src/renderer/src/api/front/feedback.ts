@@ -1,6 +1,6 @@
-import { Result } from '@renderer/types/api/base'
+import { Result } from '@renderer/types/result'
 import api from '..'
-import { AddFeedbackFrontRequest, FeedbackFrontResponse } from '@renderer/types/api/feedback'
+import { AddFeedbackFrontRequest, FeedbackFrontResponse } from '@renderer/types/feedback'
 
 export const createFeedback = (data: AddFeedbackFrontRequest): Promise<Result<void>> =>
   api.post<Result<void>>('/front/feedbacks', data).then((res) => res.data)

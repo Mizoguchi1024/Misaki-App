@@ -1,4 +1,4 @@
-import { Layout, Menu, MenuProps } from 'antd'
+import { App, Layout, Menu, MenuProps } from 'antd'
 import { useEffect, useState } from 'react'
 import { Outlet, UIMatch, useLocation, useMatches, useNavigate } from 'react-router-dom'
 
@@ -23,7 +23,6 @@ import { useSettingsStore } from '@renderer/store/settingsStore'
 import { useAssistantStore } from '@renderer/store/assistantStore'
 import clsx from 'clsx'
 import dayjs from 'dayjs'
-import { messageApi } from '@renderer/messageApi'
 import { useFeedbackStore } from '@renderer/store/feedbackStore'
 import { listModels } from '@renderer/api/front/model'
 import { useModelStore } from '@renderer/store/modelStore'
@@ -32,6 +31,7 @@ const { Header, Content, Sider } = Layout
 
 export default function MainLayout(): React.JSX.Element {
   const { t } = useTranslation('mainLayout')
+  const { message: appMessage } = App.useApp()
   const [collapsed, setCollapsed] = useState(false)
   const location = useLocation()
   const navigate = useNavigate()
@@ -41,6 +41,7 @@ export default function MainLayout(): React.JSX.Element {
     backgroundOpacity,
     backgroundBlur,
     getOssBaseUrl,
+    setStaticMessage,
     setSettings,
     reset: resetSettingsStore
   } = useSettingsStore()
@@ -53,6 +54,7 @@ export default function MainLayout(): React.JSX.Element {
   const currentPage = matches.at(-1)?.handle?.page
 
   useEffect(() => {
+    setStaticMessage(appMessage)
     const load = async (): Promise<void> => {
       if (jwt) {
         if (!rememberMe) {
@@ -84,7 +86,7 @@ export default function MainLayout(): React.JSX.Element {
           )
           if (!isToday) {
             await checkIn()
-            messageApi?.success(t('checkInSuccess'))
+            appMessage.success(t('checkInSuccess'))
             const newProfileRes = await getProfile()
             setProfile(newProfileRes.data)
           }

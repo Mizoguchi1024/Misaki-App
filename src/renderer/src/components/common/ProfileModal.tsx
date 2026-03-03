@@ -1,11 +1,10 @@
 import { useUserStore } from '@renderer/store/userStore'
-import { Button, DatePicker, Form, FormProps, Input, Modal, Radio } from 'antd'
+import { App, Button, DatePicker, Form, FormProps, Input, Modal, Radio } from 'antd'
 import dayjs from 'dayjs'
 import { useTranslation } from 'react-i18next'
 import ImageUpload from './ImageUpload'
-import { UploadResponse } from '@renderer/types/api/common'
+import { UploadResponse } from '@renderer/types/common'
 import { getProfile, updateProfile } from '@renderer/api/front/user'
-import { messageApi } from '@renderer/messageApi'
 
 type FieldType = {
   username: string
@@ -18,6 +17,7 @@ type FieldType = {
 
 export default function ProfileModal({ open, onCancel }): React.JSX.Element {
   const { t } = useTranslation('profileModal')
+  const { message: appMessage } = App.useApp()
   const {
     id,
     email,
@@ -45,7 +45,7 @@ export default function ProfileModal({ open, onCancel }): React.JSX.Element {
       })
       const profileRes = await getProfile()
       setProfile(profileRes.data)
-      messageApi?.success(t('saveSuccess'))
+      appMessage.success(t('saveSuccess'))
     } catch {
       return
     }
@@ -68,7 +68,7 @@ export default function ProfileModal({ open, onCancel }): React.JSX.Element {
             onSuccess={async (data: UploadResponse) => {
               try {
                 await updateProfile({ avatarPath: data.path, version: profileVersion! })
-                messageApi?.success(t('uploadSuccess'))
+                appMessage.success(t('uploadSuccess'))
                 const profileRes = await getProfile()
                 setProfile(profileRes.data)
               } catch {

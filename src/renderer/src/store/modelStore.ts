@@ -1,4 +1,4 @@
-import { ModelFrontResponse } from '@renderer/types/api/model'
+import { ModelFrontResponse } from '@renderer/types/model'
 import { create } from 'zustand'
 
 interface ModelState {

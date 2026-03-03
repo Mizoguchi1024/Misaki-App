@@ -4,9 +4,9 @@ import {
   MessageFrontResponse,
   SendMessageFrontRequest,
   UpdateChatTitleFrontRequest
-} from '@renderer/types/api/chat'
+} from '@renderer/types/chat'
 import api from '../index'
-import { Result } from '@renderer/types/api/base'
+import { Result } from '@renderer/types/result'
 
 export const createChat = (): Promise<Result<ChatFrontResponse>> =>
   api.post<Result<ChatFrontResponse>>('/front/chats').then((res) => res.data)

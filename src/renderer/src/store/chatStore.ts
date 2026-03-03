@@ -1,16 +1,14 @@
-import { ChatFrontResponse, MessageFrontResponse } from '@renderer/types/api/chat'
-import { Chat } from '@renderer/types/entity/chat'
-import { Message } from '@renderer/types/entity/message'
+import { ChatFrontResponse, MessageFrontResponse } from '@renderer/types/chat'
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
 interface ChatState {
-  chats: Chat[] | null
-  messages: Message[] | null
+  chats: ChatFrontResponse[] | null
+  messages: MessageFrontResponse[] | null
   parentId: string | null
 
-  setChats: (chatFrontResponse: ChatFrontResponse[]) => void
-  setMessages: (messageFrontResponse: MessageFrontResponse[]) => void
+  setChats: (chats: ChatFrontResponse[]) => void
+  setMessages: (messages: MessageFrontResponse[]) => void
   setParentId: (parentId: string) => void
   reset: () => void
 }

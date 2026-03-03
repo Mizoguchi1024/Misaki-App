@@ -18,7 +18,7 @@ export default function AssistantScrollList(): React.JSX.Element {
   const avatarList = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    setAssistant(assistants?.[0])
+    setAssistant(assistants?.[0] || null)
 
     scope.current = createScope({ root }).add(() => {
       // TODO 需要改挂载一次性？
@@ -69,6 +69,7 @@ export default function AssistantScrollList(): React.JSX.Element {
               }
             >
               <Avatar
+                draggable={false}
                 src={
                   models?.find((model) => model.id === item.modelId)?.avatarPath
                     ? getOssBaseUrl() +

@@ -1,11 +1,10 @@
 import { LockOutlined, MailOutlined } from '@ant-design/icons'
 import GlassBox from '@renderer/components/common/GlassBox'
-import { Button, Checkbox, Form, FormProps, Input } from 'antd'
+import { App, Button, Checkbox, Form, FormProps, Input } from 'antd'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { login } from '@renderer/api/common/auth'
 import { useUserStore } from '@renderer/store/userStore'
-import { messageApi } from '@renderer/messageApi'
 import { useState } from 'react'
 import clsx from 'clsx'
 
@@ -16,6 +15,7 @@ type FieldType = {
 }
 
 export default function Login(): React.JSX.Element {
+  const { message: appMessage } = App.useApp()
   const [passwordFocus, setPasswordFocus] = useState(false)
   const { setAuthInfo, setRememberMe } = useUserStore()
   const [submitButtonLoading, setSubmitButtonLoading] = useState(false)
@@ -28,7 +28,7 @@ export default function Login(): React.JSX.Element {
       const loginRes = await login({ email: values.email, password: values.password })
       setAuthInfo(loginRes.data)
       setRememberMe(values.remember)
-      messageApi?.success(t('loginSuccess'))
+      appMessage.success(t('loginSuccess'))
       setSubmitButtonLoading(false)
       navigator('/', { viewTransition: true })
     } catch {

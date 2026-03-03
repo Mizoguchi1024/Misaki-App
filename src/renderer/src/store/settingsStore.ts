@@ -1,11 +1,14 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import { SettingsFrontResponse } from '@renderer/types/api/user'
+import { SettingsFrontResponse } from '@renderer/types/user'
 import zh_CN from 'antd/locale/zh_CN'
 import en_US from 'antd/locale/en_US'
 import ja_JP from 'antd/locale/ja_JP'
+import { MessageInstance } from 'antd/es/message/interface'
 
 interface SettingsState {
+  staticMessage: MessageInstance | null
+
   baseUrl: string
   language: number // 0:中文 1:英文 2:日文
   fontSize: number
@@ -23,14 +26,18 @@ interface SettingsState {
 
   getApiBaseUrl: () => string
   getOssBaseUrl: () => string
+
+  setStaticMessage: (staticMessage: any) => void
   setSettings: (settingsFrontResponse: SettingsFrontResponse) => void
   setPartial: (patch: Partial<SettingsState>) => void
+
   reset: () => void
   resetLocalSettings: () => void
   resetCloudSettings: () => void
 }
 
 const initialState = {
+  staticMessage: null,
   baseUrl: 'http://localhost',
   appearance: 0,
   language: 0,
@@ -94,6 +101,7 @@ export const useSettingsStore = create<SettingsState>()(
 
       getApiBaseUrl: () => `${get().baseUrl}:8080/api`,
       getOssBaseUrl: () => `${get().baseUrl}:9000`,
+      setStaticMessage: (staticMessage) => set({ staticMessage }),
       setSettings: (settingsFrontResponse) => set(settingsFrontResponse),
       setPartial: (patch) => set((state) => ({ ...state, ...patch })),
       reset: () => set(initialState),

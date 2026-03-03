@@ -1,11 +1,11 @@
-import { Result } from '@renderer/types/api/base'
+import { Result } from '@renderer/types/result'
 import api from '../index'
 import {
   SettingsFrontResponse,
   UpdateSettingsFrontRequest,
   UpdateUserFrontRequest,
   UserFrontResponse
-} from '@renderer/types/api/user'
+} from '@renderer/types/user'
 
 export const getProfile = (): Promise<Result<UserFrontResponse>> =>
   api.get<Result<UserFrontResponse>>('/front/users/profiles').then((res) => res.data)

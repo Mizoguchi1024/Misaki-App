@@ -1,6 +1,6 @@
-import { Result } from '@renderer/types/api/base'
+import { Result } from '@renderer/types/result'
 import api from '..'
-import { AboutFrontResponse } from '@renderer/types/api/about'
+import { AboutFrontResponse } from '@renderer/types/about'
 
 export const likeMisaki = (): Promise<Result<void>> =>
   api.post<Result<void>>('/front/about/like').then((res) => res.data)

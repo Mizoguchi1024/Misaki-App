@@ -1,14 +1,14 @@
 import { HeartFilled, HeartOutlined } from '@ant-design/icons'
 import { getMisakiLikes, likeMisaki } from '@renderer/api/front/about'
-import { messageApi } from '@renderer/messageApi'
 import { useUserStore } from '@renderer/store/userStore'
-import { Button, Modal } from 'antd'
+import { App, Button, Modal } from 'antd'
 import React from 'react'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 export default function AboutModal({ open, onCancel }): React.JSX.Element {
   const { t } = useTranslation('aboutModal')
+  const { message: appMessage } = App.useApp()
   const { jwt } = useUserStore()
   const [versions, setVersions] = useState({
     misaki: '',
@@ -77,9 +77,9 @@ export default function AboutModal({ open, onCancel }): React.JSX.Element {
                 setLikes(aboutRes.data.likes)
                 setLikedFlag(aboutRes.data.likedFlag)
                 if (aboutRes.data.likedFlag) {
-                  messageApi?.success(t('thanks'))
+                  appMessage.success(t('thanks'))
                 } else {
-                  messageApi?.info(t('sad'))
+                  appMessage.info(t('sad'))
                 }
               }}
             >

@@ -1,10 +1,9 @@
 import axios from 'axios'
+import i18n from '@renderer/i18n'
 import { useUserStore } from '@renderer/store/userStore'
 import { useSettingsStore } from '@renderer/store/settingsStore'
-import { messageApi } from '@renderer/messageApi'
 import { useChatStore } from '@renderer/store/chatStore'
 import { useAssistantStore } from '@renderer/store/assistantStore'
-import i18n from '@renderer/i18n'
 import { useFeedbackStore } from '@renderer/store/feedbackStore'
 
 const api = axios.create({
@@ -35,13 +34,15 @@ api.interceptors.response.use(
           useAssistantStore.getState().reset()
           useFeedbackStore.getState().reset()
 
-          messageApi?.info(i18n.t('tokenExpired', { ns: 'api' }))
+          useSettingsStore.getState().staticMessage?.info(i18n.t('tokenExpired', { ns: 'api' }))
         }
       } else {
-        messageApi?.error(serverMessage ?? i18n.t('networkError', { ns: 'api' }))
+        useSettingsStore
+          .getState()
+          .staticMessage?.error(serverMessage ?? i18n.t('networkError', { ns: 'api' }))
       }
     } else {
-      messageApi?.error(i18n.t('unknownError', { ns: 'api' }))
+      useSettingsStore.getState().staticMessage?.error(i18n.t('unknownError', { ns: 'api' }))
     }
 
     return Promise.reject(err)

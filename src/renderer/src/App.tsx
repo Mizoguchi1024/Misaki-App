@@ -1,18 +1,14 @@
-import { ConfigProvider, message, theme } from 'antd'
+import { App as AntdApp, ConfigProvider, theme } from 'antd'
 import 'dayjs/locale/zh-cn'
 import { LanguageAntdMap, useSettingsStore } from './store/settingsStore'
-import { setMessageApi } from './messageApi'
 import { useEffect, useState } from 'react'
 import { StyleProvider } from '@ant-design/cssinjs'
 
 export default function App({ children }: { children?: React.ReactNode }): React.JSX.Element {
   const { appearance, fontSize, mainColor, borderRadius, language } = useSettingsStore()
-  const [messageInstance, contextHolder] = message.useMessage()
   const [isSystemDark, setIsSystemDark] = useState(window.api.getSystemTheme())
 
   useEffect(() => {
-    setMessageApi(messageInstance)
-
     window.api.onSystemThemeChange((dark) => {
       setIsSystemDark(dark)
     })
@@ -48,8 +44,7 @@ export default function App({ children }: { children?: React.ReactNode }): React
         }}
         locale={LanguageAntdMap[language]}
       >
-        {contextHolder}
-        {children}
+        <AntdApp>{children}</AntdApp>
       </ConfigProvider>
     </StyleProvider>
   )

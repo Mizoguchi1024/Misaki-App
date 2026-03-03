@@ -1,11 +1,11 @@
-import { Result } from '@renderer/types/api/base'
+import { Result } from '@renderer/types/result'
 import api from '../index'
 import {
   LoginRequest,
   LoginResponse,
   RegisterRequest,
   ResetPasswordRequest
-} from '@renderer/types/api/auth'
+} from '@renderer/types/auth'
 
 export const login = (data: LoginRequest): Promise<Result<LoginResponse>> =>
   api.post<Result<LoginResponse>>('/auth/login', data).then((res) => res.data)

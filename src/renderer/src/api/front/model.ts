@@ -1,6 +1,6 @@
-import { Result } from '@renderer/types/api/base'
+import { Result } from '@renderer/types/result'
 import api from '..'
-import { ModelFrontResponse } from '@renderer/types/api/model'
+import { ModelFrontResponse } from '@renderer/types/model'
 
 export const listModels = (): Promise<Result<ModelFrontResponse[]>> =>
   api.get<Result<ModelFrontResponse[]>>('/front/models').then((res) => res.data)

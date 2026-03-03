@@ -4,7 +4,7 @@ import { searchChats } from '@renderer/api/front/chat'
 import EmptyState from '@renderer/components/common/EmptyState'
 import { useChatStore } from '@renderer/store/chatStore'
 import { useSettingsStore } from '@renderer/store/settingsStore'
-import { ChatFrontResponse } from '@renderer/types/api/chat'
+import { ChatFrontResponse } from '@renderer/types/chat'
 import { Card, Spin } from 'antd'
 import clsx from 'clsx'
 import { useEffect, useState } from 'react'
@@ -17,7 +17,7 @@ export default function Search(): React.JSX.Element {
   const { backgroundPath } = useSettingsStore()
   const { chats } = useChatStore()
 
-  const [results, setResults] = useState<ChatFrontResponse[]>([])
+  const [results, setResults] = useState<ChatFrontResponse[] | null>([])
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
@@ -40,9 +40,12 @@ export default function Search(): React.JSX.Element {
             >
               <Spin spinning={loading} delay={250} indicator={<LoadingOutlined spin />}>
                 <Card.Meta
-                  avatar={<MessageOutlined className="text-2xl h-full" />}
+                  avatar={<MessageOutlined className="text-2xl" />}
                   title={item.title || t('newChat')}
                   description={item.updateTime}
+                  classNames={{
+                    avatar: 'flex items-center justify-center'
+                  }}
                 />
               </Spin>
             </Card>

@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import { LoginResponse } from '@renderer/types/api/auth'
-import { UserFrontResponse } from '@renderer/types/api/user'
+import { LoginResponse } from '@renderer/types/auth'
+import { UserFrontResponse } from '@renderer/types/user'
 
 interface UserState {
   jwt: string | null

@@ -1,24 +1,24 @@
 import { LoadingOutlined, PlusOutlined } from '@ant-design/icons'
 import { upload } from '@renderer/api/common/common'
-import { messageApi } from '@renderer/messageApi'
 import { useSettingsStore } from '@renderer/store/settingsStore'
-import { Tooltip, Upload } from 'antd'
+import { App, Tooltip, Upload } from 'antd'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 export default function ImageUpload({ imgPath, onSuccess }): React.JSX.Element {
   const { t } = useTranslation('imageUpload')
+  const { message: appMessage } = App.useApp()
   const { borderRadius, getOssBaseUrl } = useSettingsStore()
   const [avatarLoading, setAvatarLoading] = useState(false)
 
   const beforeUpload = (file: File): boolean => {
     const isImage = file.type.startsWith('image/')
     if (!isImage) {
-      messageApi?.warning(t('onlyImage'))
+      appMessage.warning(t('onlyImage'))
     }
     const isLt10M = file.size / 1024 / 1024 < 10
     if (!isLt10M) {
-      messageApi?.warning(t('sizeLimit'))
+      appMessage.warning(t('sizeLimit'))
     }
     return isImage && isLt10M
   }

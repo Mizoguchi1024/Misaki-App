@@ -2,6 +2,7 @@ import { deleteUser, getSettings, updateSettings } from '@renderer/api/front/use
 import { LanguageMap, useSettingsStore } from '@renderer/store/settingsStore'
 import { useUserStore } from '@renderer/store/userStore'
 import {
+  App,
   Button,
   ColorPicker,
   Input,
@@ -16,12 +17,12 @@ import {
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import ImageUpload from './ImageUpload'
-import { UploadResponse } from '@renderer/types/api/common'
-import { messageApi } from '@renderer/messageApi'
+import { UploadResponse } from '@renderer/types/common'
 import { useNavigate } from 'react-router-dom'
 
 export default function SettingsModal({ open, onCancel }): React.JSX.Element {
   const { t } = useTranslation('settingsModal')
+  const { message: appMessage } = App.useApp()
   const navigate = useNavigate()
   const { jwt } = useUserStore()
   const {
@@ -187,7 +188,7 @@ export default function SettingsModal({ open, onCancel }): React.JSX.Element {
                       backgroundPath: data.path,
                       version: settingsVersion!
                     })
-                    messageApi?.success(t('uploadSuccess'))
+                    appMessage.success(t('uploadSuccess'))
                     const settingsRes = await getSettings()
                     setSettings(settingsRes.data)
                   } catch {
@@ -209,7 +210,7 @@ export default function SettingsModal({ open, onCancel }): React.JSX.Element {
                       backgroundPath: '',
                       version: settingsVersion!
                     })
-                    messageApi?.success(t('deleteSuccess'))
+                    appMessage.success(t('deleteSuccess'))
                     const settingsRes = await getSettings()
                     setSettings(settingsRes.data)
                   }}

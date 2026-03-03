@@ -2,8 +2,11 @@ import {
   ArrowLeftOutlined,
   CheckOutlined,
   CloseOutlined,
+  DeleteOutlined,
   EditOutlined,
+  HeartOutlined,
   LockOutlined,
+  PlusOutlined,
   ShopOutlined,
   UnlockOutlined
 } from '@ant-design/icons'
@@ -17,12 +20,14 @@ import { getSettings, updateSettings } from '@renderer/api/front/user'
 import EmptyState from '@renderer/components/common/EmptyState'
 import GlassBox from '@renderer/components/common/GlassBox'
 import Live2DCanvas from '@renderer/components/common/Live2DCanvas'
-import { messageApi } from '@renderer/messageApi'
 import { useAssistantStore } from '@renderer/store/assistantStore'
 import { useModelStore } from '@renderer/store/modelStore'
 import { useSettingsStore } from '@renderer/store/settingsStore'
+import { Page } from '@renderer/types/result'
 import { animate, createScope, Scope } from 'animejs'
 import {
+  App,
+  Avatar,
   Button,
   Card,
   DatePicker,
@@ -52,7 +57,13 @@ type FieldType = {
 
 export default function Misaki(): React.JSX.Element {
   const { t } = useTranslation('misaki')
-  const { enabledAssistantId, version: settingsVersion, setSettings } = useSettingsStore()
+  const { message: appMessage } = App.useApp()
+  const {
+    enabledAssistantId,
+    version: settingsVersion,
+    getOssBaseUrl,
+    setSettings
+  } = useSettingsStore()
   const {
     assistant,
     assistants,
@@ -64,6 +75,11 @@ export default function Misaki(): React.JSX.Element {
   const { models } = useModelStore()
   const [isEditing, setIsEditing] = useState(false)
   const [isShopOpen, setIsShopOpen] = useState(false)
+  const [publicAssistantsPage, setPublicAssistantsPage] = useState<Page>({
+    total: 0,
+    pageIndex: 1,
+    pageSize: 4
+  })
 
   const root = useRef<HTMLDivElement>(null)
   const scope = useRef<Scope>(null)
@@ -107,14 +123,22 @@ export default function Misaki(): React.JSX.Element {
   }, [isEditing])
 
   useEffect(() => {
+    // 加载公开助手分页数据
     const load = async (): Promise<void> => {
-      const publicAssistantsRes = await listPublicAssistants(1, 6)
-      setPublicAssistants(publicAssistantsRes.data)
+      const publicAssistantsRes = await listPublicAssistants(
+        publicAssistantsPage.pageIndex,
+        publicAssistantsPage.pageSize
+      )
+      setPublicAssistants(publicAssistantsRes.data.list)
+      setPublicAssistantsPage({
+        ...publicAssistantsPage,
+        total: +publicAssistantsRes.data.total
+      })
     }
     if (isShopOpen) {
       load()
     }
-  }, [isShopOpen])
+  }, [isShopOpen, publicAssistantsPage.pageIndex, publicAssistantsPage.pageSize])
 
   const onFinish = async (values: FieldType): Promise<void> => {
     try {
@@ -131,7 +155,7 @@ export default function Misaki(): React.JSX.Element {
         })
         const assistantsRes = await listAssistants()
         setAssistants(assistantsRes.data)
-        messageApi?.success(t('saveSuccess'))
+        appMessage.success(t('saveSuccess'))
       } else {
         await createAssistant({
           name: values.name,
@@ -144,7 +168,7 @@ export default function Misaki(): React.JSX.Element {
         })
         const assistantsRes = await listAssistants()
         setAssistants(assistantsRes.data)
-        messageApi?.success(t('createSuccess'))
+        appMessage.success(t('createSuccess'))
       }
     } finally {
       setIsEditing(false)
@@ -163,9 +187,9 @@ export default function Misaki(): React.JSX.Element {
         {isEditing ? (
           <div className="loading-blur w-full h-full">
             {isShopOpen ? (
-              <div className="w-full h-full flex flex-col justify-between select-none">
+              <div className="w-full h-full flex flex-col items-center justify-between select-none">
                 <div className="flex items-center justify-between w-full">
-                  <span className="text-2xl font-semibold">{t('shop')}</span>
+                  <span className="text-2xl font-semibold">{t('assistantHub')}</span>
                   <div className="flex gap-4">
                     <Tooltip
                       title={t('back')}
@@ -184,16 +208,93 @@ export default function Misaki(): React.JSX.Element {
                     </Tooltip>
                   </div>
                 </div>
-                <div className="h-100 flex flex-col items-center justify-between">
-                  {!publicAssistants || publicAssistants.length === 0 ? (
-                    <EmptyState className="text-2xl" />
-                  ) : (
-                    publicAssistants?.map((assistant) => (
-                      <Card key={assistant.id} content={assistant.personality} />
-                    ))
-                  )}
-                  <Pagination defaultPageSize={6} />
-                </div>
+
+                {!publicAssistants || publicAssistants.length === 0 ? (
+                  <EmptyState className="text-2xl" />
+                ) : (
+                  <div className="grid grid-cols-2 gap-4 w-full">
+                    {publicAssistants?.map((item) => (
+                      <Card
+                        key={item.id}
+                        variant="borderless"
+                        title={item.name}
+                        extra={
+                          <div className="flex items-center gap-2">
+                            <Tooltip
+                              title={t('like')}
+                              arrow={false}
+                              classNames={{ container: 'select-none' }}
+                            >
+                              <Button
+                                icon={<HeartOutlined />}
+                                color={item.likedFlag ? 'primary' : 'default'}
+                                variant="filled"
+                                onClick={() => {
+                                  /* TODO */
+                                }}
+                              >
+                                {item.likes}
+                              </Button>
+                            </Tooltip>
+                            <Tooltip
+                              title={t('copy')}
+                              arrow={false}
+                              classNames={{ container: 'select-none' }}
+                            >
+                              <Button
+                                icon={<PlusOutlined />}
+                                color="default"
+                                variant="filled"
+                                shape="circle"
+                                onClick={() => {
+                                  /* TODO */
+                                }}
+                              />
+                            </Tooltip>
+                          </div>
+                        }
+                        className="hover:shadow-xl ease-in-out duration-500"
+                      >
+                        <Card.Meta
+                          avatar={
+                            <Avatar
+                              src={
+                                models?.find((model) => model.id === item.modelId)?.avatarPath
+                                  ? getOssBaseUrl() +
+                                    models?.find((model) => model.id === item.modelId)?.avatarPath
+                                  : null
+                              }
+                              icon={
+                                models?.find((model) => model.id === item.modelId)
+                                  ?.avatarPath ? null : (
+                                  <HeartOutlined />
+                                )
+                              }
+                              draggable={false}
+                            />
+                          }
+                          title={item.personality}
+                          description={item.detail || t('noDetail')}
+                          classNames={{
+                            avatar: 'flex items-center justify-center'
+                          }}
+                        />
+                      </Card>
+                    ))}
+                  </div>
+                )}
+                <Pagination
+                  total={publicAssistantsPage.total}
+                  current={publicAssistantsPage.pageIndex}
+                  pageSize={publicAssistantsPage.pageSize}
+                  onChange={(page, pageSize) => {
+                    setPublicAssistantsPage({
+                      ...publicAssistantsPage,
+                      pageIndex: page,
+                      pageSize
+                    })
+                  }}
+                />
               </div>
             ) : (
               <Form
@@ -226,9 +327,27 @@ export default function Misaki(): React.JSX.Element {
                     />
                   </Form.Item>
                   <div className="flex gap-4">
-                    {!assistant && (
+                    {assistant ? (
                       <Tooltip
-                        title={t('shop')}
+                        title={t('delete')}
+                        arrow={false}
+                        classNames={{
+                          container: 'select-none'
+                        }}
+                      >
+                        <Button
+                          color="danger"
+                          variant="filled"
+                          shape="circle"
+                          icon={<DeleteOutlined />}
+                          onClick={() => {
+                            /* TODO */
+                          }}
+                        />
+                      </Tooltip>
+                    ) : (
+                      <Tooltip
+                        title={t('assistantHub')}
                         arrow={false}
                         classNames={{
                           container: 'select-none'
@@ -258,7 +377,7 @@ export default function Misaki(): React.JSX.Element {
                         icon={<CloseOutlined />}
                         onClick={() => {
                           if (!assistant) {
-                            setAssistant(assistants?.[0])
+                            setAssistant(assistants?.[0] || null)
                           }
                           setIsEditing(!isEditing)
                         }}
@@ -326,7 +445,7 @@ export default function Misaki(): React.JSX.Element {
                   <Input.TextArea
                     placeholder={t('detail')}
                     showCount
-                    maxLength={100}
+                    maxLength={50}
                     autoSize={{ minRows: 2, maxRows: 4 }}
                   ></Input.TextArea>
                 </Form.Item>
@@ -362,7 +481,10 @@ export default function Misaki(): React.JSX.Element {
           <div className="loading-blur w-full h-full flex flex-col items-center justify-between">
             <div className="flex justify-between w-full">
               <Tooltip
-                title={t('duplicateName', { count: assistant?.duplicateName })}
+                title={
+                  assistant?.name !== 'Misaki' &&
+                  t('duplicateName', { count: assistant?.duplicateName })
+                }
                 arrow={false}
                 classNames={{
                   container: 'select-none'
@@ -371,37 +493,6 @@ export default function Misaki(): React.JSX.Element {
                 <span className="text-2xl font-semibold">{assistant?.name}</span>
               </Tooltip>
               <div className="flex gap-4">
-                {assistant?.id !== enabledAssistantId && (
-                  <Tooltip
-                    title={t('enable')}
-                    arrow={false}
-                    classNames={{
-                      container: 'select-none'
-                    }}
-                  >
-                    <Button
-                      color={assistant?.id === enabledAssistantId ? 'green' : 'default'}
-                      variant="filled"
-                      shape="circle"
-                      icon={<CheckOutlined />}
-                      onClick={async () => {
-                        if (assistant?.id !== enabledAssistantId) {
-                          try {
-                            await updateSettings({
-                              enabledAssistantId: assistant?.id,
-                              version: settingsVersion
-                            })
-                            messageApi?.success(t('enableSuccess'))
-                            const settingsRes = await getSettings()
-                            setSettings(settingsRes.data)
-                          } catch {
-                            return
-                          }
-                        }
-                      }}
-                    />
-                  </Tooltip>
-                )}
                 <Tooltip
                   title={t('edit')}
                   arrow={false}
@@ -417,9 +508,39 @@ export default function Misaki(): React.JSX.Element {
                     onClick={() => setIsEditing(!isEditing)}
                   />
                 </Tooltip>
+                <Tooltip
+                  title={t(assistant?.id === enabledAssistantId ? 'enabled' : 'enable')}
+                  arrow={false}
+                  classNames={{
+                    container: 'select-none'
+                  }}
+                >
+                  <Button
+                    color={assistant?.id === enabledAssistantId ? 'green' : 'default'}
+                    variant="filled"
+                    shape="circle"
+                    icon={<CheckOutlined />}
+                    onClick={async () => {
+                      if (assistant?.id !== enabledAssistantId) {
+                        try {
+                          await updateSettings({
+                            enabledAssistantId: assistant?.id,
+                            version: settingsVersion
+                          })
+                          appMessage.success(t('enableSuccess'))
+                          const settingsRes = await getSettings()
+                          setSettings(settingsRes.data)
+                        } catch {
+                          return
+                        }
+                      }
+                    }}
+                  />
+                </Tooltip>
               </div>
             </div>
             <Descriptions
+              column={5}
               items={[
                 {
                   key: '1',
@@ -433,23 +554,26 @@ export default function Misaki(): React.JSX.Element {
                 },
                 {
                   key: '3',
-                  label: t('personality'),
-                  children: assistant?.personality
-                },
-                {
-                  key: '4',
-                  label: t('detail'),
-                  children: assistant?.detail || t('none')
-                },
-                {
-                  key: '5',
                   label: t('publicFlag'),
                   children: assistant?.publicFlag ? t('public') : t('private')
                 },
                 {
-                  key: '6',
+                  key: '4',
+                  span: 2,
                   label: t('createTime'),
                   children: assistant?.createTime
+                },
+                {
+                  key: '5',
+                  span: 2,
+                  label: t('personality'),
+                  children: assistant?.personality
+                },
+                {
+                  key: '6',
+                  span: 'filled',
+                  label: t('detail'),
+                  children: assistant?.detail || t('none')
                 }
               ]}
             />

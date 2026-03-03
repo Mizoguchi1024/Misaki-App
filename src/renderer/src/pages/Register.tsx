@@ -1,9 +1,8 @@
 import { InfoCircleOutlined, LockOutlined, MailOutlined, UserOutlined } from '@ant-design/icons'
 import { register, sendVerifyCode } from '@renderer/api/common/auth'
 import GlassBox from '@renderer/components/common/GlassBox'
-import { messageApi } from '@renderer/messageApi'
 import { useSettingsStore } from '@renderer/store/settingsStore'
-import { Button, Form, FormProps, Input, Space, Tooltip } from 'antd'
+import { App, Button, Form, FormProps, Input, Space, Tooltip } from 'antd'
 import clsx from 'clsx'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -21,6 +20,7 @@ const onFinishFailed: FormProps<FieldType>['onFinishFailed'] = (errorInfo) => {
 }
 
 export default function Register(): React.JSX.Element {
+  const { message: appMessage } = App.useApp()
   const [passwordFocus, setPasswordFocus] = useState(false)
   const navigator = useNavigate()
   const [form] = Form.useForm<FieldType>()
@@ -34,7 +34,7 @@ export default function Register(): React.JSX.Element {
       const { email } = await form.validateFields(['email'])
       setSendVerifyCodeLoading(true)
       await sendVerifyCode(email, language)
-      messageApi?.success(t('sendVerifyCodeSuccess'))
+      appMessage.success(t('sendVerifyCodeSuccess'))
     } finally {
       setTimeout(() => {
         setSendVerifyCodeLoading(false)
@@ -51,7 +51,7 @@ export default function Register(): React.JSX.Element {
         password: values.password,
         verifyCode: values.verifyCode
       })
-      messageApi?.success(t('registerSuccess'))
+      appMessage.success(t('registerSuccess'))
       setFinishLoading(false)
       navigator('/login', { viewTransition: true })
     } catch {

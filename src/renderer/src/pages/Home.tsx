@@ -1,11 +1,10 @@
-import { ColorPicker, Dropdown, Input, InputRef } from 'antd'
+import { App, ColorPicker, Dropdown, Input, InputRef } from 'antd'
 import { Sender } from '@ant-design/x'
 import MisakiLogo from '@renderer/assets/img/misaki-logo-symbol.svg?react'
 import { useEffect, useRef, useState } from 'react'
 import { useUserStore } from '@renderer/store/userStore'
 import TermsModal from '@renderer/components/common/TermsModal'
 import PolicyModal from '@renderer/components/common/PolicyModal'
-import { messageApi } from '@renderer/messageApi'
 import { useTranslation } from 'react-i18next'
 import { createChat, listChats } from '@renderer/api/front/chat'
 import { useNavigate } from 'react-router-dom'
@@ -17,6 +16,7 @@ import { listAssistants, updateAssistant } from '@renderer/api/front/assistant'
 import clsx from 'clsx'
 
 export default function Home(): React.JSX.Element {
+  const { message: appMessage } = App.useApp()
   const { jwt } = useUserStore()
   const {
     mainColor,
@@ -65,7 +65,7 @@ export default function Home(): React.JSX.Element {
       })
       const assistantRes = await listAssistants()
       setAssistants(assistantRes.data)
-      messageApi?.success(t('assistantNameUpdated'))
+      appMessage.success(t('assistantNameUpdated'))
     } else {
       setAssistantNameInputValue(enabledAssistant?.name || 'Misaki')
     }

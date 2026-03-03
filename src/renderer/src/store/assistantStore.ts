@@ -1,17 +1,16 @@
-import { AssistantFrontResponse } from '@renderer/types/api/assistant'
-import { Assistant } from '@renderer/types/entity/assistant'
+import { AssistantFrontResponse } from '@renderer/types/assistant'
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
 interface AssistantState {
-  assistants: Assistant[] | null
-  publicAssistants: Assistant[] | null
+  assistants: AssistantFrontResponse[] | null
+  publicAssistants: AssistantFrontResponse[] | null
 
-  assistant: Assistant | null
+  assistant: AssistantFrontResponse | null
 
-  setAssistants: (assistantFrontResponse: AssistantFrontResponse[]) => void
+  setAssistants: (assistants: AssistantFrontResponse[]) => void
   setPublicAssistants: (assistantFrontResponse: AssistantFrontResponse[]) => void
-  setAssistant: (assistant: AssistantFrontResponse | null) => void
+  setAssistant: (assistantFrontResponse: AssistantFrontResponse | null) => void
   reset: () => void
 }
 
@@ -26,9 +25,8 @@ export const useAssistantStore = create<AssistantState>()(
     (set) => ({
       ...initialState,
 
-      setAssistants: (assistantFrontResponse) => set({ assistants: assistantFrontResponse }),
-      setPublicAssistants: (assistantFrontResponse) =>
-        set({ publicAssistants: assistantFrontResponse }),
+      setAssistants: (assistants) => set({ assistants }),
+      setPublicAssistants: (publicAssistants) => set({ publicAssistants }),
       setAssistant: (assistant) => set({ assistant }),
       reset: () => set(initialState)
     }),
