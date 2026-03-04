@@ -22,8 +22,10 @@ export const listPublicAssistants = (
     >('/front/assistants/public', { params: { pageIndex, pageSize } })
     .then((res) => res.data)
 
-export const createAssistant = (data: AddAssistantFrontRequest): Promise<Result<void>> =>
-  api.post<Result<void>>('/front/assistants', data).then((res) => res.data)
+export const createAssistant = (
+  data: AddAssistantFrontRequest
+): Promise<Result<AssistantFrontResponse>> =>
+  api.post<Result<AssistantFrontResponse>>('/front/assistants', data).then((res) => res.data)
 
 export const copyAssistant = (id: string): Promise<Result<void>> =>
   api.post<Result<void>>(`/front/assistants/${id}`).then((res) => res.data)

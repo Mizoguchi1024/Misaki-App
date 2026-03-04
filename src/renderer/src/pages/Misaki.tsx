@@ -11,7 +11,10 @@ import {
   UnlockOutlined
 } from '@ant-design/icons'
 import {
+  copyAssistant,
   createAssistant,
+  deleteAssistant,
+  likeAssistant,
   listAssistants,
   listPublicAssistants,
   updateAssistant
@@ -75,6 +78,7 @@ export default function Misaki(): React.JSX.Element {
   const { models } = useModelStore()
   const [isEditing, setIsEditing] = useState(false)
   const [isShopOpen, setIsShopOpen] = useState(false)
+  const [form] = Form.useForm<FieldType>()
   const [publicAssistantsPage, setPublicAssistantsPage] = useState<Page>({
     total: 0,
     pageIndex: 1,
@@ -102,6 +106,7 @@ export default function Misaki(): React.JSX.Element {
 
   useEffect(() => {
     if (!assistant) {
+      form.resetFields()
       setIsEditing(true)
     } else {
       setIsEditing(false)
@@ -153,11 +158,12 @@ export default function Misaki(): React.JSX.Element {
           publicFlag: values.publicFlag,
           version: assistant.version
         })
+        appMessage.success(t('saveSuccess'))
         const assistantsRes = await listAssistants()
         setAssistants(assistantsRes.data)
-        appMessage.success(t('saveSuccess'))
+        setAssistant(assistantsRes.data.find((item) => item.id === assistant.id) || null)
       } else {
-        await createAssistant({
+        const createAssistantRes = await createAssistant({
           name: values.name,
           gender: values.gender,
           birthday: values.birthday.format('YYYY-MM-DD'),
@@ -166,9 +172,10 @@ export default function Misaki(): React.JSX.Element {
           modelId: values.modelId,
           publicFlag: values.publicFlag
         })
+        appMessage.success(t('createSuccess'))
         const assistantsRes = await listAssistants()
         setAssistants(assistantsRes.data)
-        appMessage.success(t('createSuccess'))
+        setAssistant(createAssistantRes.data)
       }
     } finally {
       setIsEditing(false)
@@ -221,7 +228,7 @@ export default function Misaki(): React.JSX.Element {
                         extra={
                           <div className="flex items-center gap-2">
                             <Tooltip
-                              title={t('like')}
+                              title={item.likedFlag ? t('cancel') : t('like')}
                               arrow={false}
                               classNames={{ container: 'select-none' }}
                             >
@@ -229,8 +236,21 @@ export default function Misaki(): React.JSX.Element {
                                 icon={<HeartOutlined />}
                                 color={item.likedFlag ? 'primary' : 'default'}
                                 variant="filled"
-                                onClick={() => {
-                                  /* TODO */
+                                onClick={async () => {
+                                  try {
+                                    await likeAssistant(item.id)
+                                    const publicAssistantsRes = await listPublicAssistants(
+                                      publicAssistantsPage.pageIndex,
+                                      publicAssistantsPage.pageSize
+                                    )
+                                    setPublicAssistants(publicAssistantsRes.data.list)
+                                    setPublicAssistantsPage({
+                                      ...publicAssistantsPage,
+                                      total: +publicAssistantsRes.data.total
+                                    })
+                                  } catch {
+                                    return
+                                  }
                                 }}
                               >
                                 {item.likes}
@@ -246,8 +266,15 @@ export default function Misaki(): React.JSX.Element {
                                 color="default"
                                 variant="filled"
                                 shape="circle"
-                                onClick={() => {
-                                  /* TODO */
+                                onClick={async () => {
+                                  try {
+                                    await copyAssistant(item.id)
+                                    appMessage.success(t('copySuccess'))
+                                    const assistantsRes = await listAssistants()
+                                    setAssistants(assistantsRes.data)
+                                  } catch {
+                                    return
+                                  }
                                 }}
                               />
                             </Tooltip>
@@ -298,7 +325,7 @@ export default function Misaki(): React.JSX.Element {
               </div>
             ) : (
               <Form
-                id="updateAssistantForm"
+                form={form}
                 name="basic"
                 autoComplete="off"
                 validateTrigger="onSubmit"
@@ -312,10 +339,10 @@ export default function Misaki(): React.JSX.Element {
                 variant="filled"
                 className="w-full h-full flex flex-col justify-between select-none"
               >
-                <div className="flex items-center justify-between w-full">
+                <div className="flex items-center justify-between w-full mb-6">
                   <Form.Item
                     name="name"
-                    rules={[{ required: true }]}
+                    rules={[{ required: true, message: t('nameRequired') }]}
                     initialValue={assistant?.name}
                     wrapperCol={{ span: 24 }}
                     className="m-0"
@@ -340,8 +367,21 @@ export default function Misaki(): React.JSX.Element {
                           variant="filled"
                           shape="circle"
                           icon={<DeleteOutlined />}
-                          onClick={() => {
-                            /* TODO */
+                          onClick={async () => {
+                            try {
+                              if (assistant.id === enabledAssistantId) {
+                                appMessage.warning(t('cantDeleteEnabledAssistant'))
+                                return
+                              }
+                              await deleteAssistant(assistant.id)
+                              appMessage.success(t('deleteSuccess'))
+                              const assistantsRes = await listAssistants()
+                              setAssistants(assistantsRes.data)
+                              setAssistant(assistantsRes.data[0] || null)
+                              setIsEditing(false)
+                            } catch {
+                              return
+                            }
                           }}
                         />
                       </Tooltip>
@@ -362,7 +402,6 @@ export default function Misaki(): React.JSX.Element {
                         />
                       </Tooltip>
                     )}
-
                     <Tooltip
                       title={t('cancel')}
                       arrow={false}
@@ -391,7 +430,6 @@ export default function Misaki(): React.JSX.Element {
                       }}
                     >
                       <Button
-                        form="updateAssistantForm"
                         htmlType="submit"
                         color="primary"
                         variant="filled"
@@ -404,7 +442,7 @@ export default function Misaki(): React.JSX.Element {
                 <Form.Item<FieldType>
                   name="gender"
                   label={t('gender')}
-                  initialValue={assistant?.gender}
+                  initialValue={assistant?.gender || 0}
                   rules={[{ required: true }]}
                 >
                   <Radio.Group>
@@ -431,11 +469,34 @@ export default function Misaki(): React.JSX.Element {
                   />
                 </Form.Item>
                 <Form.Item<FieldType>
+                  name="modelId"
+                  label={t('model')}
+                  initialValue={assistant?.modelId || models?.[0].id}
+                  rules={[{ required: true }]}
+                >
+                  <Select
+                    placeholder={t('model')}
+                    options={models?.map((model) => ({ label: model.name, value: model.id }))}
+                    className="w-32"
+                  />
+                </Form.Item>
+                <Form.Item<FieldType>
+                  name="publicFlag"
+                  label={t('publicFlag')}
+                  initialValue={assistant?.publicFlag || false}
+                  rules={[{ required: true }]}
+                >
+                  <Switch
+                    checkedChildren={<UnlockOutlined />}
+                    unCheckedChildren={<LockOutlined />}
+                  />
+                </Form.Item>
+                <Form.Item<FieldType>
                   name="personality"
                   label={t('personality')}
                   initialValue={assistant?.personality}
                 >
-                  <Input placeholder={t('occupation')} maxLength={20} showCount />
+                  <Input placeholder={t('personality')} maxLength={20} showCount />
                 </Form.Item>
                 <Form.Item<FieldType>
                   name="detail"
@@ -448,31 +509,6 @@ export default function Misaki(): React.JSX.Element {
                     maxLength={50}
                     autoSize={{ minRows: 2, maxRows: 4 }}
                   ></Input.TextArea>
-                </Form.Item>
-                <Form.Item<FieldType>
-                  name="modelId"
-                  label={t('model')}
-                  initialValue={assistant?.modelId}
-                  rules={[{ required: true }]}
-                >
-                  <Select
-                    placeholder={t('model')}
-                    options={models?.map((model) => ({ label: model.name, value: model.id }))}
-                  />
-                </Form.Item>
-                <Form.Item<FieldType>
-                  name="publicFlag"
-                  label={t('publicFlag')}
-                  initialValue={assistant?.publicFlag}
-                  rules={[{ required: true }]}
-                >
-                  <Switch
-                    checkedChildren={<UnlockOutlined />}
-                    unCheckedChildren={<LockOutlined />}
-                  />
-                </Form.Item>
-                <Form.Item name="createTime" label={t('createTime')} className="m-0">
-                  <span>{assistant?.createTime}</span>
                 </Form.Item>
               </Form>
             )}
@@ -505,7 +541,10 @@ export default function Misaki(): React.JSX.Element {
                     variant="filled"
                     shape="circle"
                     icon={<EditOutlined />}
-                    onClick={() => setIsEditing(!isEditing)}
+                    onClick={() => {
+                      form.resetFields()
+                      setIsEditing(!isEditing)
+                    }}
                   />
                 </Tooltip>
                 <Tooltip
@@ -540,7 +579,7 @@ export default function Misaki(): React.JSX.Element {
               </div>
             </div>
             <Descriptions
-              column={5}
+              column={4}
               items={[
                 {
                   key: '1',
@@ -554,14 +593,13 @@ export default function Misaki(): React.JSX.Element {
                 },
                 {
                   key: '3',
-                  label: t('publicFlag'),
-                  children: assistant?.publicFlag ? t('public') : t('private')
+                  label: t('createTime'),
+                  children: dayjs(assistant?.createTime).format('YYYY-MM-DD')
                 },
                 {
                   key: '4',
-                  span: 2,
-                  label: t('createTime'),
-                  children: assistant?.createTime
+                  label: t('publicFlag'),
+                  children: assistant?.publicFlag ? t('public') : t('private')
                 },
                 {
                   key: '5',

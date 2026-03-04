@@ -19,7 +19,15 @@ export default function AssistantScrollList(): React.JSX.Element {
 
   useEffect(() => {
     setAssistant(assistants?.[0] || null)
+  }, [])
 
+  useEffect(() => {
+    if (assistant && !assistants?.some((item) => item.id === assistant.id)) {
+      setAssistant(assistants?.[0] || null)
+    }
+  }, [assistants])
+
+  useEffect(() => {
     scope.current = createScope({ root }).add(() => {
       // TODO 需要改挂载一次性？
       const rootObj = root.current
@@ -62,7 +70,7 @@ export default function AssistantScrollList(): React.JSX.Element {
             <Badge
               count={
                 item.id === enabledAssistantId ? (
-                  <CheckCircleFilled className="text-green-500" />
+                  <CheckCircleFilled style={{ color: 'oklch(79.2% 0.209 151.711)' }} />
                 ) : (
                   0
                 )
@@ -83,7 +91,7 @@ export default function AssistantScrollList(): React.JSX.Element {
                 }
                 className={clsx(
                   'flex-none cursor-pointer select-none border-0 duration-250',
-                  item.id === assistant?.id && 'outline-5'
+                  assistant && item.id === assistant.id && 'outline-5'
                 )}
                 style={{ outlineColor: mainColor }}
                 onClick={() => {
