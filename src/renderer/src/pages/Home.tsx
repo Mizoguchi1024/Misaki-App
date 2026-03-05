@@ -6,7 +6,7 @@ import { useUserStore } from '@renderer/store/userStore'
 import TermsModal from '@renderer/components/common/TermsModal'
 import PolicyModal from '@renderer/components/common/PolicyModal'
 import { useTranslation } from 'react-i18next'
-import { createChat, listChats } from '@renderer/api/front/chat'
+import { createChat, sendMessage } from '@renderer/api/front/chat'
 import { useNavigate } from 'react-router-dom'
 import { useChatStore } from '@renderer/store/chatStore'
 import { useSettingsStore } from '@renderer/store/settingsStore'
@@ -16,6 +16,7 @@ import { listAssistants, updateAssistant } from '@renderer/api/front/assistant'
 import clsx from 'clsx'
 
 export default function Home(): React.JSX.Element {
+  const { t } = useTranslation('home')
   const { message: appMessage } = App.useApp()
   const { jwt } = useUserStore()
   const {
@@ -25,17 +26,16 @@ export default function Home(): React.JSX.Element {
     version: settingsVersion,
     setSettings
   } = useSettingsStore()
-  const { setChats } = useChatStore()
+  const { isStreaming, chats, setChats, stopSendMessage } = useChatStore()
   const { assistants, setAssistants } = useAssistantStore()
-  const { t } = useTranslation('home')
   const navigate = useNavigate()
-  const [message, setMessage] = useState('')
-  const [loading, setLoading] = useState(false)
   const [colorPickerValue, setColorPickerValue] = useState(mainColor)
   const [assistantNameInputValue, setAssistantNameInputValue] = useState(
     assistants?.find((assistant) => assistant.id === enabledAssistantId)?.name || 'Misaki'
   )
   const assistantInputRef = useRef<InputRef>(null)
+  const [isTermsModalOpen, setIsTermsModalOpen] = useState(false)
+  const [isPolicyModalOpen, setIsPolicyModalOpen] = useState(false)
 
   useEffect(() => {
     setColorPickerValue(mainColor)
@@ -72,26 +72,6 @@ export default function Home(): React.JSX.Element {
       label: '天气'
     }
   ]
-
-  const [isTermsModalOpen, setIsTermsModalOpen] = useState(false)
-
-  const showTermsModal = (): void => {
-    setIsTermsModalOpen(true)
-  }
-
-  const handleTermsCancel = (): void => {
-    setIsTermsModalOpen(false)
-  }
-
-  const [isPolicyModalOpen, setIsPolicyModalOpen] = useState(false)
-
-  const showPolicyModal = (): void => {
-    setIsPolicyModalOpen(true)
-  }
-
-  const handlePolicyCancel = (): void => {
-    setIsPolicyModalOpen(false)
-  }
 
   return (
     <div className="flex flex-col h-full">
@@ -135,8 +115,7 @@ export default function Home(): React.JSX.Element {
                 : 'bg-white dark:bg-neutral-800',
               'transition-all duration-500'
             )}
-            value={message}
-            loading={loading}
+            loading={isStreaming}
             placeholder={!jwt ? t('pleaseLoginFirst') : t('greetings')}
             readOnly={!jwt}
             submitType="enter"
@@ -155,41 +134,32 @@ export default function Home(): React.JSX.Element {
                 </div>
               )
             }}
-            onChange={(value) => {
-              setMessage(value)
-            }}
-            onSubmit={async () => {
+            onSubmit={async (value) => {
               try {
-                setLoading(true)
-                const chatId = (await createChat()).data.id
-                const chatRes = await listChats()
-                setChats(chatRes.data)
-                setMessage('')
-                setLoading(false)
-                navigate(`/chat/${chatId}`, {
-                  state: { firstMessage: message },
+                const newChat = (await createChat()).data
+                setChats([...(chats ?? []), newChat])
+                sendMessage(newChat.id, { content: value })
+                navigate(`/chat/${newChat.id}`, {
                   viewTransition: true
                 })
               } catch {
-                setTimeout(() => {
-                  setLoading(false)
-                }, 1000)
+                return
               }
             }}
             onCancel={() => {
-              setLoading(false)
+              stopSendMessage()
             }}
           />
         </div>
       </div>
       <div className="h-14 flex justify-center items-center select-none">
         <span>{t('footer.agreement')}</span>
-        <a onClick={showTermsModal}>{t('footer.terms')}</a>
+        <a onClick={() => setIsTermsModalOpen(true)}>{t('footer.terms')}</a>
         <span>{t('footer.andRead')}</span>
-        <a onClick={showPolicyModal}>{t('footer.policy')}</a>
+        <a onClick={() => setIsPolicyModalOpen(true)}>{t('footer.policy')}</a>
         <span>{t('footer.period')}</span>
-        <TermsModal open={isTermsModalOpen} onCancel={handleTermsCancel} />
-        <PolicyModal open={isPolicyModalOpen} onCancel={handlePolicyCancel} />
+        <TermsModal open={isTermsModalOpen} onCancel={() => setIsTermsModalOpen(false)} />
+        <PolicyModal open={isPolicyModalOpen} onCancel={() => setIsPolicyModalOpen(false)} />
       </div>
     </div>
   )

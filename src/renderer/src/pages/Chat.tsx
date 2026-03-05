@@ -13,10 +13,9 @@ import { useChatStore } from '@renderer/store/chatStore'
 import { useModelStore } from '@renderer/store/modelStore'
 import { useSettingsStore } from '@renderer/store/settingsStore'
 import { useUserStore } from '@renderer/store/userStore'
-import { SendMessageFrontRequest } from '@renderer/types/chat'
 import { Avatar } from 'antd'
 import { useEffect, useState } from 'react'
-import { useLocation, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 
 const actionItems = [
   {
@@ -33,96 +32,21 @@ const actionItems = [
 
 export default function Chat(): React.JSX.Element {
   const { id: chatId } = useParams()
-  const { jwt, username, avatarPath } = useUserStore()
-  const { enabledAssistantId, getApiBaseUrl, getOssBaseUrl } = useSettingsStore()
+  const { username, avatarPath } = useUserStore()
+  const { enabledAssistantId, getOssBaseUrl } = useSettingsStore()
   const { assistants } = useAssistantStore()
   const { models } = useModelStore()
-  const { chats, messages, setChats, setMessages, setFullMessages, setParentId } = useChatStore()
-  const location = useLocation()
-  const { firstMessage } = location.state || {}
-  const [loading, setLoading] = useState(false)
-  const [userContent, setUserContent] = useState<string | null>(null)
-  const [assistantContent, setAssistantContent] = useState<string | null>(null)
-
-  const handleSendMessage = async (message: string): Promise<void> => {
-    try {
-      setLoading(true)
-      setUserContent(message)
-      const parentId = useChatStore.getState().parentId
-      // const tools = await window.api.listMcpTools()
-      const data: SendMessageFrontRequest = {
-        content: message,
-        parentId: parentId ?? undefined
-        // tools
-      }
-
-      const response = await fetch(`${getApiBaseUrl()}/front/chats/${chatId}/messages`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${jwt}`,
-          'X-Timestamp': Date.now().toString(),
-          'X-Nonce': crypto.randomUUID()
-        },
-        body: JSON.stringify(data)
-      })
-
-      if (!response.ok) {
-        throw new Error(`Request failed with status ${response.status}`)
-      }
-
-      if (!response.body) {
-        throw new Error('Response body is empty')
-      }
-
-      const reader = response.body.getReader()
-      const decoder = new TextDecoder()
-      let buffer = ''
-
-      while (true) {
-        const { done, value } = await reader.read()
-        if (done) break
-        buffer += decoder.decode(value, { stream: true })
-
-        const lines = buffer.split('\n')
-        buffer = lines.pop() || ''
-
-        for (const line of lines) {
-          const trimmed = line.trim()
-
-          if (!trimmed) continue
-          if (!trimmed.startsWith('data:')) continue
-
-          const content = trimmed.replace(/^data:\s*/, '')
-          if (content === '[DONE]') return
-          console.log(content)
-          setAssistantContent((x) => x + content)
-        }
-      }
-    } catch (e) {
-      console.error(e)
-    } finally {
-      setLoading(false)
-    }
-  }
+  const { setMessages, setFullMessages, setParentId, sendMessage, stopSendMessage } = useChatStore()
+  const messages = useChatStore((state) => state.messages)
+  const isStreaming = useChatStore((state) => state.isStreaming)
+  const [senderValue, setSenderValue] = useState('')
 
   useEffect(() => {
     const load = async (): Promise<void> => {
       try {
-        const messagesRes = await listMessages(chatId!)
-        setMessages(messagesRes.data)
-        if (messagesRes.data.length == 0 && firstMessage) {
-          setParentId(null)
-          await handleSendMessage(firstMessage)
-          if (!chats?.find((chat) => chat.id === chatId)?.title) {
-            await createChatTitle(chatId!)
-            const chatsRes = await listChats()
-            setChats(chatsRes.data)
-          }
-          const newMessagesRes = await listMessages(chatId!)
-          setMessages(newMessagesRes.data)
-          setUserContent(null)
-          setAssistantContent(null)
+        if (!isStreaming) {
+          const messagesRes = await listMessages(chatId!)
+          setMessages(messagesRes.data)
         }
       } catch {
         return
@@ -130,14 +54,15 @@ export default function Chat(): React.JSX.Element {
     }
 
     load()
-  }, [chatId])
+  }, [chatId, isStreaming])
 
   const update = (key: string | number, editable: any) => {}
 
   const role: BubbleListProps['role'] = {
     ASSISTANT: {
       typing: false,
-      header: 'ASSISTANT',
+      header:
+        assistants?.find((assistant) => assistant.id === enabledAssistantId)?.name || 'Misaki',
       variant: 'borderless',
       avatar: () => (
         <Avatar
@@ -218,19 +143,25 @@ export default function Chat(): React.JSX.Element {
           }
           autoScroll={false}
         />
-        {userContent && <Bubble role="user" content={userContent}></Bubble>}
-        {assistantContent && <Bubble role="ai" content={assistantContent}></Bubble>}
       </div>
       <div className="absolute bottom-12 left-1/2 -translate-x-1/2 w-160">
         <Sender
           className="bg-white/70 dark:bg-white/20 backdrop-blur-xs hover:backdrop-blur-sm ease-in-out duration-500"
-          loading={loading}
-          onSubmit={async (value) => {
-            await handleSendMessage(value)
-            const messagesRes = await listMessages(chatId!)
-            setMessages(messagesRes.data)
-            setUserContent(null)
-            setAssistantContent(null)
+          loading={isStreaming}
+          value={senderValue}
+          onChange={(value) => {
+            setSenderValue(value)
+          }}
+          onSubmit={async () => {
+            setSenderValue('')
+            await sendMessage(chatId!, { content: senderValue })
+            setTimeout(async () => {
+              const messagesRes = await listMessages(chatId!)
+              setMessages(messagesRes.data)
+            }, 1000)
+          }}
+          onCancel={() => {
+            stopSendMessage()
           }}
         />
       </div>
