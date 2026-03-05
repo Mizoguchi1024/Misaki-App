@@ -11,7 +11,7 @@ export default function TermsModal({ open, onCancel }): React.JSX.Element {
       destroyOnHidden
       className="select-none"
     >
-      <div className="max-h-120 overflow-y-auto scrollbar-none">
+      <div className="max-h-120 overflow-y-auto scrollbar-style">
         <p className="text-xl">
           <b>感谢您使用 Misaki！</b>
         </p>

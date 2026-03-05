@@ -330,10 +330,11 @@ export default function SettingsModal({ open, onCancel }): React.JSX.Element {
       destroyOnHidden
     >
       <Tabs
+        animated
         items={tabItems}
-        centered
         tabPlacement="start"
         classNames={{
+          item: 'pl-0.5',
           header: 'pt-1',
           content: 'p-0'
         }}

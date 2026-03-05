@@ -165,6 +165,7 @@ export default function MainLayout(): React.JSX.Element {
       </Header>
       <Layout className="bg-transparent">
         <Sider
+          breakpoint="md"
           collapsible
           collapsed={collapsed}
           onCollapse={(value) => setCollapsed(value)}

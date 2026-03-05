@@ -1,0 +1,9 @@
+{
+    "chatDetail": "聊天详情",
+    "title": "标题",
+    "none": "无",
+    "id": "ID",
+    "token": "Token使用量",
+    "createTime": "创建时间",
+    "updateTime": "更新时间"
+}

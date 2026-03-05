@@ -26,7 +26,7 @@ export default function Search(): React.JSX.Element {
 
   return (
     <div className="h-full relative">
-      <div className="h-full pt-16 pb-40 flex flex-col items-center gap-5 overflow-y-auto scrollbar-style">
+      <div className="h-full pt-16 pb-40 flex flex-col items-center gap-5 overflow-y-auto scrollbar-style mask-b-from-84%">
         {results && results.length > 0 ? (
           results.map((item) => (
             <Card
@@ -34,8 +34,8 @@ export default function Search(): React.JSX.Element {
               onClick={() => navigate(`/chat/${item.id}`, { viewTransition: true })}
               className={clsx(
                 backgroundPath &&
-                  'bg-white/20 dark:bg-neutral-800/20 border-white/60 dark:border-white/16 backdrop-blur-xl hover:backdrop-blur-3xl',
-                'w-2/3 select-none cursor-pointer hover:shadow-xl inset-shadow-[0_0_6px_rgba(255,255,255,0.25)] dark:hover:shadow-neutral-600 ease-in-out duration-500'
+                  'bg-white/20 dark:bg-neutral-800/20 border-white/60 dark:border-white/16 inset-shadow-[0_0_6px_rgba(255,255,255,0.25)] backdrop-blur-xl hover:backdrop-blur-3xl',
+                'w-2/3 select-none cursor-pointer hover:shadow-xl dark:hover:shadow-neutral-600 ease-in-out duration-500'
               )}
             >
               <Spin spinning={loading} delay={250} indicator={<LoadingOutlined spin />}>
@@ -56,12 +56,7 @@ export default function Search(): React.JSX.Element {
       </div>
       <div className="absolute bottom-1/12 left-1/2 -translate-x-1/2 w-4/7">
         <Sender
-          className={clsx(
-            backgroundPath
-              ? 'bg-white/60 dark:bg-neutral-800/60 backdrop-blur-xs hover:backdrop-blur-sm '
-              : 'bg-white dark:bg-neutral-800',
-            'transition-all duration-500'
-          )}
+          className="bg-white/70 dark:bg-white/20 backdrop-blur-xs hover:backdrop-blur-sm ease-in-out duration-500"
           placeholder={t('searchChats')}
           loading={loading}
           onSubmit={async (value) => {

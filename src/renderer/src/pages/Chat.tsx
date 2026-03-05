@@ -13,40 +13,47 @@ import { useChatStore } from '@renderer/store/chatStore'
 import { useModelStore } from '@renderer/store/modelStore'
 import { useSettingsStore } from '@renderer/store/settingsStore'
 import { useUserStore } from '@renderer/store/userStore'
-import { Avatar } from 'antd'
+import { App, Avatar } from 'antd'
 import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useParams } from 'react-router-dom'
 
-const actionItems = [
-  {
-    key: 'retry',
-    icon: <RedoOutlined />,
-    label: 'Retry'
-  },
-  {
-    key: 'copy',
-    icon: <CopyOutlined />,
-    label: 'Copy'
-  }
-]
-
 export default function Chat(): React.JSX.Element {
+  const { t } = useTranslation('chat')
   const { id: chatId } = useParams()
   const { username, avatarPath } = useUserStore()
   const { enabledAssistantId, getOssBaseUrl } = useSettingsStore()
   const { assistants } = useAssistantStore()
   const { models } = useModelStore()
-  const { setMessages, setFullMessages, setParentId, sendMessage, stopSendMessage } = useChatStore()
+  const {
+    chats,
+    setChats,
+    setMessages,
+    setFullMessages,
+    setParentId,
+    sendMessage,
+    stopSendMessage
+  } = useChatStore()
   const messages = useChatStore((state) => state.messages)
   const isStreaming = useChatStore((state) => state.isStreaming)
   const [senderValue, setSenderValue] = useState('')
 
+  const { message:appMessage } = App.useApp()
   useEffect(() => {
     const load = async (): Promise<void> => {
       try {
         if (!isStreaming) {
           const messagesRes = await listMessages(chatId!)
+          setParentId(messagesRes.data[messagesRes.data.length - 1].id)
+          setFullMessages(messagesRes.data)
           setMessages(messagesRes.data)
+
+          appMessage.success(t('triggered'))
+          // if (!chats?.find((chat) => chat.id === chatId)?.title) {
+          //   await createChatTitle(chatId!)
+          //   const chatRes = await listChats()
+          //   setChats(chatRes.data)
+          // }
         }
       } catch {
         return
@@ -73,7 +80,8 @@ export default function Chat(): React.JSX.Element {
                 model.id ===
                 assistants?.find((assistant) => assistant.id === enabledAssistantId)?.modelId
             )?.avatarPath
-              ? models?.find(
+              ? getOssBaseUrl() +
+                models?.find(
                   (model) =>
                     model.id ===
                     assistants?.find((assistant) => assistant.id === enabledAssistantId)?.modelId
@@ -91,7 +99,23 @@ export default function Chat(): React.JSX.Element {
           }
         />
       ),
-      footer: (content) => <Actions items={actionItems} onClick={() => console.log(content)} />
+      footer: (content) => (
+        <Actions
+          items={[
+            {
+              key: 'retry',
+              icon: <RedoOutlined />,
+              label: t('retry')
+            },
+            {
+              key: 'copy',
+              icon: <CopyOutlined />,
+              label: t('copy')
+            }
+          ]}
+          onClick={() => console.log(content)}
+        />
+      )
     },
     USER: (data) => ({
       placement: 'end',
@@ -113,7 +137,7 @@ export default function Chat(): React.JSX.Element {
               : {
                   key: 'edit',
                   icon: <EditOutlined />,
-                  label: 'edit'
+                  label: t('edit')
                 }
           ]}
           onClick={({ key }) => update(data.key, { editable: key === 'edit' })}
@@ -131,23 +155,27 @@ export default function Chat(): React.JSX.Element {
 
   return (
     <div className="relative h-full">
-      <div className="max-h-full px-12 pb-40 overflow-y-auto">
-        <Bubble.List
-          role={role}
-          items={
-            messages?.map((item) => ({
-              key: item.id,
-              role: item.type,
-              content: item.content
-            })) ?? []
-          }
-          autoScroll={false}
-        />
-      </div>
-      <div className="absolute bottom-12 left-1/2 -translate-x-1/2 w-160">
+      <Bubble.List
+        role={role}
+        items={
+          messages?.map((item) => ({
+            key: item.id,
+            role: item.type,
+            content: item.content
+          })) ?? []
+        }
+        className="h-full mask-b-from-84%"
+        classNames={{
+          scroll: 'px-12 pt-6 pb-24 w-10',
+          avatar: 'select-none',
+          header: 'select-none'
+        }}
+      />
+      <div className="absolute bottom-1/12 left-1/2 -translate-x-1/2 w-4/7">
         <Sender
           className="bg-white/70 dark:bg-white/20 backdrop-blur-xs hover:backdrop-blur-sm ease-in-out duration-500"
           loading={isStreaming}
+          placeholder={t('chatWithMe')}
           value={senderValue}
           onChange={(value) => {
             setSenderValue(value)
@@ -155,16 +183,18 @@ export default function Chat(): React.JSX.Element {
           onSubmit={async () => {
             setSenderValue('')
             await sendMessage(chatId!, { content: senderValue })
-            setTimeout(async () => {
-              const messagesRes = await listMessages(chatId!)
-              setMessages(messagesRes.data)
-            }, 1000)
           }}
           onCancel={() => {
             stopSendMessage()
           }}
         />
       </div>
+      <span className="absolute bottom-6 left-1/2 -translate-x-1/2 select-none">
+        {t('answerMayNotBeAccurate', {
+          name:
+            assistants?.find((assistant) => assistant.id === enabledAssistantId)?.name || 'Misaki'
+        })}
+      </span>
     </div>
   )
 }

@@ -24,7 +24,7 @@ export const updateChatTitle = (
   id: string,
   data: UpdateChatTitleFrontRequest
 ): Promise<Result<void>> =>
-  api.put<Result<void>>(`/front/chats/${id}/messages`, data).then((res) => res.data)
+  api.put<Result<void>>(`/front/chats/${id}/title`, data).then((res) => res.data)
 
 export const listChats = (): Promise<Result<ChatFrontResponse[]>> =>
   api.get<Result<ChatFrontResponse[]>>('/front/chats').then((res) => res.data)

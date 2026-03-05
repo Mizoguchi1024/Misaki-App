@@ -8,7 +8,7 @@ import {
 } from '@ant-design/icons'
 import { createFeedback, deleteFeedback, listFeedbacks } from '@renderer/api/front/feedback'
 import { useFeedbackStore } from '@renderer/store/feedbackStore'
-import { App, Button, Card, Form, FormProps, Input, Modal, Select, Tabs, Tag } from 'antd'
+import { App, Button, Card, Divider, Form, FormProps, Input, Modal, Select, Tabs, Tag } from 'antd'
 import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import EmptyState from './EmptyState'
@@ -164,15 +164,13 @@ export default function FeedbackModal({ open, onCancel }): React.JSX.Element {
                 />
               ]}
             >
-              <div className="flex flex-col gap-4">
-                <div className="w-full">{item.content}</div>
-                {item.reply && (
-                  <>
-                    <hr className="border-neutral-100 dark:border-neutral-700" />
-                    <div className="w-full">{item.reply}</div>
-                  </>
-                )}
-              </div>
+              <div className="w-full">{item.content}</div>
+              {item.reply && (
+                <>
+                  <Divider />
+                  <div className="w-full">{item.reply}</div>
+                </>
+              )}
             </Card>
           ))}
         </div>
@@ -192,11 +190,12 @@ export default function FeedbackModal({ open, onCancel }): React.JSX.Element {
         destroyOnHidden
       >
         <Tabs
-          centered
-          tabPlacement="start"
+          animated
           items={tabItems}
+          tabPlacement="start"
           classNames={{
-            header: 'pt-2',
+            item: 'pl-0.5',
+            header: 'pt-1',
             content: 'p-0'
           }}
         />

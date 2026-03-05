@@ -44,7 +44,7 @@ export default function App({ children }: { children?: React.ReactNode }): React
         }}
         locale={LanguageAntdMap[language]}
       >
-        <AntdApp>{children}</AntdApp>
+        <AntdApp message={{ maxCount: 5 }}>{children}</AntdApp>
       </ConfigProvider>
     </StyleProvider>
   )

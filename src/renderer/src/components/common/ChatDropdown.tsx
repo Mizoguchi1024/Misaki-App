@@ -1,29 +1,63 @@
-import { DeleteOutlined, EditOutlined, EllipsisOutlined } from '@ant-design/icons'
-import { Dropdown, Button, MenuProps, Modal } from 'antd'
+import {
+  DeleteOutlined,
+  EllipsisOutlined,
+  InfoCircleOutlined,
+  PushpinOutlined
+} from '@ant-design/icons'
+import { deleteChat, listChats } from '@renderer/api/front/chat'
+import { Dropdown, Button, MenuProps, App } from 'antd'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useNavigate, useParams } from 'react-router-dom'
+import ChatDetailModal from './ChatDetailModal'
+import { useChatStore } from '@renderer/store/chatStore'
 
 export default function ChatDropdown(): React.JSX.Element {
   const { t } = useTranslation('chatDropdown')
-  const [isDeleteConfirmModalOpen, setIsDeleteConfirmModalOpen] = useState(false)
+  const { message: appMessage } = App.useApp()
+  const navigate = useNavigate()
+  const { id: chatId } = useParams()
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false)
+  const {setChats} = useChatStore()
 
   const list: MenuProps['items'] = [
     {
-      key: '/updateTitle',
-      label: t('updateTitle'),
-      icon: <EditOutlined />
+      key: 'pin',
+      label: t('pin'),
+      icon: <PushpinOutlined />
     },
     {
-      key: '/delete',
+      key: 'detail',
+      label: t('detail'),
+      icon: <InfoCircleOutlined />
+    },
+    {
+      type: 'divider'
+    },
+    {
+      key: 'delete',
       label: t('delete'),
-      icon: <DeleteOutlined />
+      icon: <DeleteOutlined />,
+      danger: true
     }
   ]
 
-  const onClick: MenuProps['onClick'] = ({ key }) => {
+  const onClick: MenuProps['onClick'] = async ({ key }) => {
     switch (key) {
-      case '/delete':
-        setIsDeleteConfirmModalOpen(true)
+      case 'detail':
+        setIsDetailModalOpen(true)
+        break
+      case 'delete':
+        try {
+          await deleteChat(chatId!)
+          appMessage.success(t('deleteSuccess'))
+          const chatsRes = await listChats()
+          setChats(chatsRes.data)
+          navigate('/', { viewTransition: true })
+        } catch {
+          return
+        }
+
         break
     }
   }
@@ -32,7 +66,7 @@ export default function ChatDropdown(): React.JSX.Element {
     <>
       <Dropdown
         menu={{ items: list, onClick }}
-        placement="bottomLeft"
+        placement="bottomRight"
         trigger={['click']}
         classNames={{
           itemContent: 'select-none'
@@ -45,13 +79,7 @@ export default function ChatDropdown(): React.JSX.Element {
           icon={<EllipsisOutlined />}
         ></Button>
       </Dropdown>
-      <Modal
-        title={t('title')}
-        centered
-        open={isDeleteConfirmModalOpen}
-        onCancel={() => setIsDeleteConfirmModalOpen(false)}
-        className="select-none"
-      ></Modal>
+      <ChatDetailModal open={isDetailModalOpen} onCancel={() => setIsDetailModalOpen(false)} />
     </>
   )
 }

@@ -1,12 +1,14 @@
 import { createDraggable, createScope, Scope } from 'animejs'
 import { CheckCircleFilled, HeartOutlined, PlusOutlined } from '@ant-design/icons'
-import { Avatar, Badge, Tooltip } from 'antd'
+import { Avatar, Badge, theme, Tooltip } from 'antd'
 import { useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useAssistantStore } from '@renderer/store/assistantStore'
 import { useModelStore } from '@renderer/store/modelStore'
 import { useSettingsStore } from '@renderer/store/settingsStore'
 import clsx from 'clsx'
+
+const { useToken } = theme
 
 export default function AssistantScrollList(): React.JSX.Element {
   const { t } = useTranslation('assistantScrollList')
@@ -16,6 +18,9 @@ export default function AssistantScrollList(): React.JSX.Element {
   const root = useRef<HTMLDivElement>(null)
   const scope = useRef<Scope>(null)
   const avatarList = useRef<HTMLDivElement>(null)
+  const {
+    token: { colorSuccess }
+  } = useToken()
 
   useEffect(() => {
     setAssistant(assistants?.[0] || null)
@@ -52,11 +57,7 @@ export default function AssistantScrollList(): React.JSX.Element {
   }, [assistants])
 
   return (
-    <div
-      ref={root}
-      className="w-120 h-full overflow-hidden mask-[linear-gradient(to_right,transparent,black_40px,black_calc(100%-40px),transparent)]
-    [-webkit-mask-image:linear-gradient(to_right,transparent,black_40px,black_calc(100%-40px),transparent)]"
-    >
+    <div ref={root} className="w-120 h-full overflow-hidden mask-x-from-90%">
       <div ref={avatarList} className="flex items-center h-full pl-10 gap-6">
         {assistants?.map((item) => (
           <Tooltip
@@ -70,7 +71,7 @@ export default function AssistantScrollList(): React.JSX.Element {
             <Badge
               count={
                 item.id === enabledAssistantId ? (
-                  <CheckCircleFilled style={{ color: 'oklch(79.2% 0.209 151.711)' }} />
+                  <CheckCircleFilled style={{ color: colorSuccess }} />
                 ) : (
                   0
                 )

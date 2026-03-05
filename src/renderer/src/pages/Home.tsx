@@ -26,7 +26,7 @@ export default function Home(): React.JSX.Element {
     version: settingsVersion,
     setSettings
   } = useSettingsStore()
-  const { isStreaming, chats, setChats, stopSendMessage } = useChatStore()
+  const { isStreaming, chats, setParentId, setChats, stopSendMessage } = useChatStore()
   const { assistants, setAssistants } = useAssistantStore()
   const navigate = useNavigate()
   const [colorPickerValue, setColorPickerValue] = useState(mainColor)
@@ -36,6 +36,10 @@ export default function Home(): React.JSX.Element {
   const assistantInputRef = useRef<InputRef>(null)
   const [isTermsModalOpen, setIsTermsModalOpen] = useState(false)
   const [isPolicyModalOpen, setIsPolicyModalOpen] = useState(false)
+
+  useEffect(() => {
+    setParentId(null)
+  }, [])
 
   useEffect(() => {
     setColorPickerValue(mainColor)
@@ -116,7 +120,7 @@ export default function Home(): React.JSX.Element {
               'transition-all duration-500'
             )}
             loading={isStreaming}
-            placeholder={!jwt ? t('pleaseLoginFirst') : t('greetings')}
+            placeholder={!jwt ? t('pleaseLoginFirst') : t('chatWithMe')}
             readOnly={!jwt}
             submitType="enter"
             footer={() => {
@@ -137,7 +141,7 @@ export default function Home(): React.JSX.Element {
             onSubmit={async (value) => {
               try {
                 const newChat = (await createChat()).data
-                setChats([...(chats ?? []), newChat])
+                setChats([newChat, ...(chats ?? [])])
                 sendMessage(newChat.id, { content: value })
                 navigate(`/chat/${newChat.id}`, {
                   viewTransition: true
