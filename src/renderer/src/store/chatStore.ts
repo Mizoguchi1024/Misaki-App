@@ -5,17 +5,20 @@ import { persist } from 'zustand/middleware'
 interface ChatState {
   chats: ChatFrontResponse[] | null
   messages: MessageFrontResponse[] | null
+  fullMessages: MessageFrontResponse[] | null
   parentId: string | null
 
   setChats: (chats: ChatFrontResponse[]) => void
   setMessages: (messages: MessageFrontResponse[]) => void
-  setParentId: (parentId: string) => void
+  setFullMessages: (fullMessages: MessageFrontResponse[]) => void
+  setParentId: (parentId: string | null) => void
   reset: () => void
 }
 
 const initialState = {
   chats: null,
   messages: null,
+  fullMessages: null,
   parentId: null
 }
 
@@ -59,6 +62,7 @@ export const useChatStore = create<ChatState>()(
             parentId: path.length ? path[path.length - 1].id : ''
           }
         }),
+      setFullMessages: (fullMessages) => set({ fullMessages }),
       setParentId: (parentId) => set({ parentId }),
       reset: () => set(initialState)
     }),

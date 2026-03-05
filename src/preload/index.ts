@@ -3,6 +3,7 @@ import { contextBridge, ipcRenderer } from 'electron'
 // Custom APIs for renderer
 const api = {
   getVersions: () => ipcRenderer.invoke('get-versions'),
+  listMcpServers: () => ipcRenderer.invoke('mcp-server-version'),
   listMcpTools: () => ipcRenderer.invoke('mcp-list-tools'),
   getSystemTheme: () => ipcRenderer.sendSync('system-theme'),
   onSystemThemeChange: (callback) =>

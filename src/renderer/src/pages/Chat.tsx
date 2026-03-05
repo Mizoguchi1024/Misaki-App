@@ -1,14 +1,16 @@
 import {
-  AntDesignOutlined,
   CheckOutlined,
   CopyOutlined,
   EditOutlined,
+  HeartOutlined,
   RedoOutlined,
   UserOutlined
 } from '@ant-design/icons'
 import { Actions, Bubble, BubbleListProps, Sender } from '@ant-design/x'
-import { listMessages, sendMessage } from '@renderer/api/front/chat'
+import { createChatTitle, listChats, listMessages } from '@renderer/api/front/chat'
+import { useAssistantStore } from '@renderer/store/assistantStore'
 import { useChatStore } from '@renderer/store/chatStore'
+import { useModelStore } from '@renderer/store/modelStore'
 import { useSettingsStore } from '@renderer/store/settingsStore'
 import { useUserStore } from '@renderer/store/userStore'
 import { SendMessageFrontRequest } from '@renderer/types/chat'
@@ -30,106 +32,105 @@ const actionItems = [
 ]
 
 export default function Chat(): React.JSX.Element {
-  const { chatId } = useParams()
-  const { username } = useUserStore()
-  const { messages, setMessages, setParentId } = useChatStore()
-  const { baseUrl } = useSettingsStore()
+  const { id: chatId } = useParams()
+  const { jwt, username, avatarPath } = useUserStore()
+  const { enabledAssistantId, getApiBaseUrl, getOssBaseUrl } = useSettingsStore()
+  const { assistants } = useAssistantStore()
+  const { models } = useModelStore()
+  const { chats, messages, setChats, setMessages, setFullMessages, setParentId } = useChatStore()
   const location = useLocation()
   const { firstMessage } = location.state || {}
-  const [message, setMessage] = useState('')
   const [loading, setLoading] = useState(false)
-
-  const useSSE = (url: string, body: SendMessageFrontRequest): [string, boolean] => {
-    const [content, setContent] = useState('')
-    const [done, setDone] = useState(true)
-
-    useEffect(() => {
-      if (!body) return
-
-      const abortController = new AbortController()
-
-      const start = async (): Promise<void> => {
-        setContent('')
-        setDone(false)
-
-        const res = await fetch(url, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(body),
-          signal: abortController.signal
-        })
-
-        const reader = res.body?.getReader()
-        const decoder = new TextDecoder('utf-8')
-
-        if (!reader) return
-
-        while (true) {
-          const { value, done: readerDone } = await reader.read()
-          if (readerDone) break
-
-          const chunk = decoder.decode(value, { stream: true })
-
-          // 解析 data:
-          const lines = chunk.split('\n')
-          lines.forEach((line) => {
-            if (line.startsWith('data:')) {
-              const text = line.replace('data:', '').trim()
-              setContent((prev) => prev + text)
-            }
-          })
-        }
-
-        setDone(true)
-      }
-
-      start()
-
-      return () => {
-        abortController.abort()
-      }
-    }, [url, body])
-
-    return [content, done] as const
-  }
+  const [userContent, setUserContent] = useState<string | null>(null)
+  const [assistantContent, setAssistantContent] = useState<string | null>(null)
 
   const handleSendMessage = async (message: string): Promise<void> => {
     try {
-      const [content, done] = useSSE(baseUrl + `/front/chats/${chatId}/messages`, {
-        content: message
+      setLoading(true)
+      setUserContent(message)
+      const parentId = useChatStore.getState().parentId
+      // const tools = await window.api.listMcpTools()
+      const data: SendMessageFrontRequest = {
+        content: message,
+        parentId: parentId ?? undefined
+        // tools
+      }
+
+      const response = await fetch(`${getApiBaseUrl()}/front/chats/${chatId}/messages`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${jwt}`,
+          'X-Timestamp': Date.now().toString(),
+          'X-Nonce': crypto.randomUUID()
+        },
+        body: JSON.stringify(data)
       })
+
+      if (!response.ok) {
+        throw new Error(`Request failed with status ${response.status}`)
+      }
+
+      if (!response.body) {
+        throw new Error('Response body is empty')
+      }
+
+      const reader = response.body.getReader()
+      const decoder = new TextDecoder()
+      let buffer = ''
+
+      while (true) {
+        const { done, value } = await reader.read()
+        if (done) break
+        buffer += decoder.decode(value, { stream: true })
+
+        const lines = buffer.split('\n')
+        buffer = lines.pop() || ''
+
+        for (const line of lines) {
+          const trimmed = line.trim()
+
+          if (!trimmed) continue
+          if (!trimmed.startsWith('data:')) continue
+
+          const content = trimmed.replace(/^data:\s*/, '')
+          if (content === '[DONE]') return
+          console.log(content)
+          setAssistantContent((x) => x + content)
+        }
+      }
     } catch (e) {
       console.error(e)
+    } finally {
+      setLoading(false)
     }
   }
 
   useEffect(() => {
     const load = async (): Promise<void> => {
       try {
-        if (!chatId) {
-          throw new Error('No chatId')
-        }
-        const messagesRes = await listMessages(chatId)
+        const messagesRes = await listMessages(chatId!)
         setMessages(messagesRes.data)
-        if (messages?.length == 0 && firstMessage) {
-          handleSendMessage(firstMessage)
+        if (messagesRes.data.length == 0 && firstMessage) {
+          setParentId(null)
+          await handleSendMessage(firstMessage)
+          if (!chats?.find((chat) => chat.id === chatId)?.title) {
+            await createChatTitle(chatId!)
+            const chatsRes = await listChats()
+            setChats(chatsRes.data)
+          }
+          const newMessagesRes = await listMessages(chatId!)
+          setMessages(newMessagesRes.data)
+          setUserContent(null)
+          setAssistantContent(null)
         }
-      } catch (e) {
-        console.error(e)
+      } catch {
+        return
       }
     }
 
     load()
   }, [chatId])
-
-  const mappedMessages =
-    messages?.map((item) => ({
-      key: item.id,
-      role: item.type,
-      content: item.content
-    })) ?? []
 
   const update = (key: string | number, editable: any) => {}
 
@@ -138,24 +139,47 @@ export default function Chat(): React.JSX.Element {
       typing: false,
       header: 'ASSISTANT',
       variant: 'borderless',
-      avatar: () => <Avatar icon={<AntDesignOutlined />} />,
+      avatar: () => (
+        <Avatar
+          draggable={false}
+          src={
+            models?.find(
+              (model) =>
+                model.id ===
+                assistants?.find((assistant) => assistant.id === enabledAssistantId)?.modelId
+            )?.avatarPath
+              ? models?.find(
+                  (model) =>
+                    model.id ===
+                    assistants?.find((assistant) => assistant.id === enabledAssistantId)?.modelId
+                )?.avatarPath
+              : null
+          }
+          icon={
+            models?.find(
+              (model) =>
+                model.id ===
+                assistants?.find((assistant) => assistant.id === enabledAssistantId)?.modelId
+            )?.avatarPath ? null : (
+              <HeartOutlined />
+            )
+          }
+        />
+      ),
       footer: (content) => <Actions items={actionItems} onClick={() => console.log(content)} />
-    },
-    ASSISTANT_NEW: {
-      typing: true,
-      header: 'ASSISTANT',
-      variant: 'borderless',
-      avatar: () => <Avatar icon={<AntDesignOutlined />} />,
-      footer: (content) => (
-        <Actions items={actionItems} onClick={() => console.log(content)} fadeInLeft />
-      )
     },
     USER: (data) => ({
       placement: 'end',
       typing: false,
       header: username,
       shape: 'round',
-      avatar: () => <Avatar icon={<UserOutlined />} />,
+      avatar: () => (
+        <Avatar
+          draggable={false}
+          src={avatarPath ? getOssBaseUrl() + avatarPath : null}
+          icon={avatarPath ? null : <UserOutlined />}
+        />
+      ),
       footer: () => (
         <Actions
           items={[
@@ -183,15 +207,31 @@ export default function Chat(): React.JSX.Element {
   return (
     <div className="relative h-full">
       <div className="max-h-full px-12 pb-40 overflow-y-auto">
-        <Bubble content={content} streaming={!done} typing={false} />
-        <Bubble.List role={role} items={mappedMessages} autoScroll={false} />
+        <Bubble.List
+          role={role}
+          items={
+            messages?.map((item) => ({
+              key: item.id,
+              role: item.type,
+              content: item.content
+            })) ?? []
+          }
+          autoScroll={false}
+        />
+        {userContent && <Bubble role="user" content={userContent}></Bubble>}
+        {assistantContent && <Bubble role="ai" content={assistantContent}></Bubble>}
       </div>
       <div className="absolute bottom-12 left-1/2 -translate-x-1/2 w-160">
         <Sender
           className="bg-white/70 dark:bg-white/20 backdrop-blur-xs hover:backdrop-blur-sm ease-in-out duration-500"
-          value={message}
           loading={loading}
-          onSubmit={() => handleSendMessage(message)}
+          onSubmit={async (value) => {
+            await handleSendMessage(value)
+            const messagesRes = await listMessages(chatId!)
+            setMessages(messagesRes.data)
+            setUserContent(null)
+            setAssistantContent(null)
+          }}
         />
       </div>
     </div>

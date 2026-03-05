@@ -1,11 +1,12 @@
 import { Client } from '@modelcontextprotocol/sdk/client/index.js'
 import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js'
-import { Tool } from '@modelcontextprotocol/sdk/types.js'
+import { Implementation, Tool } from '@modelcontextprotocol/sdk/types.js'
 
 export default class MCPClient {
   mcp: Client
   transport: StdioClientTransport | null = null
   tools: Tool[] = []
+  version: Implementation | undefined
 
   constructor() {
     this.mcp = new Client({ name: 'mcp-client', version: '1.0.0' })
@@ -40,25 +41,23 @@ export default class MCPClient {
       })
       await this.mcp.connect(this.transport)
 
+      this.version = await this.mcp.getServerVersion()
       const toolsResult = await this.mcp.listTools()
       this.tools = toolsResult.tools.map((tool) => {
         return {
           name: tool.name,
+          title: tool.title,
           description: tool.description,
           inputSchema: tool.inputSchema
         }
       })
-      console.log(
-        'Connected to server with tools:',
-        this.tools.map(({ name }) => name)
-      )
     } catch (e) {
       console.log('Failed to connect to MCP server: ', e)
       throw e
     }
   }
 
-  async cleanup() {
+  async cleanup(): Promise<void> {
     await this.mcp.close()
   }
 }

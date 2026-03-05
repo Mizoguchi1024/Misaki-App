@@ -96,6 +96,10 @@ ipcMain.on('system-theme', (event) => {
   event.returnValue = nativeTheme.shouldUseDarkColors
 })
 
+ipcMain.handle('mcp-server-version', async () => {
+  return mcpClient.version
+})
+
 ipcMain.handle('mcp-list-tools', async () => {
   return mcpClient.tools
 })

@@ -11,7 +11,7 @@ const api = axios.create({
 })
 
 api.interceptors.request.use((config) => {
-  // config.baseURL = useSettingsStore.getState().getApiBaseUrl()  使用vite proxy
+  config.baseURL = useSettingsStore.getState().getApiBaseUrl()
   const jwt = useUserStore.getState().jwt
   if (jwt) config.headers.Authorization = `Bearer ${jwt}`
   config.headers['X-Timestamp'] = Date.now().toString()

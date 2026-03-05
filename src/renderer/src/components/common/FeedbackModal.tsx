@@ -79,13 +79,18 @@ export default function FeedbackModal({ open, onCancel }): React.JSX.Element {
           onFinishFailed={(errorInfo) => {
             console.log('Failed:', errorInfo)
           }}
-          validateMessages={{ required: t('requiredTemplate') }}
         >
           <div>
-            <Form.Item<FieldType> name="title" rules={[{ required: true }]}>
+            <Form.Item<FieldType>
+              name="title"
+              rules={[{ required: true, message: t('titleRequired') }]}
+            >
               <Input placeholder={t('title')} showCount maxLength={50}></Input>
             </Form.Item>
-            <Form.Item<FieldType> name="type" rules={[{ required: true }]}>
+            <Form.Item<FieldType>
+              name="type"
+              rules={[{ required: true, message: t('typeRequired') }]}
+            >
               <Select
                 placeholder={t('type')}
                 options={[
@@ -97,7 +102,10 @@ export default function FeedbackModal({ open, onCancel }): React.JSX.Element {
                 ]}
               ></Select>
             </Form.Item>
-            <Form.Item<FieldType> name="content" rules={[{ required: true }]}>
+            <Form.Item<FieldType>
+              name="content"
+              rules={[{ required: true, message: t('contentRequired') }]}
+            >
               <Input.TextArea
                 autoSize={{ minRows: 10, maxRows: 12 }}
                 placeholder={t('content')}

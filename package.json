@@ -22,10 +22,10 @@
   },
   "dependencies": {
     "@ant-design/icons": "~6.1.0",
-    "@ant-design/x": "^2.2.2",
+    "@ant-design/x": "^2.3.0",
     "@electron-toolkit/preload": "^3.0.2",
     "@electron-toolkit/utils": "^4.0.0",
-    "@modelcontextprotocol/sdk": "^1.26.0",
+    "@modelcontextprotocol/sdk": "^1.27.1",
     "@tailwindcss/vite": "^4.2.1",
     "animejs": "^4.3.6",
     "antd": "^6.3.1",
