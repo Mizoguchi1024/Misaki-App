@@ -14,11 +14,13 @@ interface ChatState {
   messages: MessageFrontResponse[] | null
   fullMessages: MessageFrontResponse[] | null
   parentId: string | null
+  pinnedChats: string[] | null
 
   setChats: (chats: ChatFrontResponse[]) => void
   setMessages: (messages: MessageFrontResponse[]) => void
   setFullMessages: (fullMessages: MessageFrontResponse[]) => void
   setParentId: (parentId: string | null) => void
+  setPinnedChats: (pinnedChats: string[]) => void
   reset: () => void
   stopSendMessage: () => void
 
@@ -32,7 +34,8 @@ const initialState = {
   chats: null,
   messages: null,
   fullMessages: null,
-  parentId: null
+  parentId: null,
+  pinnedChats: null
 }
 
 export const useChatStore = create<ChatState>()(
@@ -77,6 +80,7 @@ export const useChatStore = create<ChatState>()(
         }),
       setFullMessages: (fullMessages) => set({ fullMessages }),
       setParentId: (parentId) => set({ parentId }),
+      setPinnedChats: (pinnedChats) => set({ pinnedChats }),
       reset: () => set(initialState),
       stopSendMessage: () => {
         currentSendMessageController?.abort()

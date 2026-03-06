@@ -8,6 +8,7 @@ import {
   FolderOutlined,
   FormOutlined,
   MessageOutlined,
+  PushpinOutlined,
   SearchOutlined
 } from '@ant-design/icons'
 import { useUserStore } from '@renderer/store/userStore'
@@ -45,7 +46,7 @@ export default function MainLayout(): React.JSX.Element {
     setSettings,
     reset: resetSettingsStore
   } = useSettingsStore()
-  const { chats, setChats, reset: resetChatStore } = useChatStore()
+  const { chats, setChats, pinnedChats, reset: resetChatStore } = useChatStore()
   const { setAssistants, reset: resetAssistantStore } = useAssistantStore()
   const { setModels, reset: resetModelStore } = useModelStore()
   const { reset: resetFeedbackStore } = useFeedbackStore()
@@ -130,14 +131,22 @@ export default function MainLayout(): React.JSX.Element {
     }
   ]
 
-  const chatItems =
-    chats?.map((item) => ({
-      key: '/chat/' + item.id.toString(),
-      label: item.title ? item.title : t('newChat'),
-      icon: <MessageOutlined />
-    })) ?? []
+  const chatList = chats ?? []
+  const chatMap = new Map(chatList.map((chat) => [chat.id, chat]))
+  const pinnedOrderedChats = (pinnedChats ?? [])
+    .map((id) => chatMap.get(id))
+    .filter((chat): chat is (typeof chatList)[number] => Boolean(chat))
+  const pinnedChatIdSet = new Set(pinnedOrderedChats.map((chat) => chat.id))
+  const unpinnedChats = chatList.filter((chat) => !pinnedChatIdSet.has(chat.id))
+  const orderedChats = [...pinnedOrderedChats, ...unpinnedChats]
 
-  const items = [...agentItems, ...chatItems]
+  const chatItems = orderedChats.map((item) => ({
+    key: '/chat/' + item.id,
+    label: item.title ? item.title : t('newChat'),
+    icon: pinnedChats?.includes(item.id) ? <PushpinOutlined /> : <MessageOutlined />
+  }))
+
+  const menuItems = [...agentItems, ...chatItems]
 
   return (
     <Layout className="h-screen w-screen overflow-hidden relative z-0">
@@ -183,7 +192,7 @@ export default function MainLayout(): React.JSX.Element {
             onClick={(e) => navigate(e.key, { viewTransition: true })}
             onAuxClick={(e) => console.log(e)}
             mode="inline"
-            items={items}
+            items={menuItems}
             disabled={!jwt}
           />
         </Sider>

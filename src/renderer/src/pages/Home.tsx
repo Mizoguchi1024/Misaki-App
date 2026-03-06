@@ -117,11 +117,11 @@ export default function Home(): React.JSX.Element {
               backgroundPath
                 ? 'bg-white/60 dark:bg-neutral-800/60 backdrop-blur-xs hover:backdrop-blur-sm '
                 : 'bg-white dark:bg-neutral-800',
-              'transition-all duration-500'
+              'ease-in-out duration-500'
             )}
             loading={isStreaming}
             placeholder={!jwt ? t('pleaseLoginFirst') : t('chatWithMe')}
-            readOnly={!jwt}
+            disabled={!jwt}
             submitType="enter"
             footer={() => {
               return (

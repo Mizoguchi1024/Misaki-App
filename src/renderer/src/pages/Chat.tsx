@@ -48,12 +48,14 @@ export default function Chat(): React.JSX.Element {
           setFullMessages(messagesRes.data)
           setMessages(messagesRes.data)
 
-          appMessage.success(t('triggered'))
+          appMessage.warning(t('off'))
           // if (!chats?.find((chat) => chat.id === chatId)?.title) {
           //   await createChatTitle(chatId!)
           //   const chatRes = await listChats()
           //   setChats(chatRes.data)
           // }
+        }else {
+          appMessage.success(t('on'))
         }
       } catch {
         return

@@ -3,20 +3,21 @@ import { Dropdown, Button, MenuProps } from 'antd'
 import AboutModal from './AboutModal'
 import SettingsModal from './SettingsModal'
 import { useState } from 'react'
-import { t } from 'i18next'
+import { useTranslation } from 'react-i18next'
 
 export default function HelpDropdown(): React.JSX.Element {
+  const { t } = useTranslation('helpDropdown')
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false)
   const [isAboutModalOpen, setIsAboutModalOpen] = useState(false)
 
   const list: MenuProps['items'] = [
     {
-      key: '/settings',
+      key: 'settings',
       label: t('settings'),
       icon: <SettingOutlined />
     },
     {
-      key: '/about',
+      key: 'about',
       label: t('about'),
       icon: <InfoCircleOutlined />
     }
@@ -24,10 +25,10 @@ export default function HelpDropdown(): React.JSX.Element {
 
   const onClick: MenuProps['onClick'] = ({ key }) => {
     switch (key) {
-      case '/settings':
+      case 'settings':
         setIsSettingsModalOpen(true)
         break
-      case '/about':
+      case 'about':
         setIsAboutModalOpen(true)
         break
     }
@@ -37,7 +38,7 @@ export default function HelpDropdown(): React.JSX.Element {
     <>
       <Dropdown
         menu={{ items: list, onClick }}
-        placement="bottomLeft"
+        placement="bottomRight"
         trigger={['click']}
         classNames={{
           itemContent: 'select-none'

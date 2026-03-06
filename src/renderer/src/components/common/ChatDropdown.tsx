@@ -18,12 +18,12 @@ export default function ChatDropdown(): React.JSX.Element {
   const navigate = useNavigate()
   const { id: chatId } = useParams()
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false)
-  const {setChats} = useChatStore()
+  const { pinnedChats, setChats, setPinnedChats } = useChatStore()
 
   const list: MenuProps['items'] = [
     {
       key: 'pin',
-      label: t('pin'),
+      label: pinnedChats?.includes(chatId!) ? t('unpin') : t('pin'),
       icon: <PushpinOutlined />
     },
     {
@@ -44,6 +44,13 @@ export default function ChatDropdown(): React.JSX.Element {
 
   const onClick: MenuProps['onClick'] = async ({ key }) => {
     switch (key) {
+      case 'pin':
+        setPinnedChats(
+          pinnedChats?.includes(chatId!)
+            ? pinnedChats.filter((id) => id !== chatId!)
+            : [...(pinnedChats || []), chatId!]
+        )
+        break
       case 'detail':
         setIsDetailModalOpen(true)
         break
