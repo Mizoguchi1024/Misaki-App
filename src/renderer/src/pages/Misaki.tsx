@@ -377,7 +377,10 @@ export default function Misaki(): React.JSX.Element {
                               appMessage.success(t('deleteSuccess'))
                               const assistantsRes = await listAssistants()
                               setAssistants(assistantsRes.data)
-                              setAssistant(assistantsRes.data[0] || null)
+                              setAssistant(
+                                assistantsRes.data.find((item) => item.id === enabledAssistantId) ||
+                                  null
+                              )
                               setIsEditing(false)
                             } catch {
                               return
@@ -416,7 +419,9 @@ export default function Misaki(): React.JSX.Element {
                         icon={<CloseOutlined />}
                         onClick={() => {
                           if (!assistant) {
-                            setAssistant(assistants?.[0] || null)
+                            setAssistant(
+                              assistants?.find((item) => item.id === enabledAssistantId) || null
+                            )
                           }
                           setIsEditing(!isEditing)
                         }}
@@ -579,39 +584,51 @@ export default function Misaki(): React.JSX.Element {
               </div>
             </div>
             <Descriptions
+              className="dark:drop-shadow-[0_0_4px_rgb(0,0,0,0.6)]"
+              classNames={{
+                label: 'text-nowrap select-none'
+              }}
               column={4}
               items={[
                 {
                   key: '1',
                   label: t('gender'),
-                  children: genderMap[assistant?.gender || 0]
+                  children: <span className="truncate">{genderMap[assistant?.gender || 0]}</span>
                 },
                 {
                   key: '2',
                   label: t('birthday'),
-                  children: assistant?.birthday
+                  children: <span className="truncate">{assistant?.birthday}</span>
                 },
                 {
                   key: '3',
-                  label: t('createTime'),
-                  children: dayjs(assistant?.createTime).format('YYYY-MM-DD')
+                  label: t('createDate'),
+                  children: (
+                    <span className="truncate">
+                      {dayjs(assistant?.createTime).format('YYYY-MM-DD')}
+                    </span>
+                  )
                 },
                 {
                   key: '4',
                   label: t('publicFlag'),
-                  children: assistant?.publicFlag ? t('public') : t('private')
+                  children: (
+                    <span className="truncate">
+                      {assistant?.publicFlag ? t('public') : t('private')}
+                    </span>
+                  )
                 },
                 {
                   key: '5',
                   span: 2,
                   label: t('personality'),
-                  children: assistant?.personality
+                  children: <span>{assistant?.personality || t('none')}</span>
                 },
                 {
                   key: '6',
                   span: 'filled',
                   label: t('detail'),
-                  children: assistant?.detail || t('none')
+                  children: <span>{assistant?.detail || t('none')}</span>
                 }
               ]}
             />

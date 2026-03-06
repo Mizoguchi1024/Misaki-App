@@ -48,6 +48,17 @@ export default function SettingsModal({ open, onCancel }): React.JSX.Element {
     setColorPickerValue(mainColor)
   }, [mainColor])
 
+  useEffect(() => {
+    const load = async (): Promise<void> => {
+      const settingsRes = await getSettings()
+      setSettings(settingsRes.data)
+    }
+
+    if (open) {
+      load()
+    }
+  }, [open])
+
   const tabItems = [
     {
       key: '1',

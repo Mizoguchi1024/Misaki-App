@@ -21,7 +21,7 @@ export default function HeaderMiddlePart({ currentPage }): React.JSX.Element {
     }
 
     load()
-  }, [chatId])
+  }, [chatId, chats])
 
   switch (currentPage) {
     case 'chat':

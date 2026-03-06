@@ -6,7 +6,7 @@ import { useUserStore } from '@renderer/store/userStore'
 import TermsModal from '@renderer/components/common/TermsModal'
 import PolicyModal from '@renderer/components/common/PolicyModal'
 import { useTranslation } from 'react-i18next'
-import { createChat, sendMessage } from '@renderer/api/front/chat'
+import { createChat } from '@renderer/api/front/chat'
 import { useNavigate } from 'react-router-dom'
 import { useChatStore } from '@renderer/store/chatStore'
 import { useSettingsStore } from '@renderer/store/settingsStore'
@@ -26,7 +26,16 @@ export default function Home(): React.JSX.Element {
     version: settingsVersion,
     setSettings
   } = useSettingsStore()
-  const { isStreaming, chats, setParentId, setChats, stopSendMessage } = useChatStore()
+  const {
+    isStreaming,
+    chats,
+    setParentId,
+    setChats,
+    setMessages,
+    setFullMessages,
+    sendMessage,
+    stopSendMessage
+  } = useChatStore()
   const { assistants, setAssistants } = useAssistantStore()
   const navigate = useNavigate()
   const [colorPickerValue, setColorPickerValue] = useState(mainColor)
@@ -140,6 +149,8 @@ export default function Home(): React.JSX.Element {
             }}
             onSubmit={async (value) => {
               try {
+                setFullMessages([])
+                setMessages([])
                 const newChat = (await createChat()).data
                 setChats([newChat, ...(chats ?? [])])
                 sendMessage(newChat.id, { content: value })

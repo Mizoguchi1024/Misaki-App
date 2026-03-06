@@ -16,24 +16,27 @@ export default function ChatDetailModal({ open, onCancel }): React.JSX.Element {
       footer={null}
       open={open}
       onCancel={onCancel}
-      className="select-none"
+      destroyOnHidden
+      classNames={{ title: 'select-none' }}
     >
       <Descriptions
         className="py-2"
+        classNames={{
+          label: 'select-none'
+        }}
         column={2}
         items={[
           {
             key: '1',
-            label: t('title'),
-            children: <span>{chat?.title || t('none')}</span>,
+            label: t('id'),
+            children: <span>{chat?.id}</span>,
             span: 'filled'
           },
           {
             key: '2',
-            label: t('id'),
-            children: <span>{chat?.id}</span>
+            label: t('title'),
+            children: <span>{chat?.title || t('none')}</span>
           },
-
           {
             key: '3',
             label: t('token'),
@@ -42,14 +45,12 @@ export default function ChatDetailModal({ open, onCancel }): React.JSX.Element {
           {
             key: '4',
             label: t('createTime'),
-            children: <span>{chat?.createTime}</span>,
-            span: 'filled'
+            children: <span>{chat?.createTime}</span>
           },
           {
             key: '5',
             label: t('updateTime'),
-            children: <span>{chat?.updateTime}</span>,
-            span: 'filled'
+            children: <span>{chat?.updateTime}</span>
           }
         ]}
       />

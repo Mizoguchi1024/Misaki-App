@@ -1,7 +1,7 @@
 import { createDraggable, createScope, Scope } from 'animejs'
 import { CheckCircleFilled, HeartOutlined, PlusOutlined } from '@ant-design/icons'
 import { Avatar, Badge, theme, Tooltip } from 'antd'
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useAssistantStore } from '@renderer/store/assistantStore'
 import { useModelStore } from '@renderer/store/modelStore'
@@ -18,17 +18,24 @@ export default function AssistantScrollList(): React.JSX.Element {
   const root = useRef<HTMLDivElement>(null)
   const scope = useRef<Scope>(null)
   const avatarList = useRef<HTMLDivElement>(null)
+  const [initialEnabledAssistantId] = useState(enabledAssistantId)
+  const orderedAssistants = assistants
+    ? [
+        ...assistants.filter((item) => item.id === initialEnabledAssistantId),
+        ...assistants.filter((item) => item.id !== initialEnabledAssistantId)
+      ]
+    : null
   const {
     token: { colorSuccess }
   } = useToken()
 
   useEffect(() => {
-    setAssistant(assistants?.[0] || null)
+    setAssistant(assistants?.find((item) => item.id === enabledAssistantId) || null)
   }, [])
 
   useEffect(() => {
     if (assistant && !assistants?.some((item) => item.id === assistant.id)) {
-      setAssistant(assistants?.[0] || null)
+      setAssistant(assistants?.find((item) => item.id === enabledAssistantId) || null)
     }
   }, [assistants])
 
@@ -59,7 +66,7 @@ export default function AssistantScrollList(): React.JSX.Element {
   return (
     <div ref={root} className="w-120 h-full overflow-hidden mask-x-from-90%">
       <div ref={avatarList} className="flex items-center h-full pl-10 gap-6">
-        {assistants?.map((item) => (
+        {orderedAssistants?.map((item) => (
           <Tooltip
             key={item.id}
             title={item.name}

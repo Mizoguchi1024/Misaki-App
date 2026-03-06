@@ -46,6 +46,7 @@ export default function HeaderRightPart({ currentPage }): React.JSX.Element {
     case 'chat':
       return (
         <div className="flex items-center gap-4">
+          <TokenTag />
           <ChatDropdown />
           <UserDropdown />
         </div>

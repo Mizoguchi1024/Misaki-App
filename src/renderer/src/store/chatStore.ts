@@ -162,7 +162,7 @@ export const useChatStore = create<ChatState>()(
               if (!line) continue
               if (!line.startsWith('data:')) continue
 
-              const content = line.replace(/^data:/, '').replace('  ', '\n')
+              const content = line.replace(/^data:/, '').replace('  ', '  \n')
               if (content === '[DONE]') return
 
               set((state) => ({

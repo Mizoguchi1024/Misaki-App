@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next'
 import ImageUpload from './ImageUpload'
 import { UploadResponse } from '@renderer/types/common'
 import { getProfile, updateProfile } from '@renderer/api/front/user'
+import { useEffect } from 'react'
 
 type FieldType = {
   username: string
@@ -31,6 +32,17 @@ export default function ProfileModal({ open, onCancel }): React.JSX.Element {
     version: profileVersion,
     setProfile
   } = useUserStore()
+
+  useEffect(() => {
+    const load = async (): Promise<void> => {
+      const profileRes = await getProfile()
+      setProfile(profileRes.data)
+    }
+
+    if (open) {
+      load()
+    }
+  }, [open])
 
   const onFinish: FormProps<FieldType>['onFinish'] = async (values) => {
     try {

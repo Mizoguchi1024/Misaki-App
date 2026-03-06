@@ -143,7 +143,11 @@ export default function MainLayout(): React.JSX.Element {
   const chatItems = orderedChats.map((item) => ({
     key: '/chat/' + item.id,
     label: item.title ? item.title : t('newChat'),
-    icon: pinnedChats?.includes(item.id) ? <PushpinOutlined /> : <MessageOutlined />
+    icon: pinnedChats?.includes(item.id) ? (
+      <PushpinOutlined />
+    ) : collapsed ? (
+      <MessageOutlined />
+    ) : null
   }))
 
   const menuItems = [...agentItems, ...chatItems]

@@ -6,22 +6,35 @@ import {
   RedoOutlined,
   UserOutlined
 } from '@ant-design/icons'
-import { Actions, Bubble, BubbleListProps, Sender } from '@ant-design/x'
+import { Actions, Bubble, BubbleListProps, CodeHighlighter, Sender } from '@ant-design/x'
+import XMarkdown, { ComponentProps } from '@ant-design/x-markdown'
+import Latex from '@ant-design/x-markdown/plugins/latex'
 import { createChatTitle, listChats, listMessages } from '@renderer/api/front/chat'
+import { getProfile } from '@renderer/api/front/user'
 import { useAssistantStore } from '@renderer/store/assistantStore'
 import { useChatStore } from '@renderer/store/chatStore'
 import { useModelStore } from '@renderer/store/modelStore'
 import { useSettingsStore } from '@renderer/store/settingsStore'
 import { useUserStore } from '@renderer/store/userStore'
-import { App, Avatar } from 'antd'
+import { Avatar, Skeleton, Typography } from 'antd'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useParams } from 'react-router-dom'
 
+const Code: React.FC<ComponentProps> = (props) => {
+  const { className, children } = props
+  const lang = className?.match(/language-(\w+)/)?.[1] || ''
+
+  if (typeof children !== 'string') return null
+  return <CodeHighlighter lang={lang}>{children}</CodeHighlighter>
+}
+
+const TableSkeleton = (): React.JSX.Element => <Skeleton.Node active style={{ width: 160 }} />
+
 export default function Chat(): React.JSX.Element {
   const { t } = useTranslation('chat')
   const { id: chatId } = useParams()
-  const { username, avatarPath } = useUserStore()
+  const { username, avatarPath, setProfile } = useUserStore()
   const { enabledAssistantId, getOssBaseUrl } = useSettingsStore()
   const { assistants } = useAssistantStore()
   const { models } = useModelStore()
@@ -38,7 +51,6 @@ export default function Chat(): React.JSX.Element {
   const isStreaming = useChatStore((state) => state.isStreaming)
   const [senderValue, setSenderValue] = useState('')
 
-  const { message:appMessage } = App.useApp()
   useEffect(() => {
     const load = async (): Promise<void> => {
       try {
@@ -48,14 +60,14 @@ export default function Chat(): React.JSX.Element {
           setFullMessages(messagesRes.data)
           setMessages(messagesRes.data)
 
-          appMessage.warning(t('off'))
-          // if (!chats?.find((chat) => chat.id === chatId)?.title) {
-          //   await createChatTitle(chatId!)
-          //   const chatRes = await listChats()
-          //   setChats(chatRes.data)
-          // }
-        }else {
-          appMessage.success(t('on'))
+          if (!chats?.find((chat) => chat.id === chatId)?.title) {
+            await createChatTitle(chatId!)
+            const chatRes = await listChats()
+            setChats(chatRes.data)
+          }
+
+          const profileRes = await getProfile()
+          setProfile(profileRes.data)
         }
       } catch {
         return
@@ -65,7 +77,7 @@ export default function Chat(): React.JSX.Element {
     load()
   }, [chatId, isStreaming])
 
-  const update = (key: string | number, editable: any) => {}
+  const update = (key: string | number, editable: any): void => {}
 
   const role: BubbleListProps['role'] = {
     ASSISTANT: {
@@ -123,7 +135,7 @@ export default function Chat(): React.JSX.Element {
       placement: 'end',
       typing: false,
       header: username,
-      shape: 'round',
+      shape: 'default',
       avatar: () => (
         <Avatar
           draggable={false}
@@ -163,7 +175,18 @@ export default function Chat(): React.JSX.Element {
           messages?.map((item) => ({
             key: item.id,
             role: item.type,
-            content: item.content
+            content: item.content,
+            contentRender: (content: string) => (
+              <Typography>
+                <XMarkdown
+                  content={content}
+                  config={{ extensions: Latex() }}
+                  components={{ code: Code, 'incomplete-table': TableSkeleton }}
+                  streaming={{ hasNextChunk: isStreaming, enableAnimation: true }}
+                  openLinksInNewTab
+                />
+              </Typography>
+            )
           })) ?? []
         }
         className="h-full mask-b-from-84%"
