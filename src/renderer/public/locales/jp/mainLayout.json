@@ -1,8 +1,8 @@
 {
-  "startNewChat": "チャットを新規作成",
-  "searchChats": "チャットを検索",
-  "mcpServer": "MCPサーバー",
+  "startNewChat": "チャット",
+  "searchChats": "検索",
+  "mcpServer": "MCP",
   "script": "スクリプト",
-  "fileManager": "ファイル管理",
+  "fileManager": "ファイル",
   "newChat": "新しいチャット"
 }

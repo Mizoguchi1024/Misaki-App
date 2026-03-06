@@ -1,12 +1,12 @@
 import { Modal } from 'antd'
 import { Trans, useTranslation } from 'react-i18next'
 
-export default function TermsModal({ open, onCancel }): React.JSX.Element {
-  const { t } = useTranslation('termsModal')
+export default function PrivatePolicyModal({ open, onCancel }): React.JSX.Element {
+  const { t } = useTranslation('privatePolicyModal')
 
   return (
     <Modal
-      title={t('terms')}
+      title={t('privatePolicy')}
       centered
       footer={null}
       open={open}
@@ -17,7 +17,7 @@ export default function TermsModal({ open, onCancel }): React.JSX.Element {
       <div className="max-h-120 py-2 overflow-y-auto scrollbar-style">
         <Trans
           i18nKey="content"
-          ns="termsModal"
+          ns="privatePolicyModal"
           t={t}
           components={{
             heading: <h2 className="text-base font-semibold" />,

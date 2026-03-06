@@ -64,7 +64,7 @@ export default function SettingsModal({ open, onCancel }): React.JSX.Element {
       key: '1',
       label: t('general'),
       children: (
-        <div className="h-80 w-full flex flex-col gap-4 p-2 ml-4 overflow-y-auto scrollbar-none">
+        <div className="h-86 w-full flex flex-col gap-4 p-2 ml-4 overflow-y-auto scrollbar-style">
           <div className="flex justify-between items-center">
             <span>{t('baseUrl')}</span>
             <Space.Compact className="w-2/3">
@@ -118,7 +118,7 @@ export default function SettingsModal({ open, onCancel }): React.JSX.Element {
       key: '2',
       label: t('appearance'),
       children: (
-        <div className="h-80 w-full flex flex-col gap-4 p-2 ml-4 overflow-y-auto scrollbar-none">
+        <div className="h-86 w-full flex flex-col gap-4 p-2 ml-4 overflow-y-auto scrollbar-style">
           <div className="flex justify-between items-center">
             <span>{t('appearance')}</span>
             <Segmented<string>
@@ -282,7 +282,7 @@ export default function SettingsModal({ open, onCancel }): React.JSX.Element {
             key: '3',
             label: t('account'),
             children: (
-              <div className="h-80 w-full flex flex-col gap-4 p-2 ml-4 overflow-y-auto scrollbar-none">
+              <div className="h-86 w-full flex flex-col gap-4 p-2 ml-4 overflow-y-auto scrollbar-style">
                 <div className="flex justify-between items-center">
                   <span>{t('resetPassword')}</span>
                   <Button
@@ -311,7 +311,7 @@ export default function SettingsModal({ open, onCancel }): React.JSX.Element {
             key: '4',
             label: t('chat'),
             children: (
-              <div className="h-80 w-full flex flex-col gap-4 p-2 ml-4 overflow-y-auto scrollbar-none">
+              <div className="h-86 w-full flex flex-col gap-4 p-2 ml-4 overflow-y-auto scrollbar-style">
                 <div className="flex justify-between items-center">
                   <span>{t('ttsAutoplay')}</span>
                   <Switch
@@ -322,6 +322,18 @@ export default function SettingsModal({ open, onCancel }): React.JSX.Element {
                       setSettings(settingsRes.data)
                     }}
                   ></Switch>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span>{t('deleteAllChat')}</span>
+                  <Button
+                    danger
+                    onClick={() => {
+                      deleteAllChat()
+                      appMessage.success(t('allChatDeleted'))
+                    }}
+                  >
+                    {t('delete')}
+                  </Button>
                 </div>
               </div>
             )
@@ -352,4 +364,7 @@ export default function SettingsModal({ open, onCancel }): React.JSX.Element {
       />
     </Modal>
   )
+}
+function deleteAllChat(): void {
+  throw new Error('Function not implemented.')
 }

@@ -30,3 +30,13 @@
 .scrollbar-none {
   scrollbar-width: none;
 }
+
+.mask-v-fade {
+    -webkit-mask: 
+      linear-gradient(white 0 0) subtract, 
+      linear-gradient(180deg, white, transparent 10%, transparent 90%, white) content-box;
+    
+    mask: 
+      linear-gradient(white 0 0) subtract, 
+      linear-gradient(180deg, white, transparent 10%, transparent 90%, white) content-box;
+  }

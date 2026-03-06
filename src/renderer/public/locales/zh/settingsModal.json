@@ -19,5 +19,6 @@
   "resetPassword": "重置密码",
   "deleteAccount": "删除账户",
   "delete": "删除",
-  "ttsAutoplay": "TTS 自动播放"
+  "ttsAutoplay": "TTS 自动播放",
+  "deleteAllChat": "删除所有聊天"
 }

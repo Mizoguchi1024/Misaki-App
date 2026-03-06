@@ -1,15 +1,14 @@
 {
     "pleaseLoginFirst": "请先登录",
     "chatWithMe": "和我聊聊天吧",
-    "titleUpdated": "标题已更新",
-    "requestFailed": "请求失败",
+    "nameUpdated": "名称已更改",
     "createScript": "创建脚本",
     "meme": "表情包",
     "footer": {
-        "agreement": "向 AI 助理 Misaki 发送消息即表示，你同意我们的",
         "terms": "条款",
-        "andRead": "并已阅读我们的",
         "policy": "隐私政策",
-        "period": "。"
+        "section1": "向 AI 助理 Misaki 发送消息即表示，你同意我们的",
+        "section2": "并已阅读我们的",
+        "section3": "。"
     }
 }

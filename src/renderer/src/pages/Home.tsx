@@ -4,7 +4,7 @@ import MisakiLogo from '@renderer/assets/img/misaki-logo-symbol.svg?react'
 import { useEffect, useRef, useState } from 'react'
 import { useUserStore } from '@renderer/store/userStore'
 import TermsModal from '@renderer/components/common/TermsModal'
-import PolicyModal from '@renderer/components/common/PolicyModal'
+import PolicyModal from '@renderer/components/common/PrivatePolicyModal'
 import { useTranslation } from 'react-i18next'
 import { createChat } from '@renderer/api/front/chat'
 import { useNavigate } from 'react-router-dom'
@@ -73,7 +73,7 @@ export default function Home(): React.JSX.Element {
       })
       const assistantRes = await listAssistants()
       setAssistants(assistantRes.data)
-      appMessage.success(t('assistantNameUpdated'))
+      appMessage.success(t('nameUpdated'))
     } else {
       setAssistantNameInputValue(enabledAssistant?.name || 'Misaki')
     }
@@ -168,11 +168,11 @@ export default function Home(): React.JSX.Element {
         </div>
       </div>
       <div className="h-14 flex justify-center items-center select-none">
-        <span>{t('footer.agreement')}</span>
+        <span>{t('footer.section1')}</span>
         <a onClick={() => setIsTermsModalOpen(true)}>{t('footer.terms')}</a>
-        <span>{t('footer.andRead')}</span>
+        <span>{t('footer.section2')}</span>
         <a onClick={() => setIsPolicyModalOpen(true)}>{t('footer.policy')}</a>
-        <span>{t('footer.period')}</span>
+        <span>{t('footer.section3')}</span>
         <TermsModal open={isTermsModalOpen} onCancel={() => setIsTermsModalOpen(false)} />
         <PolicyModal open={isPolicyModalOpen} onCancel={() => setIsPolicyModalOpen(false)} />
       </div>

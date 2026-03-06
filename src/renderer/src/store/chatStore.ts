@@ -155,14 +155,17 @@ export const useChatStore = create<ChatState>()(
             if (done) break
             buffer += decoder.decode(value, { stream: true })
 
-            const lines = buffer.split('\n')
+            const lines = buffer.split('data:')
             buffer = lines.pop() || ''
 
             for (const line of lines) {
               if (!line) continue
-              if (!line.startsWith('data:')) continue
-
-              const content = line.replace(/^data:/, '').replace('  ', '  \n')
+              let content = ''
+              if (line.endsWith('\n\n')) {
+                content = line.slice(0, -2)
+              } else {
+                content = line
+              }
               if (content === '[DONE]') return
 
               set((state) => ({

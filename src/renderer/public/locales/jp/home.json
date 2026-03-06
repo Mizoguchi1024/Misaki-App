@@ -1,0 +1,14 @@
+{
+    "pleaseLoginFirst": "ログインしてください",
+    "chatWithMe": "話をしよう",
+    "nameUpdated": "名前を変更しました",
+    "createScript": "スクリプト",
+    "meme": "ミーム",
+    "footer": {
+        "terms": "利用規約",
+        "policy": "プライバシーポリシー",
+        "section1": "AIアシスタント Misaki にメッセージを送信すると、",
+        "section2": "に同意し、",
+        "section3": "を確認したものとみなされます。"
+    }
+}

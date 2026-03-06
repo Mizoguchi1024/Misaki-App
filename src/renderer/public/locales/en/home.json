@@ -1,0 +1,14 @@
+{
+    "pleaseLoginFirst": "Please login first",
+    "chatWithMe": "Chat with me",
+    "nameUpdated": "Name updated",
+    "createScript": "Script",
+    "meme": "Meme",
+    "footer": {
+        "terms": "Terms",
+        "policy": "Privacy Policy",
+        "section1": "By messaging the AI assistant Misaki, you agree to our\u00A0",
+        "section2": "\u00A0and confirm that you have read our\u00A0",
+        "section3": "."
+    }
+}
