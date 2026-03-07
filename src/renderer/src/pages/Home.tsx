@@ -87,7 +87,7 @@ export default function Home(): React.JSX.Element {
   ]
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full w-full px-12 md:max-w-2xl md:mx-auto md:px-0">
       <div className="flex flex-col flex-1 justify-center items-center">
         <div className="flex items-center gap-1 mb-24">
           <ColorPicker
@@ -169,11 +169,13 @@ export default function Home(): React.JSX.Element {
         />
       </div>
       <div className="h-14 flex justify-center items-center select-none">
-        <span>{t('footer.section1')}</span>
-        <a onClick={() => setIsTermsModalOpen(true)}>{t('footer.terms')}</a>
-        <span>{t('footer.section2')}</span>
-        <a onClick={() => setIsPolicyModalOpen(true)}>{t('footer.policy')}</a>
-        <span>{t('footer.section3')}</span>
+        <span className="text-balance text-center">
+          {t('footer.section1')}
+          <a onClick={() => setIsTermsModalOpen(true)}>{t('footer.terms')}</a>
+          {t('footer.section2')}
+          <a onClick={() => setIsPolicyModalOpen(true)}>{t('footer.policy')}</a>
+          {t('footer.section3')}
+        </span>
         <TermsModal open={isTermsModalOpen} onCancel={() => setIsTermsModalOpen(false)} />
         <PolicyModal open={isPolicyModalOpen} onCancel={() => setIsPolicyModalOpen(false)} />
       </div>

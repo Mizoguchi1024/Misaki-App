@@ -207,12 +207,12 @@ export default function Chat(): React.JSX.Element {
         }
         className="h-full w-full mask-b-from-84% table-style"
         classNames={{
-          scroll: 'px-16 pt-6 pb-36 scrollbar-style',
+          scroll: 'pt-12 pb-36 w-full px-12 lg:max-w-4xl lg:mx-auto lg:px-0 scrollbar-none',
           avatar: 'select-none',
           header: 'select-none'
         }}
       />
-      <div className="absolute bottom-1/12 left-1/2 -translate-x-1/2 w-4/7">
+      <div className="absolute bottom-1/12 left-1/2 -translate-x-1/2 max-w-md md:max-w-xl">
         {promptsSuggestion && (
           <Prompts
             key={parentId}
@@ -226,7 +226,7 @@ export default function Chat(): React.JSX.Element {
             fadeInLeft
             className="mb-2 mask-r-from-90%"
             classNames={{
-              item: 'bg-white/70 dark:bg-white/20 backdrop-blur-xs border-none'
+              item: 'bg-white/70 dark:bg-white/20 border-none select-none'
             }}
           />
         )}

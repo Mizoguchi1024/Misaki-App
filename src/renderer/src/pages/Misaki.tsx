@@ -560,9 +560,10 @@ export default function Misaki(): React.JSX.Element {
                   }}
                 >
                   <Button
-                    color={assistant?.id === enabledAssistantId ? 'green' : 'default'}
+                    color="default"
                     variant="filled"
                     shape="circle"
+                    className={clsx(assistant?.id === enabledAssistantId && 'bg-green-300/40')}
                     icon={<CheckOutlined />}
                     onClick={async () => {
                       if (assistant?.id !== enabledAssistantId) {

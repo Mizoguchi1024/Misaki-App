@@ -211,6 +211,7 @@ export default function MainLayout(): React.JSX.Element {
         <Sider
           collapsible
           collapsed={collapsed}
+          breakpoint="lg"
           onCollapse={(value) => setCollapsed(value)}
           theme="light"
           className={clsx(

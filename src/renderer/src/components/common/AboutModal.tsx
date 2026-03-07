@@ -63,7 +63,7 @@ export default function AboutModal({ open, onCancel }): React.JSX.Element {
             <span>{React.version}</span>
           </div>
         </div>
-        <div className="w-full mb-4">{t('story')}</div>
+        <div className="w-full mb-4 text-pretty">{t('story')}</div>
         {jwt && (
           <div className="flex flex-col items-center gap-6">
             <span className="w-full">{t('likesDescription')}</span>
