@@ -1,6 +1,5 @@
 import {
   CheckOutlined,
-  CopyOutlined,
   EditOutlined,
   HeartOutlined,
   RedoOutlined,
@@ -62,10 +61,9 @@ export default function Chat(): React.JSX.Element {
 
           if (!chats?.find((chat) => chat.id === chatId)?.title) {
             await createChatTitle(chatId!)
-            const chatRes = await listChats()
-            setChats(chatRes.data)
           }
-
+          const chatRes = await listChats()
+          setChats(chatRes.data)
           const profileRes = await getProfile()
           setProfile(profileRes.data)
         }
@@ -119,15 +117,18 @@ export default function Chat(): React.JSX.Element {
             {
               key: 'retry',
               icon: <RedoOutlined />,
-              label: t('retry')
+              label: t('retry'),
+              onItemClick: () => {
+                // TODO
+              }
             },
             {
               key: 'copy',
-              icon: <CopyOutlined />,
-              label: t('copy')
+              actionRender: () => {
+                return <Actions.Copy text={content} />
+              }
             }
           ]}
-          onClick={() => console.log(content)}
         />
       )
     },
@@ -189,9 +190,9 @@ export default function Chat(): React.JSX.Element {
             )
           })) ?? []
         }
-        className="h-full mask-b-from-84%"
+        className="h-full mask-b-from-84% table-style"
         classNames={{
-          scroll: 'px-12 pt-6 pb-24 w-10',
+          scroll: 'px-12 pt-6 pb-24 w-10 scrollbar-style',
           avatar: 'select-none',
           header: 'select-none'
         }}

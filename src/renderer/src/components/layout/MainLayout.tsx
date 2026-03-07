@@ -1,4 +1,4 @@
-import { App, Layout, Menu, MenuProps } from 'antd'
+import { App, Button, Drawer, Layout, Menu, MenuProps } from 'antd'
 import { useEffect, useState } from 'react'
 import { Outlet, UIMatch, useLocation, useMatches, useNavigate } from 'react-router-dom'
 
@@ -7,6 +7,7 @@ import {
   DatabaseOutlined,
   FolderOutlined,
   FormOutlined,
+  MenuOutlined,
   MessageOutlined,
   PushpinOutlined,
   SearchOutlined
@@ -34,6 +35,7 @@ export default function MainLayout(): React.JSX.Element {
   const { t } = useTranslation('mainLayout')
   const { message: appMessage } = App.useApp()
   const [collapsed, setCollapsed] = useState(false)
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false)
   const location = useLocation()
   const navigate = useNavigate()
   const { jwt, rememberMe, setProfile, reset: resetUserStore } = useUserStore()
@@ -145,7 +147,7 @@ export default function MainLayout(): React.JSX.Element {
     label: item.title ? item.title : t('newChat'),
     icon: pinnedChats?.includes(item.id) ? (
       <PushpinOutlined />
-    ) : collapsed ? (
+    ) : collapsed && !isDrawerOpen ? (
       <MessageOutlined />
     ) : null
   }))
@@ -172,29 +174,61 @@ export default function MainLayout(): React.JSX.Element {
             : 'bg-white dark:bg-neutral-900'
         )}
       >
-        <MisakiButton />
+        <div className="flex items-center">
+          <MisakiButton />
+          <Button
+            className="block md:hidden"
+            color="default"
+            variant="filled"
+            icon={<MenuOutlined />}
+            onClick={() => setIsDrawerOpen(!isDrawerOpen)}
+          ></Button>
+        </div>
         <HeaderMiddlePart currentPage={currentPage} />
         <HeaderRightPart currentPage={currentPage} />
       </Header>
       <Layout className="bg-transparent">
+        <Drawer
+          className=""
+          placement="left"
+          closable={{ placement: 'end' }}
+          open={isDrawerOpen}
+          onClose={() => setIsDrawerOpen(false)}
+          destroyOnHidden
+        >
+          <Menu
+            className="select-none h-full overflow-y-auto scroll-smooth scrollbar-none bg-transparent"
+            theme="light"
+            selectedKeys={[location.pathname]}
+            onClick={(e) => {
+              setIsDrawerOpen(false)
+              navigate(e.key, { viewTransition: true })
+            }}
+            mode="inline"
+            items={menuItems}
+            disabled={!jwt}
+          />
+        </Drawer>
         <Sider
-          breakpoint="md"
           collapsible
           collapsed={collapsed}
           onCollapse={(value) => setCollapsed(value)}
           theme="light"
-          className={
+          className={clsx(
+            isDrawerOpen ? 'hidden' : 'hidden md:block',
             backgroundPath
               ? 'bg-white/20 dark:bg-neutral-800/20 backdrop-blur-lg border-r border-white/60 dark:border-white/16'
               : 'bg-white dark:bg-neutral-800'
-          }
+          )}
         >
           <Menu
             className="select-none h-full overflow-y-auto scroll-smooth scrollbar-none bg-transparent"
             theme="light"
             selectedKeys={[location.pathname]}
             onClick={(e) => navigate(e.key, { viewTransition: true })}
-            onAuxClick={(e) => console.log(e)}
+            onAuxClick={
+              (e) => console.log(e) // TODO 右键菜单
+            }
             mode="inline"
             items={menuItems}
             disabled={!jwt}

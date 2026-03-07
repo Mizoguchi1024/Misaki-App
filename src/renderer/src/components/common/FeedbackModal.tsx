@@ -131,50 +131,53 @@ export default function FeedbackModal({ open, onCancel }): React.JSX.Element {
       label: t('history'),
       children: (
         <div className="h-120 pl-6 pr-2 overflow-y-auto scrollbar-style mask-v-fade">
-          {feedbacks?.length === 0 && <EmptyState className="w-full h-full text-lg" />}
-          <div className="flex flex-col gap-4 py-4">
-            {feedbacks?.map((item) => (
-              <Card
-                key={item.id}
-                title={item.title}
-                extra={
-                  <div className="flex gap-2">
-                    <Tag>{feedbackTypeMap[item.type]}</Tag>
-                    <Tag
-                      color={feedbackStatusMap[item.status].color}
-                      icon={feedbackStatusMap[item.status].icon}
-                    >
-                      {feedbackStatusMap[item.status].text}
-                    </Tag>
-                  </div>
-                }
-                actions={[
-                  <DeleteOutlined
-                    key="delete"
-                    className="text-red-500"
-                    onClick={async () => {
-                      try {
-                        await deleteFeedback(item.id)
-                        appMessage.success(t('deleteSuccess'))
-                        const feedbacksRes = await listFeedbacks()
-                        setFeedbacks(feedbacksRes.data)
-                      } catch (e) {
-                        console.error(e)
-                      }
-                    }}
-                  />
-                ]}
-              >
-                <div className="w-full">{item.content}</div>
-                {item.reply && (
-                  <>
-                    <Divider />
-                    <div className="w-full">{item.reply}</div>
-                  </>
-                )}
-              </Card>
-            ))}
-          </div>
+          {feedbacks?.length === 0 ? (
+            <EmptyState className="w-full h-full text-lg" />
+          ) : (
+            <div className="flex flex-col gap-4 py-4">
+              {feedbacks?.map((item) => (
+                <Card
+                  key={item.id}
+                  title={item.title}
+                  extra={
+                    <div className="flex gap-2">
+                      <Tag>{feedbackTypeMap[item.type]}</Tag>
+                      <Tag
+                        color={feedbackStatusMap[item.status].color}
+                        icon={feedbackStatusMap[item.status].icon}
+                      >
+                        {feedbackStatusMap[item.status].text}
+                      </Tag>
+                    </div>
+                  }
+                  actions={[
+                    <DeleteOutlined
+                      key="delete"
+                      className="text-red-500"
+                      onClick={async () => {
+                        try {
+                          await deleteFeedback(item.id)
+                          appMessage.success(t('deleteSuccess'))
+                          const feedbacksRes = await listFeedbacks()
+                          setFeedbacks(feedbacksRes.data)
+                        } catch (e) {
+                          console.error(e)
+                        }
+                      }}
+                    />
+                  ]}
+                >
+                  <div className="w-full">{item.content}</div>
+                  {item.reply && (
+                    <>
+                      <Divider />
+                      <div className="w-full">{item.reply}</div>
+                    </>
+                  )}
+                </Card>
+              ))}
+            </div>
+          )}
         </div>
       )
     }

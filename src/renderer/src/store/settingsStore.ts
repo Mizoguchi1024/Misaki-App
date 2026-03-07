@@ -16,6 +16,7 @@ interface SettingsState {
   borderRadius: number
 
   mainColor: string // #3142ef
+  promptsSuggestion: boolean
   ttsAutoplay: boolean
   backgroundPath: string | null
   backgroundOpacity: number
@@ -41,6 +42,7 @@ const initialState = {
   baseUrl: 'http://localhost',
   appearance: 0,
   language: 0,
+  promptsSuggestion: false,
   ttsAutoplay: false,
   fontSize: 14,
   mainColor: '#3142ef',
@@ -62,6 +64,7 @@ const initialLocalState = {
 
 const initialCloudState = {
   mainColor: '#3142ef',
+  promptsSuggestion: false,
   ttsAutoplay: false,
   backgroundPath: null,
   backgroundOpacity: 100,

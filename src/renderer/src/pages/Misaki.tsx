@@ -593,28 +593,32 @@ export default function Misaki(): React.JSX.Element {
                 {
                   key: '1',
                   label: t('gender'),
+                  span: { sm: 2, md: 1 },
                   children: <span className="truncate">{genderMap[assistant?.gender || 0]}</span>
                 },
                 {
                   key: '2',
                   label: t('birthday'),
+                  span: { sm: 2, md: 1 },
                   children: <span className="truncate">{assistant?.birthday}</span>
                 },
                 {
                   key: '3',
-                  label: t('createDate'),
+                  label: t('publicFlag'),
+                  span: { sm: 2, md: 1 },
                   children: (
                     <span className="truncate">
-                      {dayjs(assistant?.createTime).format('YYYY-MM-DD')}
+                      {assistant?.publicFlag ? t('public') : t('private')}
                     </span>
                   )
                 },
                 {
                   key: '4',
-                  label: t('publicFlag'),
+                  label: t('createDate'),
+                  span: { sm: 2, md: 1 },
                   children: (
                     <span className="truncate">
-                      {assistant?.publicFlag ? t('public') : t('private')}
+                      {dayjs(assistant?.createTime).format('YYYY-MM-DD')}
                     </span>
                   )
                 },

@@ -28,6 +28,7 @@ export type UserFrontResponse = {
 }
 
 export type UpdateSettingsFrontRequest = {
+  promptsSuggestion?: boolean
   ttsAutoplay?: boolean
   mainColor?: string
   backgroundPath?: string
@@ -38,6 +39,7 @@ export type UpdateSettingsFrontRequest = {
 }
 
 export type SettingsFrontResponse = {
+  promptsSuggestion: boolean
   ttsAutoplay: boolean
   colorPrimary: string
   backgroundPath: string

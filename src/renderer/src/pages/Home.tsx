@@ -102,7 +102,10 @@ export default function Home(): React.JSX.Element {
             arrow={false}
             disabled={!jwt}
           >
-            <MisakiLogo className="h-28 shrink-0 cursor-pointer" fill={mainColor} />
+            <MisakiLogo
+              className="h-20 md:h-26 shrink-0 cursor-pointer ease-in-out duration-250"
+              fill={mainColor}
+            />
           </ColorPicker>
           <Input
             value={assistantNameInputValue}
@@ -111,7 +114,7 @@ export default function Home(): React.JSX.Element {
             maxLength={8}
             spellCheck="false"
             className={clsx(
-              'text-8xl font-semibold text-neutral-900 dark:text-neutral-100 field-sizing-content',
+              'text-7xl md:text-8xl font-semibold text-neutral-900 dark:text-neutral-100 field-sizing-content',
               jwt && 'cursor-text'
             )}
             onChange={(e) => setAssistantNameInputValue(e.target.value)}

@@ -25,7 +25,7 @@ export default function TokenTag(): React.JSX.Element {
         color={(token ?? 0) <= 1000 ? 'red' : 'geekblue'}
         variant="filled"
         icon={<HeartOutlined />}
-        className="select-none cursor-pointer"
+        className="select-none cursor-pointer hidden md:inline"
         onClick={() => setIsModalOpen(true)}
       >
         {token}

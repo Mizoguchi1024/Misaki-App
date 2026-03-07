@@ -30,8 +30,8 @@ export default function MisakiButton(): React.JSX.Element {
       }}
     >
       <div className="flex items-center gap-1">
-        <MisakiLogo className="w-8 h-8 shrink-0" fill={mainColor} />
-        <span className="text-xl font-semibold">{assistantName}</span>
+        <MisakiLogo className="h-6 shrink-0" fill={mainColor} />
+        <span className="text-xl font-semibold hidden md:inline">{assistantName}</span>
       </div>
     </Button>
   )
