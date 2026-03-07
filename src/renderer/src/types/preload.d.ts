@@ -1,4 +1,4 @@
-import type { API } from './index'
+import type { API } from '../../../preload/index'
 
 declare global {
   interface Window {

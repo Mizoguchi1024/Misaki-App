@@ -1,8 +1,9 @@
-import { App as AntdApp, ConfigProvider, theme } from 'antd'
+import { App as AntdApp, theme } from 'antd'
 import 'dayjs/locale/zh-cn'
-import { LanguageAntdMap, useSettingsStore } from './store/settingsStore'
+import { LanguageAntdMap, LanguageAntdXMap, useSettingsStore } from './store/settingsStore'
 import { useEffect, useState } from 'react'
 import { StyleProvider } from '@ant-design/cssinjs'
+import { XProvider } from '@ant-design/x'
 
 export default function App({ children }: { children?: React.ReactNode }): React.JSX.Element {
   const { appearance, fontSize, mainColor, borderRadius, language } = useSettingsStore()
@@ -25,7 +26,7 @@ export default function App({ children }: { children?: React.ReactNode }): React
 
   return (
     <StyleProvider layer>
-      <ConfigProvider
+      <XProvider
         theme={{
           algorithm:
             appearance === 2 || (appearance === 0 && isSystemDark)
@@ -42,10 +43,10 @@ export default function App({ children }: { children?: React.ReactNode }): React
             }
           }
         }}
-        locale={LanguageAntdMap[language]}
+        locale={{ ...LanguageAntdXMap[language], ...LanguageAntdMap[language] }}
       >
         <AntdApp message={{ maxCount: 5 }}>{children}</AntdApp>
-      </ConfigProvider>
+      </XProvider>
     </StyleProvider>
   )
 }

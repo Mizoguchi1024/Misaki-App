@@ -64,7 +64,7 @@ export default function AssistantScrollList(): React.JSX.Element {
   }, [assistants])
 
   return (
-    <div ref={root} className="w-120 h-full overflow-hidden mask-x-from-90%">
+    <div ref={root} className="w-60 md:w-120 h-full overflow-hidden mask-x-from-90%">
       <div ref={avatarList} className="flex items-center h-full pl-10 gap-6">
         {orderedAssistants?.map((item) => (
           <Tooltip

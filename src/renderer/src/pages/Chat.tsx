@@ -1,14 +1,16 @@
+import { EditOutlined, HeartOutlined, RedoOutlined, UserOutlined } from '@ant-design/icons'
 import {
-  CheckOutlined,
-  EditOutlined,
-  HeartOutlined,
-  RedoOutlined,
-  UserOutlined
-} from '@ant-design/icons'
-import { Actions, Bubble, BubbleListProps, CodeHighlighter, Sender } from '@ant-design/x'
+  Actions,
+  Bubble,
+  BubbleListProps,
+  CodeHighlighter,
+  Mermaid,
+  Prompts,
+  Sender
+} from '@ant-design/x'
 import XMarkdown, { ComponentProps } from '@ant-design/x-markdown'
 import Latex from '@ant-design/x-markdown/plugins/latex'
-import { createChatTitle, listChats, listMessages } from '@renderer/api/front/chat'
+import { createChatTitle, listChats, listMessages, listPrompts } from '@renderer/api/front/chat'
 import { getProfile } from '@renderer/api/front/user'
 import { useAssistantStore } from '@renderer/store/assistantStore'
 import { useChatStore } from '@renderer/store/chatStore'
@@ -20,11 +22,15 @@ import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useParams } from 'react-router-dom'
 
+const MERMAID_CONFIG = { theme: 'base' } as const
 const Code: React.FC<ComponentProps> = (props) => {
   const { className, children } = props
   const lang = className?.match(/language-(\w+)/)?.[1] || ''
 
   if (typeof children !== 'string') return null
+  if (lang === 'mermaid') {
+    return <Mermaid config={MERMAID_CONFIG}>{children}</Mermaid>
+  }
   return <CodeHighlighter lang={lang}>{children}</CodeHighlighter>
 }
 
@@ -34,15 +40,18 @@ export default function Chat(): React.JSX.Element {
   const { t } = useTranslation('chat')
   const { id: chatId } = useParams()
   const { username, avatarPath, setProfile } = useUserStore()
-  const { enabledAssistantId, getOssBaseUrl } = useSettingsStore()
+  const { promptsSuggestion, enabledAssistantId, getOssBaseUrl } = useSettingsStore()
   const { assistants } = useAssistantStore()
   const { models } = useModelStore()
   const {
     chats,
+    chatsUI,
+    parentId,
     setChats,
     setMessages,
     setFullMessages,
     setParentId,
+    setChatPrompts,
     sendMessage,
     stopSendMessage
   } = useChatStore()
@@ -53,6 +62,7 @@ export default function Chat(): React.JSX.Element {
   useEffect(() => {
     const load = async (): Promise<void> => {
       try {
+        setSenderValue('')
         if (!isStreaming) {
           const messagesRes = await listMessages(chatId!)
           setParentId(messagesRes.data[messagesRes.data.length - 1].id)
@@ -64,8 +74,18 @@ export default function Chat(): React.JSX.Element {
           }
           const chatRes = await listChats()
           setChats(chatRes.data)
+
+          if (promptsSuggestion && parentId && !chatsUI[chatId!]?.prompts?.length) {
+            const promptsRes = await listPrompts(chatId!, {
+              parentId: messagesRes.data[messagesRes.data.length - 1].id,
+              size: 2
+            })
+            setChatPrompts(chatId!, promptsRes.data)
+          }
           const profileRes = await getProfile()
           setProfile(profileRes.data)
+        } else {
+          setChatPrompts(chatId!, [])
         }
       } catch {
         return
@@ -110,29 +130,9 @@ export default function Chat(): React.JSX.Element {
             )
           }
         />
-      ),
-      footer: (content) => (
-        <Actions
-          items={[
-            {
-              key: 'retry',
-              icon: <RedoOutlined />,
-              label: t('retry'),
-              onItemClick: () => {
-                // TODO
-              }
-            },
-            {
-              key: 'copy',
-              actionRender: () => {
-                return <Actions.Copy text={content} />
-              }
-            }
-          ]}
-        />
       )
     },
-    USER: (data) => ({
+    USER: () => ({
       placement: 'end',
       typing: false,
       header: username,
@@ -143,28 +143,7 @@ export default function Chat(): React.JSX.Element {
           src={avatarPath ? getOssBaseUrl() + avatarPath : null}
           icon={avatarPath ? null : <UserOutlined />}
         />
-      ),
-      footer: () => (
-        <Actions
-          items={[
-            data.editable
-              ? { key: 'done', icon: <CheckOutlined />, label: 'done' }
-              : {
-                  key: 'edit',
-                  icon: <EditOutlined />,
-                  label: t('edit')
-                }
-          ]}
-          onClick={({ key }) => update(data.key, { editable: key === 'edit' })}
-        />
-      ),
-      onEditConfirm: (content) => {
-        console.log(`editing User-${data.key}: `, content)
-        update(data.key, { content, editable: false })
-      },
-      onEditCancel: () => {
-        update(data.key, { editable: false })
-      }
+      )
     })
   }
 
@@ -173,10 +152,45 @@ export default function Chat(): React.JSX.Element {
       <Bubble.List
         role={role}
         items={
-          messages?.map((item) => ({
+          messages?.map((item, index, array) => ({
             key: item.id,
             role: item.type,
             content: item.content,
+            footer: () =>
+              item.type === 'ASSISTANT' ? (
+                index === array.length - 1 && isStreaming ? null : (
+                  <Actions
+                    fadeInLeft={index === array.length - 1}
+                    items={[
+                      {
+                        key: 'retry',
+                        icon: <RedoOutlined />,
+                        label: t('retry'),
+                        onItemClick: () => {
+                          // TODO
+                        }
+                      },
+                      {
+                        key: 'copy',
+                        actionRender: () => {
+                          return <Actions.Copy text={item.content} />
+                        }
+                      }
+                    ]}
+                  />
+                )
+              ) : (
+                <Actions
+                  items={[
+                    {
+                      key: 'edit',
+                      icon: <EditOutlined />,
+                      label: t('edit')
+                    }
+                  ]}
+                  onClick={({ key }) => console.log(key)}
+                />
+              ),
             contentRender: (content: string) => (
               <Typography>
                 <XMarkdown
@@ -184,20 +198,38 @@ export default function Chat(): React.JSX.Element {
                   config={{ extensions: Latex() }}
                   components={{ code: Code, 'incomplete-table': TableSkeleton }}
                   streaming={{ hasNextChunk: isStreaming, enableAnimation: true }}
+                  dompurifyConfig={{ ADD_ATTR: ['icon', 'description'] }}
                   openLinksInNewTab
                 />
               </Typography>
             )
           })) ?? []
         }
-        className="h-full mask-b-from-84% table-style"
+        className="h-full w-full mask-b-from-84% table-style"
         classNames={{
-          scroll: 'px-12 pt-6 pb-24 w-10 scrollbar-style',
+          scroll: 'px-16 pt-6 pb-36 scrollbar-style',
           avatar: 'select-none',
           header: 'select-none'
         }}
       />
       <div className="absolute bottom-1/12 left-1/2 -translate-x-1/2 w-4/7">
+        {promptsSuggestion && (
+          <Prompts
+            key={parentId}
+            items={chatsUI[chatId!]?.prompts?.map((prompt) => ({
+              key: prompt,
+              description: prompt
+            }))}
+            onItemClick={(info) => {
+              setSenderValue(info.data.description?.toString() ?? '')
+            }}
+            fadeInLeft
+            className="mb-2 mask-r-from-90%"
+            classNames={{
+              item: 'bg-white/70 dark:bg-white/20 backdrop-blur-xs border-none'
+            }}
+          />
+        )}
         <Sender
           className="bg-white/70 dark:bg-white/20 backdrop-blur-xs hover:backdrop-blur-sm ease-in-out duration-500"
           loading={isStreaming}

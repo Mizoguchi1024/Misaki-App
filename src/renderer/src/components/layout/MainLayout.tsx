@@ -1,7 +1,6 @@
 import { App, Button, Drawer, Layout, Menu, MenuProps } from 'antd'
 import { useEffect, useState } from 'react'
 import { Outlet, UIMatch, useLocation, useMatches, useNavigate } from 'react-router-dom'
-
 import {
   CodeOutlined,
   DatabaseOutlined,
@@ -48,7 +47,7 @@ export default function MainLayout(): React.JSX.Element {
     setSettings,
     reset: resetSettingsStore
   } = useSettingsStore()
-  const { chats, setChats, pinnedChats, reset: resetChatStore } = useChatStore()
+  const { chats, chatsUI, setChats, reset: resetChatStore } = useChatStore()
   const { setAssistants, reset: resetAssistantStore } = useAssistantStore()
   const { setModels, reset: resetModelStore } = useModelStore()
   const { reset: resetFeedbackStore } = useFeedbackStore()
@@ -133,19 +132,14 @@ export default function MainLayout(): React.JSX.Element {
     }
   ]
 
-  const chatList = chats ?? []
-  const chatMap = new Map(chatList.map((chat) => [chat.id, chat]))
-  const pinnedOrderedChats = (pinnedChats ?? [])
-    .map((id) => chatMap.get(id))
-    .filter((chat): chat is (typeof chatList)[number] => Boolean(chat))
-  const pinnedChatIdSet = new Set(pinnedOrderedChats.map((chat) => chat.id))
-  const unpinnedChats = chatList.filter((chat) => !pinnedChatIdSet.has(chat.id))
+  const pinnedOrderedChats = chats?.filter((chat) => chatsUI[chat.id]?.pinned) || []
+  const unpinnedChats = chats?.filter((chat) => !chatsUI[chat.id]?.pinned) || []
   const orderedChats = [...pinnedOrderedChats, ...unpinnedChats]
 
   const chatItems = orderedChats.map((item) => ({
     key: '/chat/' + item.id,
     label: item.title ? item.title : t('newChat'),
-    icon: pinnedChats?.includes(item.id) ? (
+    icon: chatsUI[item.id]?.pinned ? (
       <PushpinOutlined />
     ) : collapsed && !isDrawerOpen ? (
       <MessageOutlined />
@@ -174,15 +168,15 @@ export default function MainLayout(): React.JSX.Element {
             : 'bg-white dark:bg-neutral-900'
         )}
       >
-        <div className="flex items-center">
+        <div className="flex items-center gap-4">
           <MisakiButton />
           <Button
-            className="block md:hidden"
+            className="md:hidden"
             color="default"
             variant="filled"
             icon={<MenuOutlined />}
             onClick={() => setIsDrawerOpen(!isDrawerOpen)}
-          ></Button>
+          />
         </div>
         <HeaderMiddlePart currentPage={currentPage} />
         <HeaderRightPart currentPage={currentPage} />
@@ -192,12 +186,17 @@ export default function MainLayout(): React.JSX.Element {
           className=""
           placement="left"
           closable={{ placement: 'end' }}
+          size={'70%'}
           open={isDrawerOpen}
           onClose={() => setIsDrawerOpen(false)}
           destroyOnHidden
+          title={<MisakiButton hideTextBelowMd={false} />}
+          classNames={{
+            title: 'pl-4'
+          }}
         >
           <Menu
-            className="select-none h-full overflow-y-auto scroll-smooth scrollbar-none bg-transparent"
+            className="select-none h-full overflow-y-auto scroll-smooth scrollbar-none bg-transparent mask-b-from-94%"
             theme="light"
             selectedKeys={[location.pathname]}
             onClick={(e) => {
@@ -222,7 +221,7 @@ export default function MainLayout(): React.JSX.Element {
           )}
         >
           <Menu
-            className="select-none h-full overflow-y-auto scroll-smooth scrollbar-none bg-transparent"
+            className="select-none h-full overflow-y-auto scroll-smooth scrollbar-none bg-transparent mask-b-from-94%"
             theme="light"
             selectedKeys={[location.pathname]}
             onClick={(e) => navigate(e.key, { viewTransition: true })}

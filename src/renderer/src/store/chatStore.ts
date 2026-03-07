@@ -11,16 +11,17 @@ import { useUserStore } from './userStore'
 interface ChatState {
   isStreaming: boolean
   chats: ChatFrontResponse[] | null
+  chatsUI: Record<string, { pinned: boolean; prompts: string[] }>
   messages: MessageFrontResponse[] | null
   fullMessages: MessageFrontResponse[] | null
   parentId: string | null
-  pinnedChats: string[] | null
 
   setChats: (chats: ChatFrontResponse[]) => void
   setMessages: (messages: MessageFrontResponse[]) => void
   setFullMessages: (fullMessages: MessageFrontResponse[]) => void
   setParentId: (parentId: string | null) => void
-  setPinnedChats: (pinnedChats: string[]) => void
+  setChatPinned: (chatId: string, pinned: boolean) => void
+  setChatPrompts: (chatId: string, prompts: string[]) => void
   reset: () => void
   stopSendMessage: () => void
 
@@ -32,8 +33,10 @@ let currentSendMessageController: AbortController | null = null
 const initialState = {
   isStreaming: false,
   chats: null,
+  chatsUI: {},
   messages: null,
   fullMessages: null,
+  prompts: null,
   parentId: null,
   pinnedChats: null
 }
@@ -43,7 +46,7 @@ export const useChatStore = create<ChatState>()(
     (set, get) => ({
       ...initialState,
 
-      setChats: (chatFrontResponse) => set({ chats: chatFrontResponse }),
+      setChats: (chats) => set({ chats }),
       setMessages: (messageFrontResponse: MessageFrontResponse[]) =>
         set((state) => {
           if (!messageFrontResponse.length) {
@@ -80,7 +83,26 @@ export const useChatStore = create<ChatState>()(
         }),
       setFullMessages: (fullMessages) => set({ fullMessages }),
       setParentId: (parentId) => set({ parentId }),
-      setPinnedChats: (pinnedChats) => set({ pinnedChats }),
+      setChatPinned: (id, pinned) =>
+        set((state) => ({
+          chatsUI: {
+            ...state.chatsUI,
+            [id]: {
+              ...state.chatsUI[id],
+              pinned
+            }
+          }
+        })),
+      setChatPrompts: (id, prompts) =>
+        set((state) => ({
+          chatsUI: {
+            ...state.chatsUI,
+            [id]: {
+              ...state.chatsUI[id],
+              prompts
+            }
+          }
+        })),
       reset: () => set(initialState),
       stopSendMessage: () => {
         currentSendMessageController?.abort()

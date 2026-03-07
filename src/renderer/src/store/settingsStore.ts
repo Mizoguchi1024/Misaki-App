@@ -4,6 +4,8 @@ import { SettingsFrontResponse } from '@renderer/types/user'
 import zh_CN from 'antd/locale/zh_CN'
 import en_US from 'antd/locale/en_US'
 import ja_JP from 'antd/locale/ja_JP'
+import zhCN_X from '@ant-design/x/locale/zh_CN'
+import enUS_X from '@ant-design/x/locale/en_US'
 import { MessageInstance } from 'antd/es/message/interface'
 
 interface SettingsState {
@@ -89,6 +91,11 @@ export const LanguageAntdMap = {
   [LanguageEnum.ZH]: zh_CN,
   [LanguageEnum.EN]: en_US,
   [LanguageEnum.JP]: ja_JP
+}
+
+export const LanguageAntdXMap = {
+  [LanguageEnum.ZH]: zhCN_X,
+  [LanguageEnum.EN]: enUS_X
 }
 
 export const LanguageMap = {

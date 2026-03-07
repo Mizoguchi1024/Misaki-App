@@ -5,8 +5,15 @@ import { useNavigate } from 'react-router-dom'
 import MisakiLogo from '@renderer/assets/img/misaki-logo-symbol.svg?react'
 import { useSettingsStore } from '@renderer/store/settingsStore'
 import { useAssistantStore } from '@renderer/store/assistantStore'
+import clsx from 'clsx'
 
-export default function MisakiButton(): React.JSX.Element {
+interface MisakiButtonProps {
+  hideTextBelowMd?: boolean
+}
+
+export default function MisakiButton({
+  hideTextBelowMd = true
+}: MisakiButtonProps): React.JSX.Element {
   const navigate = useNavigate()
   const { t } = useTranslation('misakiButton')
   const { message: appMessage } = App.useApp()
@@ -31,7 +38,9 @@ export default function MisakiButton(): React.JSX.Element {
     >
       <div className="flex items-center gap-1">
         <MisakiLogo className="h-6 shrink-0" fill={mainColor} />
-        <span className="text-xl font-semibold hidden md:inline">{assistantName}</span>
+        <span className={clsx(hideTextBelowMd && 'hidden md:inline', 'text-xl font-semibold')}>
+          {assistantName}
+        </span>
       </div>
     </Button>
   )

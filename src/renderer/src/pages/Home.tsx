@@ -123,52 +123,50 @@ export default function Home(): React.JSX.Element {
             inert={!jwt}
           />
         </div>
-        <div className="w-3/4">
-          <Sender
-            className={clsx(
-              backgroundPath
-                ? 'bg-white/60 dark:bg-neutral-800/60 backdrop-blur-xs hover:backdrop-blur-sm '
-                : 'bg-white dark:bg-neutral-800',
-              'ease-in-out duration-500'
-            )}
-            loading={isStreaming}
-            placeholder={!jwt ? t('pleaseLoginFirst') : t('chatWithMe')}
-            disabled={!jwt}
-            submitType="enter"
-            footer={() => {
-              return (
-                <div className="flex gap-2">
-                  <Sender.Switch color="default" disabled={!jwt}>
-                    {t('createScript')}
-                  </Sender.Switch>
-                  <Dropdown menu={{ items }} disabled={!jwt}>
-                    <Sender.Switch color="default">MCP · 3</Sender.Switch>
-                  </Dropdown>
-                  <Sender.Switch color="default" disabled={!jwt}>
-                    {t('meme')}
-                  </Sender.Switch>
-                </div>
-              )
-            }}
-            onSubmit={async (value) => {
-              try {
-                setFullMessages([])
-                setMessages([])
-                const newChat = (await createChat()).data
-                setChats([newChat, ...(chats ?? [])])
-                sendMessage(newChat.id, { content: value })
-                navigate(`/chat/${newChat.id}`, {
-                  viewTransition: true
-                })
-              } catch {
-                return
-              }
-            }}
-            onCancel={() => {
-              stopSendMessage()
-            }}
-          />
-        </div>
+        <Sender
+          className={clsx(
+            backgroundPath
+              ? 'bg-white/60 dark:bg-neutral-800/60 backdrop-blur-xs hover:backdrop-blur-sm '
+              : 'bg-white dark:bg-neutral-800',
+            'max-w-2xl ease-in-out duration-500'
+          )}
+          loading={isStreaming}
+          placeholder={!jwt ? t('pleaseLoginFirst') : t('chatWithMe')}
+          disabled={!jwt}
+          submitType="enter"
+          footer={() => {
+            return (
+              <div className="flex gap-2">
+                <Sender.Switch color="default" disabled={!jwt}>
+                  {t('createScript')}
+                </Sender.Switch>
+                <Dropdown menu={{ items }} disabled={!jwt}>
+                  <Sender.Switch color="default">MCP · 3</Sender.Switch>
+                </Dropdown>
+                <Sender.Switch color="default" disabled={!jwt}>
+                  {t('meme')}
+                </Sender.Switch>
+              </div>
+            )
+          }}
+          onSubmit={async (value) => {
+            try {
+              setFullMessages([])
+              setMessages([])
+              const newChat = (await createChat()).data
+              setChats([newChat, ...(chats ?? [])])
+              sendMessage(newChat.id, { content: value })
+              navigate(`/chat/${newChat.id}`, {
+                viewTransition: true
+              })
+            } catch {
+              return
+            }
+          }}
+          onCancel={() => {
+            stopSendMessage()
+          }}
+        />
       </div>
       <div className="h-14 flex justify-center items-center select-none">
         <span>{t('footer.section1')}</span>

@@ -1,4 +1,4 @@
-@layer reset, theme, base, antd, components, utilities;
+@layer reset, theme, base, antd, antdx, components, utilities;
 
 @import url(antd/dist/reset.css) layer(reset);
 @import 'tailwindcss';
