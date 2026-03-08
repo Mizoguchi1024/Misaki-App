@@ -36,7 +36,7 @@ export default function ResetPassword(): React.JSX.Element {
       const { email } = await form.validateFields(['email'])
       setSendVerifyCodeLoading(true)
       await sendVerifyCode(email, language)
-      appMessage.success(t('sendVerifyCodeSuccess'))
+      appMessage.success(t('verifyCodeSent'))
     } finally {
       setTimeout(() => {
         setSendVerifyCodeLoading(false)
@@ -56,7 +56,7 @@ export default function ResetPassword(): React.JSX.Element {
         const profileRes = await getProfile()
         setProfile(profileRes.data)
       }
-      appMessage.success(t('resetSuccess'))
+      appMessage.success(t('passwordReset'))
       setFinishLoading(false)
       navigator('/', { viewTransition: true })
     } catch {
@@ -75,7 +75,7 @@ export default function ResetPassword(): React.JSX.Element {
         )}
       />
       <GlassBox className="gap-12">
-        <h1 className="text-4xl font-medium select-none">{t('title')}</h1>
+        <h1 className="text-4xl font-medium select-none">{t('resetPassword')}</h1>
         <Form
           form={form}
           name="basic"
@@ -120,7 +120,7 @@ export default function ResetPassword(): React.JSX.Element {
               prefix={<LockOutlined />}
               suffix={
                 <Tooltip title={t('passwordTypeMessage')}>
-                  <InfoCircleOutlined style={{ color: 'rgba(0,0,0,.45)' }} />
+                  <InfoCircleOutlined />
                 </Tooltip>
               }
               allowClear

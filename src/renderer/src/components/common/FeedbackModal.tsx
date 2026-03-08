@@ -131,9 +131,7 @@ export default function FeedbackModal({ open, onCancel }): React.JSX.Element {
       label: t('history'),
       children: (
         <div className="h-120 pl-6 pr-2 overflow-y-auto scrollbar-style mask-end">
-          {feedbacks?.length === 0 ? (
-            <EmptyState className="w-full h-full text-lg" />
-          ) : (
+          {feedbacks && feedbacks.length > 0 ? (
             <div className="flex flex-col gap-4 pb-12">
               {feedbacks?.map((item) => (
                 <Card
@@ -177,6 +175,8 @@ export default function FeedbackModal({ open, onCancel }): React.JSX.Element {
                 </Card>
               ))}
             </div>
+          ) : (
+            <EmptyState className="w-full h-full text-lg" logoClassName="w-24 mb-2" />
           )}
         </div>
       )

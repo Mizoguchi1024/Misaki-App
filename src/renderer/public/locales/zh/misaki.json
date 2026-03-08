@@ -32,6 +32,6 @@
     "deleteSuccess": "删除成功",
     "enableSuccess": "启用成功",
     "cantDeleteEnabledAssistant": "无法删除已启用的助手",
-    "requiredTemplate": "{{label}}不能为空",
-    "nameRequired": "名称不能为空"
+    "requiredTemplate": "请输入{{label}}",
+    "nameRequired": "请输入名称"
 }

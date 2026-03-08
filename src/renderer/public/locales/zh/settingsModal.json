@@ -24,5 +24,6 @@
   "delete": "删除",
   "promptsSuggestion": "提示词建议",
   "ttsAutoplay": "TTS 自动播放",
-  "deleteAllChat": "删除所有聊天"
+  "deleteAllChat": "删除所有聊天",
+  "allChatsDeleted": "所有聊天已删除"
 }

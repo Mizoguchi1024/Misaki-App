@@ -17,18 +17,18 @@ import { useChatStore } from '@renderer/store/chatStore'
 import { useModelStore } from '@renderer/store/modelStore'
 import { useSettingsStore } from '@renderer/store/settingsStore'
 import { useUserStore } from '@renderer/store/userStore'
-import { Avatar, Skeleton, Typography } from 'antd'
+import { Avatar, Pagination, Skeleton, Typography } from 'antd'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useParams } from 'react-router-dom'
 
-const MERMAID_CONFIG = { theme: 'base' } as const
 const Code: React.FC<ComponentProps> = (props) => {
   const { className, children } = props
   const lang = className?.match(/language-(\w+)/)?.[1] || ''
 
   if (typeof children !== 'string') return null
   if (lang === 'mermaid') {
+    const MERMAID_CONFIG = { theme: 'base' } as const
     return <Mermaid config={MERMAID_CONFIG}>{children}</Mermaid>
   }
   return <CodeHighlighter lang={lang}>{children}</CodeHighlighter>
@@ -46,6 +46,7 @@ export default function Chat(): React.JSX.Element {
   const {
     chats,
     chatsUI,
+    fullMessages,
     parentId,
     setChats,
     setMessages,
@@ -58,18 +59,18 @@ export default function Chat(): React.JSX.Element {
   const messages = useChatStore((state) => state.messages)
   const isStreaming = useChatStore((state) => state.isStreaming)
   const [senderValue, setSenderValue] = useState('')
+  const [editingId, setEditingId] = useState('')
 
   useEffect(() => {
     const load = async (): Promise<void> => {
       try {
-        setSenderValue('')
         if (!isStreaming) {
           const messagesRes = await listMessages(chatId!)
-          setParentId(messagesRes.data[messagesRes.data.length - 1].id)
+          console.log('messagesRes', messagesRes)
           setFullMessages(messagesRes.data)
-          setMessages(messagesRes.data)
+          setParentId(messagesRes.data[messagesRes.data.length - 1].id)
 
-          if (!chats?.find((chat) => chat.id === chatId)?.title) {
+          if (messagesRes.data.length >= 2 && !chats?.find((chat) => chat.id === chatId)?.title) {
             await createChatTitle(chatId!)
           }
           const chatRes = await listChats()
@@ -91,11 +92,21 @@ export default function Chat(): React.JSX.Element {
         return
       }
     }
-
     load()
-  }, [chatId, isStreaming])
+  }, [chatId, isStreaming, promptsSuggestion])
 
-  const update = (key: string | number, editable: any): void => {}
+  useEffect(() => {
+    const load = async (): Promise<void> => {
+      setSenderValue('')
+    }
+    load()
+  }, [chatId])
+
+  useEffect(() => {
+    if (fullMessages && fullMessages.length) {
+      setMessages(fullMessages)
+    }
+  }, [parentId])
 
   const role: BubbleListProps['role'] = {
     ASSISTANT: {
@@ -156,6 +167,19 @@ export default function Chat(): React.JSX.Element {
             key: item.id,
             role: item.type,
             content: item.content,
+            editable: item.id === editingId,
+            onEditCancel: () => {
+              setEditingId('')
+            },
+            onEditConfirm: (value) => {
+              if (!value.trim()) return
+              setEditingId('')
+              setParentId(item.parentId)
+              sendMessage(chatId!, {
+                parentId: item.parentId ?? undefined,
+                content: value
+              })
+            },
             footer: () =>
               item.type === 'ASSISTANT' ? (
                 index === array.length - 1 && isStreaming ? null : (
@@ -182,13 +206,51 @@ export default function Chat(): React.JSX.Element {
               ) : (
                 <Actions
                   items={[
+                    ...((fullMessages?.filter((m) => m.parentId === item.parentId).length ?? 0) > 1
+                      ? [
+                          {
+                            key: 'pagination',
+                            actionRender: () => (
+                              <Pagination
+                                size="small"
+                                className="select-none"
+                                simple={{ readOnly: true }}
+                                current={
+                                  (fullMessages
+                                    ?.filter((m) => m.parentId === item.parentId)
+                                    .findIndex((m) => m.id === item.id) ?? 0) + 1
+                                }
+                                onChange={(page) => {
+                                  let current = fullMessages?.filter(
+                                    (x) => x.parentId === item.parentId
+                                  )[page - 1]
+
+                                  while (true) {
+                                    const child = fullMessages?.find(
+                                      (m) => m.parentId === current?.id
+                                    )
+                                    if (!child) break
+                                    current = child
+                                  }
+
+                                  setParentId(current?.id ?? null)
+                                }}
+                                total={
+                                  fullMessages?.filter((m) => m.parentId === item.parentId).length
+                                }
+                                pageSize={1}
+                              />
+                            )
+                          }
+                        ]
+                      : []),
                     {
                       key: 'edit',
                       icon: <EditOutlined />,
                       label: t('edit')
                     }
                   ]}
-                  onClick={({ key }) => console.log(key)}
+                  onClick={({ key }) => setEditingId(key === 'edit' ? item.id : '')}
                 />
               ),
             contentRender: (content: string) => (
@@ -207,7 +269,8 @@ export default function Chat(): React.JSX.Element {
         }
         className="h-full w-full mask-b-from-84% table-style"
         classNames={{
-          scroll: 'pt-12 pb-36 w-full px-12 lg:max-w-4xl lg:mx-auto lg:px-0 scrollbar-none',
+          scroll:
+            'pt-12 pb-36 w-full px-12 md:max-w-2xl md:px-0 md:mx-auto lg:max-w-3xl xl:max-w-4xl scrollbar-none ease-in-out duration-500',
           avatar: 'select-none',
           header: 'select-none'
         }}
@@ -241,8 +304,9 @@ export default function Chat(): React.JSX.Element {
           onSubmit={async () => {
             setSenderValue('')
             await sendMessage(chatId!, { content: senderValue })
+            // TODO 输出完毕信号
           }}
-          onCancel={() => {
+          onCancel={async () => {
             stopSendMessage()
           }}
         />

@@ -2,7 +2,7 @@
   "profile": "プロフィール",
   "uploadSuccess": "アップロード成功",
   "saveSuccess": "セーブ成功",
-  "requiredTemplate": "${label} は必須項目です",
+  "requiredTemplate": "${label}を入力してください",
   "id": "ID",
   "email": "メール",
   "username": "ユーザーネーム",

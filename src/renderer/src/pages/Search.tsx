@@ -1,11 +1,11 @@
-import { LoadingOutlined, MessageOutlined, SearchOutlined } from '@ant-design/icons'
+import { MessageOutlined, SearchOutlined } from '@ant-design/icons'
 import { Sender } from '@ant-design/x'
 import { searchChats } from '@renderer/api/front/chat'
 import EmptyState from '@renderer/components/common/EmptyState'
 import { useChatStore } from '@renderer/store/chatStore'
 import { useSettingsStore } from '@renderer/store/settingsStore'
 import { ChatFrontResponse } from '@renderer/types/chat'
-import { Card, Spin } from 'antd'
+import { Card, Skeleton } from 'antd'
 import clsx from 'clsx'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -27,9 +27,9 @@ export default function Search(): React.JSX.Element {
   return (
     <div className="h-full relative">
       <div className="h-full overflow-y-auto scrollbar-style mask-end px-4">
-        <div className="pt-12 pb-40 w-full px-12 md:max-w-2xl md:mx-auto md:px-0">
-          {results && results.length > 0 ? (
-            results.map((item) => (
+        {results && results.length > 0 ? (
+          <div className="pt-12 pb-40 w-full px-12 md:max-w-2xl md:mx-auto md:px-0">
+            {results.map((item) => (
               <Card
                 key={item.id}
                 onClick={() => navigate(`/chat/${item.id}`, { viewTransition: true })}
@@ -39,7 +39,7 @@ export default function Search(): React.JSX.Element {
                   'mb-4 select-none cursor-pointer hover:shadow-xl dark:hover:shadow-neutral-600 ease-in-out duration-500'
                 )}
               >
-                <Spin spinning={loading} delay={250} indicator={<LoadingOutlined spin />}>
+                <Skeleton loading={loading} active paragraph={{ rows: 1 }}>
                   <Card.Meta
                     avatar={<MessageOutlined className="text-2xl" />}
                     title={item.title || t('newChat')}
@@ -48,13 +48,13 @@ export default function Search(): React.JSX.Element {
                       avatar: 'flex items-center justify-center'
                     }}
                   />
-                </Spin>
+                </Skeleton>
               </Card>
-            ))
-          ) : (
-            <EmptyState className="w-full h-full text-2xl" />
-          )}
-        </div>
+            ))}
+          </div>
+        ) : (
+          <EmptyState className="w-full h-full text-2xl" logoClassName="w-32 mb-4" />
+        )}
       </div>
       <Sender
         className="absolute bottom-1/12 left-1/2 -translate-x-1/2 max-w-md md:max-w-xl bg-white/70 dark:bg-white/20 backdrop-blur-xs hover:backdrop-blur-sm ease-in-out duration-500"
@@ -67,7 +67,6 @@ export default function Search(): React.JSX.Element {
           }
           try {
             setLoading(true)
-            setResults([])
             const chatsRes = await searchChats(value)
             setResults(chatsRes.data)
           } finally {

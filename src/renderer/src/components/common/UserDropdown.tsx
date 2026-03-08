@@ -17,8 +17,11 @@ import ProfileModal from './ProfileModal'
 import FeedbackModal from './FeedbackModal'
 import { useAssistantStore } from '@renderer/store/assistantStore'
 import { useFeedbackStore } from '@renderer/store/feedbackStore'
+import { useNavigate } from 'react-router-dom'
 
 export default function UserDropdown(): React.JSX.Element {
+  const { t } = useTranslation('userDropdown')
+  const navigate = useNavigate()
   const { username, avatarPath, reset: resetUserStore } = useUserStore()
   const { getOssBaseUrl, resetCloudSettings: resetSettingsStore } = useSettingsStore()
   const { reset: resetChatStore } = useChatStore()
@@ -28,7 +31,6 @@ export default function UserDropdown(): React.JSX.Element {
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false)
   const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState(false)
   const [isAboutModalOpen, setIsAboutModalOpen] = useState(false)
-  const { t } = useTranslation('userDropdown')
 
   const list: MenuProps['items'] = [
     {
@@ -82,6 +84,7 @@ export default function UserDropdown(): React.JSX.Element {
         resetChatStore()
         resetAssistantStore()
         resetFeedbackStore()
+        navigate('/', { viewTransition: true })
         break
     }
   }

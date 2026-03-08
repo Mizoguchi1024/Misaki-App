@@ -1,9 +1,10 @@
 {
-    "title": "创建你的 Misaki 账户",
+    "registerAccount": "创建你的 Misaki 账户",
     "email": "电子邮箱",
     "emailRequiredMessage": "请输入邮箱",
     "emailTypeMessage": "请输入正确的邮箱格式",
     "sendVerifyCode": "发送验证码",
+    "verifyCodeSent": "验证码已发送",
     "username": "用户名",
     "usernameRequiredMessage": "请输入用户名",
     "usernameTypeMessage": "用户名长度应在2-20个字符之间",

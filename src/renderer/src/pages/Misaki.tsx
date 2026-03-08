@@ -183,12 +183,12 @@ export default function Misaki(): React.JSX.Element {
   }
 
   return (
-    <div className="flex flex-col items-center h-full w-full relative" ref={root}>
+    <div className="flex flex-col items-center h-full w-full relative px-12 md:px-0" ref={root}>
       <Live2DCanvas modelUrl={'/hiyori_free_en/runtime/hiyori_free_t08.model3.json'} />
       <GlassBox
         className={clsx(
-          isEditing ? 'h-5/6' : 'h-1/4',
-          'w-3/4 absolute bottom-1/12 ease-in-out duration-500'
+          isEditing ? 'h-5/6' : 'h-7/24',
+          'w-md md:w-3xl absolute bottom-1/12 ease-in-out duration-500'
         )}
       >
         {isEditing ? (
@@ -215,9 +215,8 @@ export default function Misaki(): React.JSX.Element {
                     </Tooltip>
                   </div>
                 </div>
-
                 {!publicAssistants || publicAssistants.length === 0 ? (
-                  <EmptyState className="text-2xl" />
+                  <EmptyState className=" text-2xl" logoClassName="w-32 mb-4" />
                 ) : (
                   <div className="grid grid-cols-2 gap-4 w-full">
                     {publicAssistants?.map((item) => (
@@ -363,7 +362,7 @@ export default function Misaki(): React.JSX.Element {
                         }}
                       >
                         <Button
-                          color="danger"
+                          color="default"
                           variant="filled"
                           shape="circle"
                           icon={<DeleteOutlined />}
@@ -520,7 +519,7 @@ export default function Misaki(): React.JSX.Element {
           </div>
         ) : (
           <div className="loading-blur w-full h-full flex flex-col items-center justify-between">
-            <div className="flex justify-between w-full">
+            <div className="flex justify-between w-full mb-4">
               <Tooltip
                 title={
                   assistant?.name !== 'Misaki' &&
@@ -560,10 +559,9 @@ export default function Misaki(): React.JSX.Element {
                   }}
                 >
                   <Button
-                    color="default"
+                    color={assistant?.id === enabledAssistantId ? 'green' : 'default'}
                     variant="filled"
                     shape="circle"
-                    className={clsx(assistant?.id === enabledAssistantId && 'bg-green-300/40')}
                     icon={<CheckOutlined />}
                     onClick={async () => {
                       if (assistant?.id !== enabledAssistantId) {

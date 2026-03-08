@@ -1,9 +1,10 @@
 {
-    "title": "Misaki アカウントを作成",
+    "registerAccount": "Misaki に登録",
     "email": "メールアドレス",
     "emailRequiredMessage": "メールアドレスを入力してください",
     "emailTypeMessage": "正しいメールアドレス形式を入力してください",
     "sendVerifyCode": "認証コードを送信",
+    "verifyCodeSent": "認証コードを送信しました",
     "username": "ユーザー名",
     "usernameRequiredMessage": "ユーザー名を入力してください",
     "usernameTypeMessage": "ユーザー名の長さは2-20文字でなければなりません",

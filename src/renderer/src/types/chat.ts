@@ -24,7 +24,7 @@ export type ChatFrontResponse = {
 export type MessageFrontResponse = {
   id: string
   chatId: string
-  parentId: string
+  parentId: string | null
   type: string
   content: string
   createTime: string

@@ -2,7 +2,7 @@
   "profile": "个人资料",
   "uploadSuccess": "上传成功",
   "saveSuccess": "保存成功",
-  "requiredTemplate": "${label} 不能为空",
+  "requiredTemplate": "请输入${label}",
   "id": "ID",
   "email": "邮箱",
   "username": "用户名",

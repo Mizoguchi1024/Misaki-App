@@ -34,7 +34,7 @@ export default function Register(): React.JSX.Element {
       const { email } = await form.validateFields(['email'])
       setSendVerifyCodeLoading(true)
       await sendVerifyCode(email, language)
-      appMessage.success(t('sendVerifyCodeSuccess'))
+      appMessage.success(t('verifyCodeSent'))
     } finally {
       setTimeout(() => {
         setSendVerifyCodeLoading(false)
@@ -70,7 +70,7 @@ export default function Register(): React.JSX.Element {
         )}
       />
       <GlassBox className="gap-12">
-        <h1 className="text-4xl font-medium select-none">{t('title')}</h1>
+        <h1 className="text-4xl font-medium select-none">{t('registerAccount')}</h1>
         <Form
           form={form}
           name="basic"

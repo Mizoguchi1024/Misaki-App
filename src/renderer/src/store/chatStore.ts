@@ -37,8 +37,7 @@ const initialState = {
   messages: null,
   fullMessages: null,
   prompts: null,
-  parentId: null,
-  pinnedChats: null
+  parentId: null
 }
 
 export const useChatStore = create<ChatState>()(
@@ -107,7 +106,7 @@ export const useChatStore = create<ChatState>()(
       stopSendMessage: () => {
         currentSendMessageController?.abort()
         currentSendMessageController = null
-        set({ isStreaming: false })
+        setTimeout(() => set({ isStreaming: false }), 500)
       },
 
       sendMessage: async (chatId, data) => {
@@ -117,7 +116,7 @@ export const useChatStore = create<ChatState>()(
 
         try {
           const userMessageId = crypto.randomUUID()
-          const aiMessageId = crypto.randomUUID()
+          const assistantMessageId = crypto.randomUUID()
           const now = new Date().toISOString()
           set((state) => ({
             isStreaming: true,
@@ -126,13 +125,13 @@ export const useChatStore = create<ChatState>()(
               {
                 id: userMessageId,
                 chatId,
-                parentId: state.parentId ?? '',
+                parentId: state.parentId ?? null,
                 type: 'USER',
                 content: data.content,
                 createTime: now
               },
               {
-                id: aiMessageId,
+                id: assistantMessageId,
                 chatId,
                 parentId: userMessageId,
                 type: 'ASSISTANT',
@@ -141,7 +140,6 @@ export const useChatStore = create<ChatState>()(
               }
             ]
           }))
-
           const response = await fetch(
             `${useSettingsStore.getState().getApiBaseUrl()}/front/chats/${chatId}/messages`,
             {
@@ -192,12 +190,11 @@ export const useChatStore = create<ChatState>()(
 
               set((state) => ({
                 messages: state.messages?.map((msg) =>
-                  msg.id === aiMessageId ? { ...msg, content: msg.content + content } : msg
+                  msg.id === assistantMessageId ? { ...msg, content: msg.content + content } : msg
                 )
               }))
             }
           }
-          console.log(get().messages)
         } catch (e) {
           if (e instanceof DOMException && e.name === 'AbortError') {
             return

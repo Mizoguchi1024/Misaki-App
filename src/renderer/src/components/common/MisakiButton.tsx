@@ -32,7 +32,7 @@ export default function MisakiButton({
         if (jwt) {
           navigate('/misaki', { viewTransition: true })
         } else {
-          appMessage.info(t('Login first'))
+          appMessage.info(t('loginFirst'))
         }
       }}
     >

@@ -19,6 +19,8 @@ import { useTranslation } from 'react-i18next'
 import ImageUpload from './ImageUpload'
 import { UploadResponse } from '@renderer/types/common'
 import { useNavigate } from 'react-router-dom'
+import { deleteAllChats, listChats } from '@renderer/api/front/chat'
+import { useChatStore } from '@renderer/store/chatStore'
 
 export default function SettingsModal({ open, onCancel }): React.JSX.Element {
   const { t } = useTranslation('settingsModal')
@@ -42,6 +44,7 @@ export default function SettingsModal({ open, onCancel }): React.JSX.Element {
     setPartial,
     resetLocalSettings
   } = useSettingsStore()
+  const { setChats } = useChatStore()
   const [baseUrlInputValue, setBaseUrlInputValue] = useState(baseUrl.replace('http://', ''))
   const [colorPickerValue, setColorPickerValue] = useState(mainColor)
 
@@ -55,7 +58,7 @@ export default function SettingsModal({ open, onCancel }): React.JSX.Element {
       setSettings(settingsRes.data)
     }
 
-    if (open) {
+    if (open && jwt) {
       load()
     }
   }, [open])
@@ -66,7 +69,7 @@ export default function SettingsModal({ open, onCancel }): React.JSX.Element {
       label: t('general'),
       children: (
         <div className="h-86 w-full flex flex-col gap-4 p-2 ml-4 overflow-y-auto scrollbar-style">
-          <div className="flex justify-between items-center min-h-8">
+          <div className="flex justify-between items-center min-h-8 flex-none">
             <span>{t('baseUrl')}</span>
             <Space.Compact className="w-2/3">
               <Space.Addon>http://</Space.Addon>
@@ -85,7 +88,7 @@ export default function SettingsModal({ open, onCancel }): React.JSX.Element {
               ></Input>
             </Space.Compact>
           </div>
-          <div className="flex justify-between items-center min-h-8">
+          <div className="flex justify-between items-center min-h-8 flex-none">
             <span>{t('language')}</span>
             <Select
               className="w-24"
@@ -100,7 +103,7 @@ export default function SettingsModal({ open, onCancel }): React.JSX.Element {
               }}
             />
           </div>
-          <div className="flex justify-between items-center min-h-8">
+          <div className="flex justify-between items-center min-h-8 flex-none">
             <span>{t('resetLocalSettings')}</span>
             <Button
               color="danger"
@@ -120,7 +123,7 @@ export default function SettingsModal({ open, onCancel }): React.JSX.Element {
       label: t('appearance'),
       children: (
         <div className="h-86 w-full flex flex-col gap-4 p-2 ml-4 overflow-y-auto scrollbar-style">
-          <div className="flex justify-between items-center min-h-8">
+          <div className="flex justify-between items-center min-h-8 flex-none">
             <span>{t('appearance')}</span>
             <Segmented<string>
               defaultValue={appearance.toString()}
@@ -136,7 +139,7 @@ export default function SettingsModal({ open, onCancel }): React.JSX.Element {
             />
           </div>
           {jwt && (
-            <div className="flex justify-between items-center min-h-8">
+            <div className="flex justify-between items-center min-h-8 flex-none">
               <span>{t('mainColor')}</span>
               <ColorPicker
                 showText
@@ -155,7 +158,7 @@ export default function SettingsModal({ open, onCancel }): React.JSX.Element {
               ></ColorPicker>
             </div>
           )}
-          <div className="flex justify-between items-center min-h-8">
+          <div className="flex justify-between items-center min-h-8 flex-none">
             <span>{t('fontSize')}</span>
             <Select
               className="w-24"
@@ -178,7 +181,7 @@ export default function SettingsModal({ open, onCancel }): React.JSX.Element {
               }}
             />
           </div>
-          <div className="flex justify-between items-center min-h-8">
+          <div className="flex justify-between items-center min-h-8 flex-none">
             <span>{t('borderRadius')}</span>
             <Slider
               min={0}
@@ -190,7 +193,7 @@ export default function SettingsModal({ open, onCancel }): React.JSX.Element {
             />
           </div>
           {jwt && (
-            <div className="flex justify-between items-center min-h-8">
+            <div className="flex justify-between items-center min-h-8 flex-none">
               <span>{t('backgroundImage')}</span>
               <ImageUpload
                 imgPath={backgroundPath}
@@ -212,7 +215,7 @@ export default function SettingsModal({ open, onCancel }): React.JSX.Element {
           )}
           {jwt && backgroundPath && (
             <>
-              <div className="flex justify-between items-center min-h-8">
+              <div className="flex justify-between items-center min-h-8 flex-none">
                 <span>{t('deleteBackground')}</span>
                 <Button
                   color="danger"
@@ -230,7 +233,7 @@ export default function SettingsModal({ open, onCancel }): React.JSX.Element {
                   {t('delete')}
                 </Button>
               </div>
-              <div className="flex justify-between items-center min-h-8">
+              <div className="flex justify-between items-center min-h-8 flex-none">
                 <span>{t('backgroundOpacity')}</span>
                 <Slider
                   min={0}
@@ -251,7 +254,7 @@ export default function SettingsModal({ open, onCancel }): React.JSX.Element {
                   }}
                 />
               </div>
-              <div className="flex justify-between items-center min-h-8">
+              <div className="flex justify-between items-center min-h-8 flex-none">
                 <span>{t('backgroundBlur')}</span>
                 <Slider
                   min={0}
@@ -284,7 +287,7 @@ export default function SettingsModal({ open, onCancel }): React.JSX.Element {
             label: t('account'),
             children: (
               <div className="h-86 w-full flex flex-col gap-4 p-2 ml-4 overflow-y-auto scrollbar-style">
-                <div className="flex justify-between items-center min-h-8">
+                <div className="flex justify-between items-center min-h-8 flex-none">
                   <span>{t('resetPassword')}</span>
                   <Button
                     type="default"
@@ -293,7 +296,7 @@ export default function SettingsModal({ open, onCancel }): React.JSX.Element {
                     {t('reset')}
                   </Button>
                 </div>
-                <div className="flex justify-between items-center min-h-8">
+                <div className="flex justify-between items-center min-h-8 flex-none">
                   <span>{t('deleteAccount')}</span>
                   <Button
                     color="danger"
@@ -313,7 +316,7 @@ export default function SettingsModal({ open, onCancel }): React.JSX.Element {
             label: t('chat'),
             children: (
               <div className="h-86 w-full flex flex-col gap-4 p-2 ml-4 overflow-y-auto scrollbar-style">
-                <div className="flex justify-between items-center min-h-8">
+                <div className="flex justify-between items-center min-h-8 flex-none">
                   <span>{t('promptsSuggestion')}</span>
                   <Switch
                     checked={promptsSuggestion}
@@ -324,7 +327,7 @@ export default function SettingsModal({ open, onCancel }): React.JSX.Element {
                     }}
                   ></Switch>
                 </div>
-                <div className="flex justify-between items-center min-h-8">
+                <div className="flex justify-between items-center min-h-8 flex-none">
                   <span>{t('ttsAutoplay')}</span>
                   <Switch
                     checked={ttsAutoplay}
@@ -335,13 +338,19 @@ export default function SettingsModal({ open, onCancel }): React.JSX.Element {
                     }}
                   ></Switch>
                 </div>
-                <div className="flex justify-between items-center min-h-8">
+                <div className="flex justify-between items-center min-h-8 flex-none">
                   <span>{t('deleteAllChat')}</span>
                   <Button
                     danger
-                    onClick={() => {
-                      deleteAllChat()
-                      appMessage.success(t('allChatDeleted'))
+                    onClick={async () => {
+                      try {
+                        await deleteAllChats()
+                        appMessage.success(t('allChatsDeleted'))
+                        const chatsRes = await listChats()
+                        setChats(chatsRes.data)
+                      } catch {
+                        return
+                      }
                     }}
                   >
                     {t('delete')}
@@ -376,7 +385,4 @@ export default function SettingsModal({ open, onCancel }): React.JSX.Element {
       />
     </Modal>
   )
-}
-function deleteAllChat(): void {
-  throw new Error('Function not implemented.')
 }
