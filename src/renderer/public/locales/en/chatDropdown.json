@@ -1,4 +1,7 @@
 {
   "pin": "Pin",
-  "unpin": "Unpin"
+  "unpin": "Unpin",
+  "detail": "Detail",
+  "delete": "Delete",
+  "chatDeleted": "Chat deleted"
 }

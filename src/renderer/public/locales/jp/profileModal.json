@@ -1,7 +1,7 @@
 {
   "profile": "プロフィール",
   "uploadSuccess": "アップロード成功",
-  "saveSuccess": "セーブ成功",
+  "profileSaved": "プロフィールを保存しました",
   "requiredTemplate": "${label}を入力してください",
   "id": "ID",
   "email": "メール",

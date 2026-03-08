@@ -54,7 +54,7 @@ export default function ChatDropdown(): React.JSX.Element {
       case 'delete':
         try {
           await deleteChat(chatId!)
-          appMessage.success(t('deleteSuccess'))
+          appMessage.success(t('chatDeleted'))
           const chatsRes = await listChats()
           setChats(chatsRes.data)
           navigate('/', { viewTransition: true })

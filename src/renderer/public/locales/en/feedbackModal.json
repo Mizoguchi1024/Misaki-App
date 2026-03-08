@@ -12,7 +12,7 @@
   "advice": "Adivce",
   "content": "Content",
   "submit": "Submit",
-  "createSuccess": "Create success",
+  "feedbackCreated": "Feedback created",
   "clear": "Clear",
   "new": "New",
   "processing": "Processing",
@@ -20,7 +20,7 @@
   "resolved": "Resolved",
   "closed": "Closed",
   "delete": "Delete",
-  "deleteSuccess": "Delete success",
+  "feedbackDeleted": "Feedback deleted",
   "contentRequired": "Please enter content",
   "titleRequired": "Please enter title",
   "typeRequired": "Please enter type"

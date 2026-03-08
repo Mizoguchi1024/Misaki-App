@@ -3,5 +3,5 @@
     "unpin": "解除",
     "detail": "詳細",
     "delete": "削除",
-    "deleteSuccess": "削除成功"
+    "chatDeleted": "チャットを削除しました"
 }

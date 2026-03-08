@@ -57,7 +57,7 @@ export default function ProfileModal({ open, onCancel }): React.JSX.Element {
       })
       const profileRes = await getProfile()
       setProfile(profileRes.data)
-      appMessage.success(t('saveSuccess'))
+      appMessage.success(t('profileSaved'))
     } catch {
       return
     }

@@ -25,5 +25,6 @@
   "backgroundOpacity": "背景不透明度",
   "deleteAllChats": "全てのチャットを削除する",
   "deleteBackground": "背景画像を削除する",
+  "backgroundDeleted": "背景画像を削除しました",
   "promptsSuggestion": "プロンプト候補"
 }

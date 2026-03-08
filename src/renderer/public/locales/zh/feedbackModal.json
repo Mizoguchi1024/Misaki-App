@@ -14,7 +14,7 @@
   "advice": "意见建议",
   "content": "内容",
   "submit": "提交",
-  "createSuccess": "创建成功",
+  "feedbackCreated": "反馈已创建",
   "clear": "清空",
   "new": "新反馈",
   "processing": "处理中",
@@ -22,5 +22,5 @@
   "resolved": "已解决",
   "closed": "已关闭",
   "delete": "删除",
-  "deleteSuccess": "删除成功"
+  "feedbackDeleted": "反馈已删除"
 }

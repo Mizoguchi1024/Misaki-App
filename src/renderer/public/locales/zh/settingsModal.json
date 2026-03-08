@@ -16,6 +16,7 @@
   "borderRadius": "圆角半径",
   "backgroundImage": "背景图片",
   "deleteBackground": "删除背景图片",
+  "backgroundDeleted": "背景图片已删除",
   "backgroundOpacity": "背景不透明度",
   "backgroundBlur": "背景模糊度",
   "uploadSuccess": "上传成功",

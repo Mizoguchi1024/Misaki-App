@@ -25,5 +25,6 @@
   "backgroundOpacity": "Background Opacity",
   "deleteAllChats": "Delete all chats",
   "deleteBackground": "Delete background image",
+  "backgroundDeleted": "Background image deleted",
   "promptsSuggestion": "Prompts suggestion"
 }

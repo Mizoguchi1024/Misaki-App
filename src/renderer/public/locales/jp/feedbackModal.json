@@ -12,7 +12,7 @@
   "advice": "アドバイス",
   "content": "内容",
   "submit": "送信",
-  "createSuccess": "作成成功",
+  "feedbackCreated": "フィードバックを作成しました",
   "clear": "クリア",
   "new": "新",
   "processing": "処理中",
@@ -20,7 +20,7 @@
   "resolved": "解決",
   "closed": "終了",
   "delete": "削除",
-  "deleteSuccess": "削除成功",
+  "feedbackDeleted": "フィードバックを削除しました",
   "contentRequired": "コンテンツを入力してください",
   "titleRequired": "タイトルを入力してください",
   "typeRequired": "タイプを入力してください"

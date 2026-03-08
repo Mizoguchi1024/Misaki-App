@@ -158,7 +158,7 @@ export default function Misaki(): React.JSX.Element {
           publicFlag: values.publicFlag,
           version: assistant.version
         })
-        appMessage.success(t('saveSuccess'))
+        appMessage.success(t('assistantSaved'))
         const assistantsRes = await listAssistants()
         setAssistants(assistantsRes.data)
         setAssistant(assistantsRes.data.find((item) => item.id === assistant.id) || null)
@@ -172,7 +172,7 @@ export default function Misaki(): React.JSX.Element {
           modelId: values.modelId,
           publicFlag: values.publicFlag
         })
-        appMessage.success(t('createSuccess'))
+        appMessage.success(t('assistantCreated'))
         const assistantsRes = await listAssistants()
         setAssistants(assistantsRes.data)
         setAssistant(createAssistantRes.data)
@@ -373,7 +373,7 @@ export default function Misaki(): React.JSX.Element {
                                 return
                               }
                               await deleteAssistant(assistant.id)
-                              appMessage.success(t('deleteSuccess'))
+                              appMessage.success(t('assistantDeleted'))
                               const assistantsRes = await listAssistants()
                               setAssistants(assistantsRes.data)
                               setAssistant(

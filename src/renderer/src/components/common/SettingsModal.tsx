@@ -225,7 +225,7 @@ export default function SettingsModal({ open, onCancel }): React.JSX.Element {
                       backgroundPath: '',
                       version: settingsVersion!
                     })
-                    appMessage.success(t('deleteSuccess'))
+                    appMessage.success(t('backgroundDeleted'))
                     const settingsRes = await getSettings()
                     setSettings(settingsRes.data)
                   }}

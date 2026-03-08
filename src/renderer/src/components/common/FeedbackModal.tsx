@@ -57,7 +57,7 @@ export default function FeedbackModal({ open, onCancel }): React.JSX.Element {
         type: values.type,
         content: values.content
       })
-      appMessage.success(t('createSuccess'))
+      appMessage.success(t('feedbackCreated'))
       const feedbacksRes = await listFeedbacks()
       setFeedbacks(feedbacksRes.data)
     } catch (e) {
@@ -155,7 +155,7 @@ export default function FeedbackModal({ open, onCancel }): React.JSX.Element {
                       onClick={async () => {
                         try {
                           await deleteFeedback(item.id)
-                          appMessage.success(t('deleteSuccess'))
+                          appMessage.success(t('feedbackDeleted'))
                           const feedbacksRes = await listFeedbacks()
                           setFeedbacks(feedbacksRes.data)
                         } catch (e) {
