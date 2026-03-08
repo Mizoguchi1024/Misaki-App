@@ -103,7 +103,7 @@ export default function Home(): React.JSX.Element {
             disabled={!jwt}
           >
             <MisakiLogo
-              className="h-20 md:h-26 shrink-0 cursor-pointer ease-in-out duration-250"
+              className="w-26 md:w-34 shrink-0 cursor-pointer ease-in-out duration-250"
               fill={mainColor}
             />
           </ColorPicker>

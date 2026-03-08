@@ -173,7 +173,8 @@ export default function MainLayout(): React.JSX.Element {
           <Button
             className="md:hidden"
             color="default"
-            variant="filled"
+            variant="text"
+            size="large"
             icon={<MenuOutlined />}
             onClick={() => setIsDrawerOpen(!isDrawerOpen)}
           />

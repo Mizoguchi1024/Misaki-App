@@ -176,7 +176,7 @@ export default function FeedbackModal({ open, onCancel }): React.JSX.Element {
               ))}
             </div>
           ) : (
-            <EmptyState className="w-full h-full text-lg" logoClassName="w-24 mb-2" />
+            <EmptyState className="w-full h-full text-lg" logoClassName="w-24" />
           )}
         </div>
       )

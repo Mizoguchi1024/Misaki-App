@@ -27,7 +27,6 @@ export default function MisakiButton({
     <Button
       type="text"
       size="large"
-      className="px-2 py-4"
       onClick={() => {
         if (jwt) {
           navigate('/misaki', { viewTransition: true })
@@ -37,7 +36,7 @@ export default function MisakiButton({
       }}
     >
       <div className="flex items-center gap-1">
-        <MisakiLogo className="h-6 shrink-0" fill={mainColor} />
+        <MisakiLogo className="w-8" fill={mainColor} />
         <span className={clsx(hideTextBelowMd && 'hidden md:inline', 'text-xl font-semibold')}>
           {assistantName}
         </span>

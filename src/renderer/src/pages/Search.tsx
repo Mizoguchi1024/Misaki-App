@@ -53,7 +53,7 @@ export default function Search(): React.JSX.Element {
             ))}
           </div>
         ) : (
-          <EmptyState className="w-full h-full text-2xl" logoClassName="w-32 mb-4" />
+          <EmptyState className="w-full h-full text-2xl" logoClassName="w-32" />
         )}
       </div>
       <Sender
