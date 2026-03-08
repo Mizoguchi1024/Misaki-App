@@ -30,5 +30,7 @@
   "publicFlag": "Visibility",
   "name": "Name",
   "assistantEnabled": "Assistant enabled",
-  "nameRequired": "Please enter name"
+  "nameRequired": "Please enter name",
+  "assistantCreated": "Assistant created",
+  "assistantSaved": "Assistant saved"
 }
