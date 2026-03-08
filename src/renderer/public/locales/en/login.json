@@ -1,5 +1,5 @@
 {
-    "title": "Sign In To Misaki",
+    "loginAccount": "Sign In To Misaki",
     "email": "Email",
     "emailRequiredMessage": "Please enter your email",
     "emailTypeMessage": "Please enter the correct email format",

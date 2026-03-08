@@ -1,5 +1,5 @@
 {
-    "title": "Misaki にログイン",
+    "loginAccount": "Misaki にログイン",
     "email": "メールアドレス",
     "emailRequiredMessage": "メールアドレスを入力してください",
     "emailTypeMessage": "正しいメールアドレス形式を入力してください",

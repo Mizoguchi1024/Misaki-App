@@ -16,7 +16,7 @@
   "borderRadius": "圆角半径",
   "backgroundImage": "背景图片",
   "deleteBackground": "删除背景图片",
-  "backgroundOpacity": "背景透明度",
+  "backgroundOpacity": "背景不透明度",
   "backgroundBlur": "背景模糊度",
   "uploadSuccess": "上传成功",
   "resetPassword": "重置密码",
@@ -24,6 +24,6 @@
   "delete": "删除",
   "promptsSuggestion": "提示词建议",
   "ttsAutoplay": "TTS 自动播放",
-  "deleteAllChat": "删除所有聊天",
+  "deleteAllChats": "删除所有聊天",
   "allChatsDeleted": "所有聊天已删除"
 }

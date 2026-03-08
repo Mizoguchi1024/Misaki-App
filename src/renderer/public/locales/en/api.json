@@ -1,0 +1,5 @@
+{
+  "networkError": "Network Error",
+  "tokenExpired": "Token Expired",
+  "unknownError": "Unknown Error"
+}

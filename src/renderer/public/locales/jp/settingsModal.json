@@ -19,5 +19,11 @@
   "resetPassword": "パスワードをリセット",
   "deleteAccount": "アカウントを削除",
   "delete": "削除",
-  "ttsAutoplay": "TTS 自動再生"
+  "ttsAutoplay": "TTS 自動再生",
+  "allChatsDeleted": "全てのチャットを削除しました",
+  "backgroundBlur": "背景ぼかし",
+  "backgroundOpacity": "背景不透明度",
+  "deleteAllChats": "全てのチャットを削除する",
+  "deleteBackground": "背景画像を削除する",
+  "promptsSuggestion": "プロンプト候補"
 }

@@ -20,5 +20,8 @@
   "resolved": "解決",
   "closed": "終了",
   "delete": "削除",
-  "deleteSuccess": "削除成功"
+  "deleteSuccess": "削除成功",
+  "contentRequired": "コンテンツを入力してください",
+  "titleRequired": "タイトルを入力してください",
+  "typeRequired": "タイプを入力してください"
 }

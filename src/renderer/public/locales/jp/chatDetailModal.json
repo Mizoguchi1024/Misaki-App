@@ -1,0 +1,9 @@
+{
+  "chatDetail": "チャット詳細",
+  "title": "タイトル",
+  "none": "無",
+  "id": "ID",
+  "token": "トークン使用量",
+  "createTime": "作成日時",
+  "updateTime": "変更日時"
+}

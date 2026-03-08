@@ -339,7 +339,7 @@ export default function SettingsModal({ open, onCancel }): React.JSX.Element {
                   ></Switch>
                 </div>
                 <div className="flex justify-between items-center min-h-8 flex-none">
-                  <span>{t('deleteAllChat')}</span>
+                  <span>{t('deleteAllChats')}</span>
                   <Button
                     danger
                     onClick={async () => {

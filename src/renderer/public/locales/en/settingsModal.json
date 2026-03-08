@@ -19,5 +19,11 @@
   "resetPassword": "Reset password",
   "deleteAccount": "Delete account",
   "delete": "Delete",
-  "ttsAutoplay": "TTS autoplay"
+  "ttsAutoplay": "TTS autoplay",
+  "allChatsDeleted": "All chats deleted",
+  "backgroundBlur": "Background blur",
+  "backgroundOpacity": "Background Opacity",
+  "deleteAllChats": "Delete all chats",
+  "deleteBackground": "Delete background image",
+  "promptsSuggestion": "Prompts suggestion"
 }

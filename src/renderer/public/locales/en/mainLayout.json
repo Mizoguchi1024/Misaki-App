@@ -1,8 +1,8 @@
 {
   "startNewChat": "Chat",
   "searchChats": "Search",
-  "mcpServer": "MCP Server",
+  "mcpServer": "MCP",
   "script": "Script",
-  "fileManager": "File manager",
+  "fileManager": "File",
   "newChat": "New chat"
 }

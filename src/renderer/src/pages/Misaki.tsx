@@ -188,7 +188,7 @@ export default function Misaki(): React.JSX.Element {
       <GlassBox
         className={clsx(
           isEditing ? 'h-5/6' : 'h-7/24',
-          'w-md md:w-3xl absolute bottom-1/12 ease-in-out duration-500'
+          'w-lg md:w-xl lg:w-3xl absolute bottom-1/12 ease-in-out duration-500'
         )}
       >
         {isEditing ? (
@@ -268,7 +268,7 @@ export default function Misaki(): React.JSX.Element {
                                 onClick={async () => {
                                   try {
                                     await copyAssistant(item.id)
-                                    appMessage.success(t('copySuccess'))
+                                    appMessage.success(t('assistantCopied'))
                                     const assistantsRes = await listAssistants()
                                     setAssistants(assistantsRes.data)
                                   } catch {
@@ -369,7 +369,7 @@ export default function Misaki(): React.JSX.Element {
                           onClick={async () => {
                             try {
                               if (assistant.id === enabledAssistantId) {
-                                appMessage.warning(t('cantDeleteEnabledAssistant'))
+                                appMessage.warning(t('canNotDeleteEnabledAssistant'))
                                 return
                               }
                               await deleteAssistant(assistant.id)
@@ -523,7 +523,7 @@ export default function Misaki(): React.JSX.Element {
               <Tooltip
                 title={
                   assistant?.name !== 'Misaki' &&
-                  t('duplicateName', { count: assistant?.duplicateName })
+                  t('sameName', { count: assistant?.duplicateName })
                 }
                 arrow={false}
                 classNames={{
@@ -570,7 +570,7 @@ export default function Misaki(): React.JSX.Element {
                             enabledAssistantId: assistant?.id,
                             version: settingsVersion
                           })
-                          appMessage.success(t('enableSuccess'))
+                          appMessage.success(t('assistantEnabled'))
                           const settingsRes = await getSettings()
                           setSettings(settingsRes.data)
                         } catch {

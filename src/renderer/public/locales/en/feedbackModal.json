@@ -20,5 +20,8 @@
   "resolved": "Resolved",
   "closed": "Closed",
   "delete": "Delete",
-  "deleteSuccess": "Delete success"
+  "deleteSuccess": "Delete success",
+  "contentRequired": "Please enter content",
+  "titleRequired": "Please enter title",
+  "typeRequired": "Please enter type"
 }
