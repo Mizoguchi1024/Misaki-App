@@ -29,7 +29,6 @@ export default function Home(): React.JSX.Element {
   const {
     isStreaming,
     chats,
-    setParentId,
     setChats,
     setMessages,
     setFullMessages,
@@ -45,10 +44,6 @@ export default function Home(): React.JSX.Element {
   const assistantInputRef = useRef<InputRef>(null)
   const [isTermsModalOpen, setIsTermsModalOpen] = useState(false)
   const [isPolicyModalOpen, setIsPolicyModalOpen] = useState(false)
-
-  useEffect(() => {
-    setParentId(null)
-  }, [])
 
   useEffect(() => {
     setColorPickerValue(mainColor)

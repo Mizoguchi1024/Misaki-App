@@ -18,6 +18,7 @@ interface ChatState {
 
   setChats: (chats: ChatFrontResponse[]) => void
   setMessages: (messages: MessageFrontResponse[]) => void
+  setMessagesFromFull: (messages: MessageFrontResponse[]) => void
   setFullMessages: (fullMessages: MessageFrontResponse[]) => void
   setParentId: (parentId: string | null) => void
   setChatPinned: (chatId: string, pinned: boolean) => void
@@ -42,11 +43,12 @@ const initialState = {
 
 export const useChatStore = create<ChatState>()(
   persist(
-    (set, get) => ({
+    (set) => ({
       ...initialState,
 
       setChats: (chats) => set({ chats }),
-      setMessages: (messageFrontResponse: MessageFrontResponse[]) =>
+      setMessages: (messages) => set({ messages }),
+      setMessagesFromFull: (messageFrontResponse: MessageFrontResponse[]) =>
         set((state) => {
           if (!messageFrontResponse.length) {
             return { messages: [] }
@@ -138,6 +140,25 @@ export const useChatStore = create<ChatState>()(
                 content: '',
                 createTime: now
               }
+            ],
+            fullMessages: [
+              ...(state.fullMessages ?? []),
+              {
+                id: userMessageId,
+                chatId,
+                parentId: state.parentId ?? null,
+                type: 'USER',
+                content: data.content,
+                createTime: now
+              },
+              {
+                id: assistantMessageId,
+                chatId,
+                parentId: userMessageId,
+                type: 'ASSISTANT',
+                content: '',
+                createTime: now
+              }
             ]
           }))
           const response = await fetch(
@@ -150,10 +171,7 @@ export const useChatStore = create<ChatState>()(
                 'X-Timestamp': Date.now().toString(),
                 'X-Nonce': crypto.randomUUID()
               },
-              body: JSON.stringify({
-                ...data,
-                parentId: get().parentId ?? undefined
-              }),
+              body: JSON.stringify(data),
               signal: controller.signal
             }
           )

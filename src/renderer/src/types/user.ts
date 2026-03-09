@@ -48,3 +48,8 @@ export type SettingsFrontResponse = {
   enabledAssistantId: string
   version: number
 }
+
+export type CheckInFrontResponse = {
+  token: number
+  crystal: number
+}

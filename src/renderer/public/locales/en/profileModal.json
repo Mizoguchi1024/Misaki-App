@@ -2,7 +2,7 @@
   "profile": "Profile",
   "uploadSuccess": "Upload success",
   "profileSaved": "Profile saved",
-  "requiredTemplate": "${label} is required",
+  "requiredTemplate": "Please enter {{label}}",
   "id": "ID",
   "email": "Email",
   "username": "Username",

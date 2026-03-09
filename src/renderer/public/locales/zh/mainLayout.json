@@ -4,5 +4,6 @@
   "mcpServer": "MCP",
   "script": "脚本",
   "fileManager": "文件",
-  "newChat": "新聊天"
+  "newChat": "新聊天",
+  "checkInSuccess": "签到成功，获得 {{token}} 个 Token 和 {{crystal}} 个回忆残晶"
 }

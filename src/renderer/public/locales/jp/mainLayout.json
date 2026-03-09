@@ -4,5 +4,6 @@
   "mcpServer": "MCP",
   "script": "スクリプト",
   "fileManager": "ファイル",
-  "newChat": "新しいチャット"
+  "newChat": "新しいチャット",
+  "checkInSuccess": "チェックイン成功、{token} トークンと {crystal} クリスタルを獲得しました"
 }

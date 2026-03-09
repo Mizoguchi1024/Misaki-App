@@ -6,7 +6,7 @@ export default function EntryModal({
   onCancel,
   title,
   amount,
-  imgPath,
+  image,
   description
 }): React.JSX.Element {
   const { language, borderRadius } = useSettingsStore()
@@ -19,9 +19,8 @@ export default function EntryModal({
       footer={null}
       destroyOnHidden
       width={300}
-      className="select-none"
       classNames={{
-        title: 'font-serif'
+        title: 'font-serif select-none'
       }}
     >
       <div className="py-2">
@@ -30,7 +29,7 @@ export default function EntryModal({
           style={{ borderRadius: borderRadius }}
         >
           <span className="text-xl font-semibold mt-auto">{amount?.toLocaleString()}</span>
-          <img src={imgPath} className="h-full object-contain" draggable={false}></img>
+          {image}
         </div>
 
         <div

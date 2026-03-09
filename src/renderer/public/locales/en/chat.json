@@ -2,5 +2,6 @@
   "edit": "Edit",
   "retry": "Retry",
   "chatWithMe": "Chat with me",
-  "answerMayNotBeAccurate": "{{name}} may also make mistakes. Please verify important information."
+  "answerMayNotBeAccurate": "{{name}} may also make mistakes. Please verify important information.",
+  "messageRequired": "Please enter message"
 }

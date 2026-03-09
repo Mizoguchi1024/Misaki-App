@@ -2,5 +2,6 @@
   "edit": "編集",
   "retry": "再試行",
   "chatWithMe": "話をしよう",
-  "answerMayNotBeAccurate": "{{name}} も間違えることがあります。重要な情報は必ず確認してください。"
+  "answerMayNotBeAccurate": "{{name}} も間違えることがあります。重要な情報は必ず確認してください。",
+  "messageRequired": "メッセージを入力してください"
 }

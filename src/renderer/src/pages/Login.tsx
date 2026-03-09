@@ -47,7 +47,7 @@ export default function Login(): React.JSX.Element {
         )}
       />
       <GlassBox className="gap-12">
-        <h1 className="text-4xl font-medium select-none">{t('title')}</h1>
+        <h1 className="text-4xl font-medium select-none">{t('loginAccount')}</h1>
         <Form
           name="basic"
           initialValues={{ remember: true }}

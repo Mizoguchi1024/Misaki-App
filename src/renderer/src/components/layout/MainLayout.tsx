@@ -87,8 +87,13 @@ export default function MainLayout(): React.JSX.Element {
             'day'
           )
           if (!isToday) {
-            await checkIn()
-            appMessage.success(t('checkInSuccess'))
+            const checkInRes = await checkIn()
+            appMessage.success(
+              t('checkInSuccess', {
+                token: checkInRes.data.token,
+                crystal: checkInRes.data.crystal
+              })
+            )
             const newProfileRes = await getProfile()
             setProfile(newProfileRes.data)
           }

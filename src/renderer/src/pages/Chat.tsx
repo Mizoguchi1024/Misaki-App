@@ -17,7 +17,7 @@ import { useChatStore } from '@renderer/store/chatStore'
 import { useModelStore } from '@renderer/store/modelStore'
 import { useSettingsStore } from '@renderer/store/settingsStore'
 import { useUserStore } from '@renderer/store/userStore'
-import { Avatar, Pagination, Skeleton, Typography } from 'antd'
+import { App, Avatar, Pagination, Skeleton, Typography } from 'antd'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useParams } from 'react-router-dom'
@@ -38,6 +38,7 @@ const TableSkeleton = (): React.JSX.Element => <Skeleton.Node active style={{ wi
 
 export default function Chat(): React.JSX.Element {
   const { t } = useTranslation('chat')
+  const { message: appMessage } = App.useApp()
   const { id: chatId } = useParams()
   const { username, avatarPath, setProfile } = useUserStore()
   const { promptsSuggestion, enabledAssistantId, getOssBaseUrl } = useSettingsStore()
@@ -50,6 +51,7 @@ export default function Chat(): React.JSX.Element {
     parentId,
     setChats,
     setMessages,
+    setMessagesFromFull,
     setFullMessages,
     setParentId,
     setChatPrompts,
@@ -104,7 +106,7 @@ export default function Chat(): React.JSX.Element {
 
   useEffect(() => {
     if (fullMessages && fullMessages.length) {
-      setMessages(fullMessages)
+      setMessagesFromFull(fullMessages)
     }
   }, [parentId])
 
@@ -172,9 +174,13 @@ export default function Chat(): React.JSX.Element {
               setEditingId('')
             },
             onEditConfirm: (value) => {
-              if (!value.trim()) return
               setEditingId('')
-              setParentId(item.parentId)
+              if (!value.trim()) {
+                appMessage.warning(t('messageRequired'))
+                return
+              }
+              const index = messages.findIndex((m) => m.id === item.id)
+              setMessages(messages?.slice(0, index) ?? [])
               sendMessage(chatId!, {
                 parentId: item.parentId ?? undefined,
                 content: value
@@ -303,7 +309,7 @@ export default function Chat(): React.JSX.Element {
           }}
           onSubmit={async () => {
             setSenderValue('')
-            await sendMessage(chatId!, { content: senderValue })
+            await sendMessage(chatId!, { parentId: parentId ?? undefined, content: senderValue })
             // TODO 输出完毕信号
           }}
           onCancel={async () => {

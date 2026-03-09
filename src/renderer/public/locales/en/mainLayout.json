@@ -4,5 +4,6 @@
   "mcpServer": "MCP",
   "script": "Script",
   "fileManager": "File",
-  "newChat": "New chat"
+  "newChat": "New chat",
+  "checkInSuccess": "Check-in success, get {{token}} Tokens and {{crystal}} Crystals"
 }
