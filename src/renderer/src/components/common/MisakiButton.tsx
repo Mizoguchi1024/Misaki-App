@@ -37,7 +37,13 @@ export default function MisakiButton({
     >
       <div className="flex items-center gap-1">
         <MisakiLogo className="w-8" fill={mainColor} />
-        <span className={clsx(hideTextBelowMd && 'hidden md:inline', 'text-xl font-semibold')}>
+        <span
+          className={clsx(
+            hideTextBelowMd && 'hidden md:inline',
+            assistantName.length <= 8 ? 'text-xl' : 'text-md',
+            'font-semibold'
+          )}
+        >
           {assistantName}
         </span>
       </div>

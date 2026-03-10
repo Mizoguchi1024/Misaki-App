@@ -98,7 +98,7 @@ export default function AssistantScrollList(): React.JSX.Element {
                   )
                 }
                 className={clsx(
-                  'flex-none cursor-pointer select-none border-0 duration-250',
+                  'flex-none cursor-pointer select-none border-0 duration-250 active:scale-90',
                   assistant && item.id === assistant.id && 'outline-5'
                 )}
                 style={{ outlineColor: mainColor }}
@@ -119,7 +119,7 @@ export default function AssistantScrollList(): React.JSX.Element {
           <Avatar
             icon={<PlusOutlined />}
             className={clsx(
-              'flex-none cursor-pointer border-0 duration-250',
+              'flex-none cursor-pointer border-0 duration-250 active:scale-90',
               !assistant && 'outline-5'
             )}
             style={{ outlineColor: mainColor }}
