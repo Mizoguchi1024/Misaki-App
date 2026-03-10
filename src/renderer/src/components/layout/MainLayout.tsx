@@ -141,17 +141,20 @@ export default function MainLayout(): React.JSX.Element {
   const unpinnedChats = chats?.filter((chat) => !chatsUI[chat.id]?.pinned) || []
   const orderedChats = [...pinnedOrderedChats, ...unpinnedChats]
 
-  const chatItems = orderedChats.map((item) => ({
+  const siderChatItems = orderedChats.map((item) => ({
     key: '/chat/' + item.id,
     label: item.title ? item.title : t('newChat'),
-    icon: chatsUI[item.id]?.pinned ? (
-      <PushpinOutlined />
-    ) : collapsed && !isDrawerOpen ? (
-      <MessageOutlined />
-    ) : null
+    icon: chatsUI[item.id]?.pinned ? <PushpinOutlined /> : collapsed ? <MessageOutlined /> : null
   }))
 
-  const menuItems = [...agentItems, ...chatItems]
+  const drawerChatItems = orderedChats.map((item) => ({
+    key: '/chat/' + item.id,
+    label: item.title ? item.title : t('newChat'),
+    icon: chatsUI[item.id]?.pinned ? <PushpinOutlined /> : null
+  }))
+
+  const siderMenuItems = [...agentItems, ...siderChatItems]
+  const drawerMenuItems = [...agentItems, ...drawerChatItems]
 
   return (
     <Layout className="h-screen w-screen overflow-hidden relative z-0">
@@ -174,7 +177,15 @@ export default function MainLayout(): React.JSX.Element {
         )}
       >
         <div className="flex items-center gap-4">
-          <MisakiButton />
+          <MisakiButton className="hidden md:inline" />
+          <Button
+            className="md:hidden"
+            color="default"
+            variant="text"
+            size="large"
+            icon={<FormOutlined />}
+            onClick={() => navigate('/', { viewTransition: true })}
+          />
           <Button
             className="md:hidden"
             color="default"
@@ -196,7 +207,7 @@ export default function MainLayout(): React.JSX.Element {
           open={isDrawerOpen}
           onClose={() => setIsDrawerOpen(false)}
           destroyOnHidden
-          title={<MisakiButton hideTextBelowMd={false} />}
+          title={<MisakiButton />}
           classNames={{
             title: 'pl-4'
           }}
@@ -210,7 +221,7 @@ export default function MainLayout(): React.JSX.Element {
               navigate(e.key, { viewTransition: true })
             }}
             mode="inline"
-            items={menuItems}
+            items={drawerMenuItems}
             disabled={!jwt}
           />
         </Drawer>
@@ -236,7 +247,7 @@ export default function MainLayout(): React.JSX.Element {
               (e) => console.log(e) // TODO 右键菜单
             }
             mode="inline"
-            items={menuItems}
+            items={siderMenuItems}
             disabled={!jwt}
           />
         </Sider>

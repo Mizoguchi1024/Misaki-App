@@ -24,7 +24,7 @@ import { useModelStore } from '@renderer/store/modelStore'
 import { useSettingsStore } from '@renderer/store/settingsStore'
 import { useUserStore } from '@renderer/store/userStore'
 import { App, Avatar, Pagination, Skeleton, Space, Typography } from 'antd'
-import { motion } from 'motion/react'
+import { motion, useAnimation } from 'motion/react'
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useParams } from 'react-router-dom'
@@ -73,6 +73,8 @@ export default function Chat(): React.JSX.Element {
   const trackRef = useRef<HTMLDivElement>(null)
   const [containerWidth, setContainerWidth] = useState(0)
   const [trackWidth, setTrackWidth] = useState(0)
+  const controls = useAnimation()
+  const [dragging, setDragging] = useState(false)
 
   useEffect(() => {
     const load = async (): Promise<void> => {
@@ -89,6 +91,10 @@ export default function Chat(): React.JSX.Element {
           setChats(chatRes.data)
 
           if (promptsSuggestion && parentId && !chatsUI[chatId!]?.prompts?.length) {
+            controls.start({
+              x: 0,
+              y: 0
+            })
             const promptsRes = await listPrompts(chatId!, {
               parentId: messagesRes.data[messagesRes.data.length - 1].id,
               size: 2
@@ -110,6 +116,10 @@ export default function Chat(): React.JSX.Element {
   useEffect(() => {
     const load = async (): Promise<void> => {
       setSenderValue('')
+      controls.start({
+        x: 0,
+        y: 0
+      })
     }
     load()
   }, [chatId])
@@ -199,6 +209,7 @@ export default function Chat(): React.JSX.Element {
     <div className="relative h-full">
       <Bubble.List
         role={role}
+        autoScroll
         items={
           messages?.map((item, index, array) => ({
             key: item.id,
@@ -318,16 +329,19 @@ export default function Chat(): React.JSX.Element {
         className="h-full w-full mask-b-from-84% table-style"
         classNames={{
           scroll:
-            'pt-12 pb-36 w-full px-12 md:max-w-2xl md:px-0 md:mx-auto lg:max-w-3xl xl:max-w-4xl scrollbar-none ease-in-out duration-500',
+            'pt-12 pb-36 w-full px-12 md:max-w-2xl md:px-0 md:mx-auto lg:max-w-3xl xl:max-w-4xl scrollbar-none scroll-smooth ease-in-out duration-500',
           avatar: 'select-none',
           header: 'select-none'
         }}
       />
       <div className="absolute bottom-1/12 left-1/2 -translate-x-1/2 w-full max-w-md md:max-w-xl ease-in-out duration-500">
         {promptsSuggestion && (
-          <div ref={containerRef} className="w-full mask-r-from-96%">
+          <div ref={containerRef} className="w-full overflow-hidden">
             <motion.div
               drag="x"
+              onDragStart={() => setDragging(true)}
+              onDragEnd={() => setTimeout(() => setDragging(false), 0)}
+              animate={controls}
               dragConstraints={{
                 left: containerWidth - trackWidth,
                 right: 0
@@ -337,22 +351,23 @@ export default function Chat(): React.JSX.Element {
                 timeConstant: 100
               }}
               ref={trackRef}
-              className="w-max pr-4"
+              className="w-max"
             >
               <Prompts
                 key={parentId}
+                fadeInLeft
                 items={chatsUI[chatId!]?.prompts?.map((prompt) => ({
                   key: prompt,
                   description: prompt
                 }))}
                 onItemClick={(info) => {
+                  if (dragging) return
                   setSenderValue(info.data.description?.toString() ?? '')
                 }}
-                fadeInLeft
                 className="mb-2 max-w-none w-max"
                 classNames={{
                   list: 'w-max',
-                  item: 'py-2 active:scale-95 bg-white/70 dark:bg-white/20 border-none select-none transition-all ease-in-out duration-100'
+                  item: 'py-2 active:scale-96 bg-white/70 dark:bg-white/20 border-none backdrop-blur-sm select-none transition-all ease-in-out duration-100'
                 }}
               />
             </motion.div>

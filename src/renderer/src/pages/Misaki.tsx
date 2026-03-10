@@ -44,6 +44,7 @@ import {
 } from 'antd'
 import clsx from 'clsx'
 import dayjs from 'dayjs'
+import { AnimatePresence, motion } from 'motion/react'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -172,172 +173,30 @@ export default function Misaki(): React.JSX.Element {
           'w-lg md:w-xl lg:w-3xl absolute bottom-1/12 flex flex-col items-center justify-center px-12 py-10'
         )}
       >
-        {isEditing ? (
-          <div className="w-full h-full">
-            {isShopOpen ? (
-              <div className="w-full h-full flex flex-col items-center justify-between select-none">
-                <div className="flex items-center justify-between w-full">
-                  <span className="text-2xl font-semibold">{t('assistantHub')}</span>
-                  <div className="flex gap-4">
-                    <Tooltip
-                      title={t('back')}
-                      arrow={false}
-                      classNames={{
-                        container: 'select-none'
-                      }}
-                    >
-                      <Button
-                        color="default"
-                        variant="filled"
-                        shape="circle"
-                        icon={<ArrowLeftOutlined />}
-                        onClick={() => setIsShopOpen(!isShopOpen)}
-                      />
-                    </Tooltip>
-                  </div>
-                </div>
-                {!publicAssistants || publicAssistants.length === 0 ? (
-                  <EmptyState className=" text-2xl" logoClassName="w-32 mb-4" />
-                ) : (
-                  <div className="grid grid-cols-2 gap-4 w-full">
-                    {publicAssistants?.map((item) => (
-                      <Card
-                        key={item.id}
-                        variant="borderless"
-                        title={item.name}
-                        extra={
-                          <div className="flex items-center gap-2">
-                            <Tooltip
-                              title={item.likedFlag ? t('cancel') : t('like')}
-                              arrow={false}
-                              classNames={{ container: 'select-none' }}
-                            >
-                              <Button
-                                icon={<HeartOutlined />}
-                                color={item.likedFlag ? 'primary' : 'default'}
-                                variant="filled"
-                                onClick={async () => {
-                                  try {
-                                    await likeAssistant(item.id)
-                                    const publicAssistantsRes = await listPublicAssistants(
-                                      publicAssistantsPage.pageIndex,
-                                      publicAssistantsPage.pageSize
-                                    )
-                                    setPublicAssistants(publicAssistantsRes.data.list)
-                                    setPublicAssistantsPage({
-                                      ...publicAssistantsPage,
-                                      total: +publicAssistantsRes.data.total
-                                    })
-                                  } catch {
-                                    return
-                                  }
-                                }}
-                              >
-                                {item.likes}
-                              </Button>
-                            </Tooltip>
-                            <Tooltip
-                              title={t('copy')}
-                              arrow={false}
-                              classNames={{ container: 'select-none' }}
-                            >
-                              <Button
-                                icon={<PlusOutlined />}
-                                color="default"
-                                variant="filled"
-                                shape="circle"
-                                onClick={async () => {
-                                  try {
-                                    await copyAssistant(item.id)
-                                    appMessage.success(t('assistantCopied'))
-                                    const assistantsRes = await listAssistants()
-                                    setAssistants(assistantsRes.data)
-                                  } catch {
-                                    return
-                                  }
-                                }}
-                              />
-                            </Tooltip>
-                          </div>
-                        }
-                        className="hover:shadow-xl ease-in-out duration-500"
-                      >
-                        <Card.Meta
-                          avatar={
-                            <Avatar
-                              src={
-                                models?.find((model) => model.id === item.modelId)?.avatarPath
-                                  ? getOssBaseUrl() +
-                                    models?.find((model) => model.id === item.modelId)?.avatarPath
-                                  : null
-                              }
-                              icon={
-                                models?.find((model) => model.id === item.modelId)
-                                  ?.avatarPath ? null : (
-                                  <HeartOutlined />
-                                )
-                              }
-                              draggable={false}
-                            />
-                          }
-                          title={item.personality}
-                          description={item.detail || t('noDetail')}
-                          classNames={{
-                            avatar: 'flex items-center justify-center'
-                          }}
-                        />
-                      </Card>
-                    ))}
-                  </div>
-                )}
-                <Pagination
-                  total={publicAssistantsPage.total}
-                  current={publicAssistantsPage.pageIndex}
-                  pageSize={publicAssistantsPage.pageSize}
-                  onChange={(page, pageSize) => {
-                    setPublicAssistantsPage({
-                      ...publicAssistantsPage,
-                      pageIndex: page,
-                      pageSize
-                    })
-                  }}
-                />
-              </div>
-            ) : (
-              <Form
-                form={form}
-                name="basic"
-                autoComplete="off"
-                validateTrigger="onSubmit"
-                colon={false}
-                labelCol={{ span: 4 }}
-                wrapperCol={{ span: 20 }}
-                labelAlign="left"
-                requiredMark={false}
-                onFinish={onFinish}
-                validateMessages={{ required: t('requiredTemplate') }}
-                variant="filled"
-                className="w-full h-full flex flex-col justify-between select-none"
-              >
-                <div className="flex items-center justify-between w-full mb-6">
-                  <Form.Item
-                    name="name"
-                    rules={[{ required: true, message: t('nameRequired') }]}
-                    initialValue={assistant?.name}
-                    wrapperCol={{ span: 24 }}
-                    className="m-0"
-                  >
-                    <Input
-                      placeholder={t('name')}
-                      maxLength={20}
-                      spellCheck={false}
-                      className="field-sizing-content text-2xl font-semibold"
-                    />
-                  </Form.Item>
-                  <div className="flex gap-4">
-                    {assistant ? (
+        <AnimatePresence mode="popLayout">
+          {isEditing ? (
+            <motion.div
+              className="w-full h-full"
+              key="edit"
+              initial={{ filter: 'blur(10px)', opacity: 0 }}
+              animate={{ filter: 'blur(0px)', opacity: 1 }}
+              exit={{ filter: 'blur(10px)', opacity: 0 }}
+              transition={{ duration: 0.5 }}
+            >
+              {isShopOpen ? (
+                <motion.div
+                  className="w-full h-full flex flex-col items-center justify-between select-none"
+                  key="shop"
+                  initial={{ filter: 'blur(10px)', opacity: 0 }}
+                  animate={{ filter: 'blur(0px)', opacity: 1 }}
+                  exit={{ filter: 'blur(10px)', opacity: 0 }}
+                  transition={{ duration: 0.5 }}
+                >
+                  <div className="flex items-center justify-between w-full">
+                    <span className="text-2xl font-semibold">{t('assistantHub')}</span>
+                    <div className="flex gap-4">
                       <Tooltip
-                        title={t('delete')}
+                        title={t('back')}
                         arrow={false}
                         classNames={{
                           container: 'select-none'
@@ -347,285 +206,460 @@ export default function Misaki(): React.JSX.Element {
                           color="default"
                           variant="filled"
                           shape="circle"
-                          icon={<DeleteOutlined />}
-                          onClick={async () => {
-                            try {
-                              if (assistant.id === enabledAssistantId) {
-                                appMessage.warning(t('canNotDeleteEnabledAssistant'))
-                                return
-                              }
-                              await deleteAssistant(assistant.id)
-                              appMessage.success(t('assistantDeleted'))
-                              const assistantsRes = await listAssistants()
-                              setAssistants(assistantsRes.data)
-                              setAssistant(
-                                assistantsRes.data.find((item) => item.id === enabledAssistantId) ||
-                                  null
-                              )
-                              setIsEditing(false)
-                            } catch {
-                              return
-                            }
-                          }}
-                        />
-                      </Tooltip>
-                    ) : (
-                      <Tooltip
-                        title={t('assistantHub')}
-                        arrow={false}
-                        classNames={{
-                          container: 'select-none'
-                        }}
-                      >
-                        <Button
-                          color="default"
-                          variant="filled"
-                          shape="circle"
-                          icon={<ShopOutlined />}
+                          icon={<ArrowLeftOutlined />}
                           onClick={() => setIsShopOpen(!isShopOpen)}
                         />
                       </Tooltip>
-                    )}
-                    <Tooltip
-                      title={t('cancel')}
-                      arrow={false}
-                      classNames={{
-                        container: 'select-none'
-                      }}
-                    >
-                      <Button
-                        color="default"
-                        variant="filled"
-                        shape="circle"
-                        icon={<CloseOutlined />}
-                        onClick={() => {
-                          if (!assistant) {
-                            setAssistant(
-                              assistants?.find((item) => item.id === enabledAssistantId) || null
-                            )
-                          }
-                          setIsEditing(!isEditing)
-                        }}
-                      />
-                    </Tooltip>
-                    <Tooltip
-                      title={assistant ? t('save') : t('create')}
-                      arrow={false}
-                      classNames={{
-                        container: 'select-none'
-                      }}
-                    >
-                      <Button
-                        htmlType="submit"
-                        color="primary"
-                        variant="filled"
-                        shape="circle"
-                        icon={<CheckOutlined />}
-                      />
-                    </Tooltip>
+                    </div>
                   </div>
-                </div>
-                <Form.Item<FieldType>
-                  name="gender"
-                  label={t('gender')}
-                  initialValue={assistant?.gender || 0}
-                  rules={[{ required: true }]}
-                >
-                  <Radio.Group>
-                    <Radio.Button value={0} className="bg-black/4 dark:bg-white/8 border-none">
-                      {t('unknown')}
-                    </Radio.Button>
-                    <Radio.Button value={1} className="bg-black/4 dark:bg-white/8 border-none">
-                      {t('male')}
-                    </Radio.Button>
-                    <Radio.Button value={2} className="bg-black/4 dark:bg-white/8 border-none">
-                      {t('female')}
-                    </Radio.Button>
-                  </Radio.Group>
-                </Form.Item>
-                <Form.Item<FieldType>
-                  name="birthday"
-                  label={t('birthday')}
-                  initialValue={dayjs(assistant?.birthday)}
-                >
-                  <DatePicker
-                    placeholder={t('birthday')}
-                    form="YYYY-MM-DD"
-                    disabledDate={(current) => current && current > dayjs().endOf('day')}
-                  />
-                </Form.Item>
-                <Form.Item<FieldType>
-                  name="modelId"
-                  label={t('model')}
-                  initialValue={assistant?.modelId || models?.[0].id}
-                  rules={[{ required: true }]}
-                >
-                  <Select
-                    placeholder={t('model')}
-                    options={models?.map((model) => ({ label: model.name, value: model.id }))}
-                    className="w-32"
-                  />
-                </Form.Item>
-                <Form.Item<FieldType>
-                  name="publicFlag"
-                  label={t('publicFlag')}
-                  initialValue={assistant?.publicFlag || false}
-                  rules={[{ required: true }]}
-                >
-                  <Switch
-                    checkedChildren={<UnlockOutlined />}
-                    unCheckedChildren={<LockOutlined />}
-                  />
-                </Form.Item>
-                <Form.Item<FieldType>
-                  name="personality"
-                  label={t('personality')}
-                  initialValue={assistant?.personality}
-                >
-                  <Input
-                    placeholder={t('personality')}
-                    maxLength={20}
-                    showCount
-                    spellCheck={false}
-                  />
-                </Form.Item>
-                <Form.Item<FieldType>
-                  name="detail"
-                  label={t('detail')}
-                  initialValue={assistant?.detail}
-                >
-                  <Input.TextArea
-                    placeholder={t('detail')}
-                    showCount
-                    maxLength={50}
-                    spellCheck={false}
-                    autoSize={{ minRows: 2, maxRows: 4 }}
-                    className="scrollbar-style"
-                  />
-                </Form.Item>
-              </Form>
-            )}
-          </div>
-        ) : (
-          <div className="w-full h-full flex flex-col items-center justify-between">
-            <div className="flex justify-between w-full mb-4">
-              <Tooltip
-                title={
-                  assistant?.name !== 'Misaki' &&
-                  t('sameName', { count: assistant?.duplicateName ?? 0 })
-                }
-                arrow={false}
-                classNames={{
-                  container: 'select-none'
-                }}
-              >
-                <span className="text-2xl font-semibold">{assistant?.name}</span>
-              </Tooltip>
-              <div className="flex gap-4">
-                <Tooltip
-                  title={t('edit')}
-                  arrow={false}
-                  classNames={{
-                    container: 'select-none'
-                  }}
-                >
-                  <Button
-                    color="default"
-                    variant="filled"
-                    shape="circle"
-                    icon={<EditOutlined />}
-                    onClick={() => {
-                      form.resetFields()
-                      setIsEditing(!isEditing)
+                  {!publicAssistants || publicAssistants.length === 0 ? (
+                    <EmptyState className=" text-2xl" logoClassName="w-32 mb-4" />
+                  ) : (
+                    <div className="grid grid-cols-2 gap-4 w-full">
+                      {publicAssistants?.map((item) => (
+                        <Card
+                          key={item.id}
+                          variant="borderless"
+                          title={item.name}
+                          extra={
+                            <div className="flex items-center gap-2">
+                              <Tooltip
+                                title={item.likedFlag ? t('cancel') : t('like')}
+                                arrow={false}
+                                classNames={{ container: 'select-none' }}
+                              >
+                                <Button
+                                  icon={<HeartOutlined />}
+                                  color={item.likedFlag ? 'primary' : 'default'}
+                                  variant="filled"
+                                  onClick={async () => {
+                                    try {
+                                      await likeAssistant(item.id)
+                                      const publicAssistantsRes = await listPublicAssistants(
+                                        publicAssistantsPage.pageIndex,
+                                        publicAssistantsPage.pageSize
+                                      )
+                                      setPublicAssistants(publicAssistantsRes.data.list)
+                                      setPublicAssistantsPage({
+                                        ...publicAssistantsPage,
+                                        total: +publicAssistantsRes.data.total
+                                      })
+                                    } catch {
+                                      return
+                                    }
+                                  }}
+                                >
+                                  {item.likes}
+                                </Button>
+                              </Tooltip>
+                              <Tooltip
+                                title={t('copy')}
+                                arrow={false}
+                                classNames={{ container: 'select-none' }}
+                              >
+                                <Button
+                                  icon={<PlusOutlined />}
+                                  color="default"
+                                  variant="filled"
+                                  shape="circle"
+                                  onClick={async () => {
+                                    try {
+                                      await copyAssistant(item.id)
+                                      appMessage.success(t('assistantCopied'))
+                                      const assistantsRes = await listAssistants()
+                                      setAssistants(assistantsRes.data)
+                                    } catch {
+                                      return
+                                    }
+                                  }}
+                                />
+                              </Tooltip>
+                            </div>
+                          }
+                          className="hover:shadow-xl ease-in-out duration-500"
+                        >
+                          <Card.Meta
+                            avatar={
+                              <Avatar
+                                src={
+                                  models?.find((model) => model.id === item.modelId)?.avatarPath
+                                    ? getOssBaseUrl() +
+                                      models?.find((model) => model.id === item.modelId)?.avatarPath
+                                    : null
+                                }
+                                icon={
+                                  models?.find((model) => model.id === item.modelId)
+                                    ?.avatarPath ? null : (
+                                    <HeartOutlined />
+                                  )
+                                }
+                                draggable={false}
+                              />
+                            }
+                            title={item.personality}
+                            description={item.detail || t('noDetail')}
+                            classNames={{
+                              avatar: 'flex items-center justify-center'
+                            }}
+                          />
+                        </Card>
+                      ))}
+                    </div>
+                  )}
+                  <Pagination
+                    total={publicAssistantsPage.total}
+                    current={publicAssistantsPage.pageIndex}
+                    pageSize={publicAssistantsPage.pageSize}
+                    onChange={(page, pageSize) => {
+                      setPublicAssistantsPage({
+                        ...publicAssistantsPage,
+                        pageIndex: page,
+                        pageSize
+                      })
                     }}
                   />
-                </Tooltip>
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="from"
+                  initial={{ filter: 'blur(10px)', opacity: 0 }}
+                  animate={{ filter: 'blur(0px)', opacity: 1 }}
+                  exit={{ filter: 'blur(10px)', opacity: 0 }}
+                  transition={{ duration: 0.5 }}
+                  className="w-full h-full"
+                >
+                  <Form
+                    form={form}
+                    name="basic"
+                    autoComplete="off"
+                    validateTrigger="onSubmit"
+                    colon={false}
+                    labelCol={{ span: 4 }}
+                    wrapperCol={{ span: 20 }}
+                    labelAlign="left"
+                    requiredMark={false}
+                    onFinish={onFinish}
+                    validateMessages={{ required: t('requiredTemplate') }}
+                    variant="filled"
+                    className="w-full h-full flex flex-col justify-between select-none"
+                  >
+                    <div className="flex items-center justify-between w-full mb-6">
+                      <Form.Item
+                        name="name"
+                        rules={[{ required: true, message: t('nameRequired') }]}
+                        initialValue={assistant?.name}
+                        wrapperCol={{ span: 24 }}
+                        className="m-0"
+                      >
+                        <Input
+                          placeholder={t('name')}
+                          maxLength={20}
+                          spellCheck={false}
+                          className="field-sizing-content text-2xl font-semibold"
+                        />
+                      </Form.Item>
+                      <div className="flex gap-4">
+                        {assistant ? (
+                          <Tooltip
+                            title={t('delete')}
+                            arrow={false}
+                            classNames={{
+                              container: 'select-none'
+                            }}
+                          >
+                            <Button
+                              color="default"
+                              variant="filled"
+                              shape="circle"
+                              icon={<DeleteOutlined />}
+                              onClick={async () => {
+                                try {
+                                  if (assistant.id === enabledAssistantId) {
+                                    appMessage.warning(t('canNotDeleteEnabledAssistant'))
+                                    return
+                                  }
+                                  await deleteAssistant(assistant.id)
+                                  appMessage.success(t('assistantDeleted'))
+                                  const assistantsRes = await listAssistants()
+                                  setAssistants(assistantsRes.data)
+                                  setAssistant(
+                                    assistantsRes.data.find(
+                                      (item) => item.id === enabledAssistantId
+                                    ) || null
+                                  )
+                                  setIsEditing(false)
+                                } catch {
+                                  return
+                                }
+                              }}
+                            />
+                          </Tooltip>
+                        ) : (
+                          <Tooltip
+                            title={t('assistantHub')}
+                            arrow={false}
+                            classNames={{
+                              container: 'select-none'
+                            }}
+                          >
+                            <Button
+                              color="default"
+                              variant="filled"
+                              shape="circle"
+                              icon={<ShopOutlined />}
+                              onClick={() => setIsShopOpen(!isShopOpen)}
+                            />
+                          </Tooltip>
+                        )}
+                        <Tooltip
+                          title={t('cancel')}
+                          arrow={false}
+                          classNames={{
+                            container: 'select-none'
+                          }}
+                        >
+                          <Button
+                            color="default"
+                            variant="filled"
+                            shape="circle"
+                            icon={<CloseOutlined />}
+                            onClick={() => {
+                              if (!assistant) {
+                                setAssistant(
+                                  assistants?.find((item) => item.id === enabledAssistantId) || null
+                                )
+                              }
+                              setIsEditing(!isEditing)
+                            }}
+                          />
+                        </Tooltip>
+                        <Tooltip
+                          title={assistant ? t('save') : t('create')}
+                          arrow={false}
+                          classNames={{
+                            container: 'select-none'
+                          }}
+                        >
+                          <Button
+                            htmlType="submit"
+                            color="primary"
+                            variant="filled"
+                            shape="circle"
+                            icon={<CheckOutlined />}
+                          />
+                        </Tooltip>
+                      </div>
+                    </div>
+                    <Form.Item<FieldType>
+                      name="gender"
+                      label={t('gender')}
+                      initialValue={assistant?.gender || 0}
+                      rules={[{ required: true }]}
+                    >
+                      <Radio.Group>
+                        <Radio.Button value={0} className="bg-black/4 dark:bg-white/8 border-none">
+                          {t('unknown')}
+                        </Radio.Button>
+                        <Radio.Button value={1} className="bg-black/4 dark:bg-white/8 border-none">
+                          {t('male')}
+                        </Radio.Button>
+                        <Radio.Button value={2} className="bg-black/4 dark:bg-white/8 border-none">
+                          {t('female')}
+                        </Radio.Button>
+                      </Radio.Group>
+                    </Form.Item>
+                    <Form.Item<FieldType>
+                      name="birthday"
+                      label={t('birthday')}
+                      initialValue={dayjs(assistant?.birthday)}
+                    >
+                      <DatePicker
+                        placeholder={t('birthday')}
+                        form="YYYY-MM-DD"
+                        disabledDate={(current) => current && current > dayjs().endOf('day')}
+                      />
+                    </Form.Item>
+                    <Form.Item<FieldType>
+                      name="modelId"
+                      label={t('model')}
+                      initialValue={assistant?.modelId || models?.[0].id}
+                      rules={[{ required: true }]}
+                    >
+                      <Select
+                        placeholder={t('model')}
+                        options={models?.map((model) => ({ label: model.name, value: model.id }))}
+                        className="w-32"
+                      />
+                    </Form.Item>
+                    <Form.Item<FieldType>
+                      name="publicFlag"
+                      label={t('publicFlag')}
+                      initialValue={assistant?.publicFlag || false}
+                      rules={[{ required: true }]}
+                    >
+                      <Switch
+                        checkedChildren={<UnlockOutlined />}
+                        unCheckedChildren={<LockOutlined />}
+                      />
+                    </Form.Item>
+                    <Form.Item<FieldType>
+                      name="personality"
+                      label={t('personality')}
+                      initialValue={assistant?.personality}
+                    >
+                      <Input
+                        placeholder={t('personality')}
+                        maxLength={20}
+                        showCount
+                        spellCheck={false}
+                      />
+                    </Form.Item>
+                    <Form.Item<FieldType>
+                      name="detail"
+                      label={t('detail')}
+                      initialValue={assistant?.detail}
+                    >
+                      <Input.TextArea
+                        placeholder={t('detail')}
+                        showCount
+                        maxLength={50}
+                        spellCheck={false}
+                        autoSize={{ minRows: 2, maxRows: 4 }}
+                        className="scrollbar-style"
+                      />
+                    </Form.Item>
+                  </Form>
+                </motion.div>
+              )}
+            </motion.div>
+          ) : (
+            <motion.div
+              className="w-full h-full flex flex-col items-center justify-between"
+              key="description"
+              initial={{ filter: 'blur(10px)', opacity: 0 }}
+              animate={{ filter: 'blur(0px)', opacity: 1 }}
+              exit={{ filter: 'blur(10px)', opacity: 0 }}
+              transition={{ duration: 0.5 }}
+            >
+              <div className="flex justify-between w-full mb-4">
                 <Tooltip
-                  title={t(assistant?.id === enabledAssistantId ? 'enabled' : 'enable')}
+                  title={
+                    assistant?.name !== 'Misaki' &&
+                    t('sameName', { count: assistant?.duplicateName ?? 0 })
+                  }
                   arrow={false}
                   classNames={{
                     container: 'select-none'
                   }}
                 >
-                  <Button
-                    color={assistant?.id === enabledAssistantId ? 'green' : 'default'}
-                    variant="filled"
-                    shape="circle"
-                    icon={<CheckOutlined />}
-                    onClick={async () => {
-                      if (assistant?.id !== enabledAssistantId) {
-                        try {
-                          await updateSettings({
-                            enabledAssistantId: assistant?.id,
-                            version: settingsVersion
-                          })
-                          appMessage.success(t('assistantEnabled'))
-                          const settingsRes = await getSettings()
-                          setSettings(settingsRes.data)
-                        } catch {
-                          return
+                  <span className="text-2xl font-semibold">{assistant?.name}</span>
+                </Tooltip>
+                <div className="flex gap-4">
+                  <Tooltip
+                    title={t('edit')}
+                    arrow={false}
+                    classNames={{
+                      container: 'select-none'
+                    }}
+                  >
+                    <Button
+                      color="default"
+                      variant="filled"
+                      shape="circle"
+                      icon={<EditOutlined />}
+                      onClick={() => {
+                        form.resetFields()
+                        setIsEditing(!isEditing)
+                      }}
+                    />
+                  </Tooltip>
+                  <Tooltip
+                    title={t(assistant?.id === enabledAssistantId ? 'enabled' : 'enable')}
+                    arrow={false}
+                    classNames={{
+                      container: 'select-none'
+                    }}
+                  >
+                    <Button
+                      color={assistant?.id === enabledAssistantId ? 'green' : 'default'}
+                      variant="filled"
+                      shape="circle"
+                      icon={<CheckOutlined />}
+                      onClick={async () => {
+                        if (assistant?.id !== enabledAssistantId) {
+                          try {
+                            await updateSettings({
+                              enabledAssistantId: assistant?.id,
+                              version: settingsVersion
+                            })
+                            appMessage.success(t('assistantEnabled'))
+                            const settingsRes = await getSettings()
+                            setSettings(settingsRes.data)
+                          } catch {
+                            return
+                          }
                         }
-                      }
-                    }}
-                  />
-                </Tooltip>
+                      }}
+                    />
+                  </Tooltip>
+                </div>
               </div>
-            </div>
-            <Descriptions
-              className="dark:drop-shadow-[0_0_4px_rgb(0,0,0,0.6)]"
-              classNames={{
-                label: 'text-nowrap select-none'
-              }}
-              column={4}
-              items={[
-                {
-                  key: '1',
-                  label: t('gender'),
-                  span: { sm: 2, md: 1 },
-                  children: <span className="truncate">{genderMap[assistant?.gender || 0]}</span>
-                },
-                {
-                  key: '2',
-                  label: t('birthday'),
-                  span: { sm: 2, md: 1 },
-                  children: <span className="truncate">{assistant?.birthday}</span>
-                },
-                {
-                  key: '3',
-                  label: t('publicFlag'),
-                  span: { sm: 2, md: 1 },
-                  children: (
-                    <span className="truncate">
-                      {assistant?.publicFlag ? t('public') : t('private')}
-                    </span>
-                  )
-                },
-                {
-                  key: '4',
-                  label: t('createDate'),
-                  span: { sm: 2, md: 1 },
-                  children: (
-                    <span className="truncate">
-                      {dayjs(assistant?.createTime).format('YYYY-MM-DD')}
-                    </span>
-                  )
-                },
-                {
-                  key: '5',
-                  span: 2,
-                  label: t('personality'),
-                  children: <span>{assistant?.personality || t('none')}</span>
-                },
-                {
-                  key: '6',
-                  span: 'filled',
-                  label: t('detail'),
-                  children: <span>{assistant?.detail || t('none')}</span>
-                }
-              ]}
-            />
-          </div>
-        )}
+              <Descriptions
+                className="dark:drop-shadow-[0_0_4px_rgb(0,0,0,0.6)]"
+                classNames={{
+                  label: 'text-nowrap select-none'
+                }}
+                column={4}
+                items={[
+                  {
+                    key: '1',
+                    label: t('gender'),
+                    span: { sm: 2, md: 1 },
+                    children: <span className="truncate">{genderMap[assistant?.gender || 0]}</span>
+                  },
+                  {
+                    key: '2',
+                    label: t('birthday'),
+                    span: { sm: 2, md: 1 },
+                    children: <span className="truncate">{assistant?.birthday}</span>
+                  },
+                  {
+                    key: '3',
+                    label: t('publicFlag'),
+                    span: { sm: 2, md: 1 },
+                    children: (
+                      <span className="truncate">
+                        {assistant?.publicFlag ? t('public') : t('private')}
+                      </span>
+                    )
+                  },
+                  {
+                    key: '4',
+                    label: t('createDate'),
+                    span: { sm: 2, md: 1 },
+                    children: (
+                      <span className="truncate">
+                        {dayjs(assistant?.createTime).format('YYYY-MM-DD')}
+                      </span>
+                    )
+                  },
+                  {
+                    key: '5',
+                    span: 2,
+                    label: t('personality'),
+                    children: <span>{assistant?.personality || t('none')}</span>
+                  },
+                  {
+                    key: '6',
+                    span: 'filled',
+                    label: t('detail'),
+                    children: <span>{assistant?.detail || t('none')}</span>
+                  }
+                ]}
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
       </GlassBox>
     </div>
   )

@@ -8,12 +8,10 @@ import { useAssistantStore } from '@renderer/store/assistantStore'
 import clsx from 'clsx'
 
 interface MisakiButtonProps {
-  hideTextBelowMd?: boolean
+  className?: string
 }
 
-export default function MisakiButton({
-  hideTextBelowMd = true
-}: MisakiButtonProps): React.JSX.Element {
+export default function MisakiButton({ className }: MisakiButtonProps): React.JSX.Element {
   const navigate = useNavigate()
   const { t } = useTranslation('misakiButton')
   const { message: appMessage } = App.useApp()
@@ -27,6 +25,7 @@ export default function MisakiButton({
     <Button
       type="text"
       size="large"
+      className={className}
       onClick={() => {
         if (jwt) {
           navigate('/misaki', { viewTransition: true })
@@ -37,13 +36,7 @@ export default function MisakiButton({
     >
       <div className="flex items-center gap-1">
         <MisakiLogo className="w-8" fill={mainColor} />
-        <span
-          className={clsx(
-            hideTextBelowMd && 'hidden md:inline',
-            assistantName.length <= 8 ? 'text-xl' : 'text-md',
-            'font-semibold'
-          )}
-        >
+        <span className={clsx(assistantName.length <= 8 ? 'text-xl' : 'text-md', 'font-semibold')}>
           {assistantName}
         </span>
       </div>
