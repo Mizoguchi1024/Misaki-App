@@ -197,7 +197,14 @@ export default function Chat(): React.JSX.Element {
                         icon: <RedoOutlined />,
                         label: t('retry'),
                         onItemClick: () => {
-                          // TODO
+                          const userMessage = messages?.find((m) => m.id === item.parentId)
+                          const index = messages.findIndex((m) => m.id === userMessage?.id)
+                          setMessages(messages?.slice(0, index) ?? [])
+                          if (!userMessage?.content) return
+                          sendMessage(chatId!, {
+                            parentId: userMessage.parentId ?? undefined,
+                            content: userMessage.content
+                          })
                         }
                       },
                       {

@@ -127,7 +127,7 @@ export default function Home(): React.JSX.Element {
           )}
           loading={isStreaming}
           placeholder={!jwt ? t('pleaseLoginFirst') : t('chatWithMe')}
-          disabled={!jwt}
+          readOnly={!jwt}
           submitType="enter"
           footer={() => {
             return (
