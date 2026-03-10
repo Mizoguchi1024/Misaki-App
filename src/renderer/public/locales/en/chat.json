@@ -3,5 +3,6 @@
   "retry": "Retry",
   "chatWithMe": "Chat with me",
   "answerMayNotBeAccurate": "{{name}} may also make mistakes. Please verify important information.",
-  "messageRequired": "Please enter message"
+  "messageRequired": "Please enter message",
+  "messageMaxLength": "Message max length: {{max}}"
 }

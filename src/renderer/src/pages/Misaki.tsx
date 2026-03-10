@@ -27,7 +27,6 @@ import { useAssistantStore } from '@renderer/store/assistantStore'
 import { useModelStore } from '@renderer/store/modelStore'
 import { useSettingsStore } from '@renderer/store/settingsStore'
 import { Page } from '@renderer/types/result'
-import { animate, createScope, Scope } from 'animejs'
 import {
   App,
   Avatar,
@@ -45,7 +44,7 @@ import {
 } from 'antd'
 import clsx from 'clsx'
 import dayjs from 'dayjs'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 type FieldType = {
@@ -85,9 +84,6 @@ export default function Misaki(): React.JSX.Element {
     pageSize: 4
   })
 
-  const root = useRef<HTMLDivElement>(null)
-  const scope = useRef<Scope>(null)
-
   const genderMap = {
     0: t('unknown'),
     1: t('male'),
@@ -100,8 +96,6 @@ export default function Misaki(): React.JSX.Element {
       setAssistants(assistantsRes.data)
     }
     load()
-    scope.current = createScope({ root })
-    return () => scope.current!.revert()
   }, [])
 
   useEffect(() => {
@@ -113,19 +107,6 @@ export default function Misaki(): React.JSX.Element {
       setIsShopOpen(false)
     }
   }, [assistant])
-
-  useEffect(() => {
-    if (scope.current) {
-      scope.current.add(() => {
-        animate('.loading-blur', {
-          opacity: [1, 0.6, 1],
-          filter: ['blur(0px)', 'blur(6px)', 'blur(0px)'],
-          duration: 800,
-          easing: 'easeInOutQuad'
-        })
-      })
-    }
-  }, [isEditing])
 
   useEffect(() => {
     // 加载公开助手分页数据
@@ -183,16 +164,16 @@ export default function Misaki(): React.JSX.Element {
   }
 
   return (
-    <div className="flex flex-col items-center h-full w-full relative px-12 md:px-0" ref={root}>
+    <div className="flex flex-col items-center h-full w-full relative px-12 md:px-0">
       <Live2DCanvas modelUrl={'/hiyori_free_en/runtime/hiyori_free_t08.model3.json'} />
       <GlassBox
         className={clsx(
           isEditing ? 'h-5/6' : 'h-7/24',
-          'w-lg md:w-xl lg:w-3xl absolute bottom-1/12 ease-in-out duration-500'
+          'w-lg md:w-xl lg:w-3xl absolute bottom-1/12 flex flex-col items-center justify-center px-12 py-10'
         )}
       >
         {isEditing ? (
-          <div className="loading-blur w-full h-full">
+          <div className="w-full h-full">
             {isShopOpen ? (
               <div className="w-full h-full flex flex-col items-center justify-between select-none">
                 <div className="flex items-center justify-between w-full">
@@ -526,7 +507,7 @@ export default function Misaki(): React.JSX.Element {
             )}
           </div>
         ) : (
-          <div className="loading-blur w-full h-full flex flex-col items-center justify-between">
+          <div className="w-full h-full flex flex-col items-center justify-between">
             <div className="flex justify-between w-full mb-4">
               <Tooltip
                 title={

@@ -10,5 +10,6 @@
         "section1": "AIアシスタント Misaki にメッセージを送信すると、",
         "section2": "に同意し、",
         "section3": "を確認したものとみなされます。"
-    }
+    },
+  "messageMaxLength": "メッセージの最大長さ：{{max}}"
 }

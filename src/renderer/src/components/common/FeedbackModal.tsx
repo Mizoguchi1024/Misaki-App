@@ -76,9 +76,6 @@ export default function FeedbackModal({ open, onCancel }): React.JSX.Element {
           validateTrigger="onSubmit"
           className="h-120 p-2 ml-4 flex flex-col justify-between overflow-y-auto scrollbar-none"
           onFinish={onFinish}
-          onFinishFailed={(errorInfo) => {
-            console.log('Failed:', errorInfo)
-          }}
         >
           <div>
             <Form.Item<FieldType>

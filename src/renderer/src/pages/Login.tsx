@@ -46,7 +46,7 @@ export default function Login(): React.JSX.Element {
           passwordFocus ? 'opacity-100' : 'opacity-0'
         )}
       />
-      <GlassBox className="gap-12">
+      <GlassBox className="flex flex-col items-center justify-center px-12 py-10 gap-12">
         <h1 className="text-4xl font-medium select-none">{t('loginAccount')}</h1>
         <Form
           name="basic"
@@ -54,9 +54,6 @@ export default function Login(): React.JSX.Element {
           size={'large'}
           variant={'filled'}
           onFinish={onFinish}
-          onFinishFailed={(errorInfo) => {
-            console.log('Failed:', errorInfo)
-          }}
           autoComplete="off"
           className="w-100"
           validateTrigger="onSubmit"

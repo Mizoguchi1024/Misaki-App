@@ -99,9 +99,6 @@ export default function ProfileModal({ open, onCancel }): React.JSX.Element {
             labelAlign="left"
             requiredMark={false}
             onFinish={onFinish}
-            onFinishFailed={(errorInfo) => {
-              console.log('Failed:', errorInfo)
-            }}
             validateMessages={{ required: t('requiredTemplate') }}
             className="w-full"
           >

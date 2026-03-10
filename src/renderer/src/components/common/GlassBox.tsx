@@ -2,7 +2,16 @@ import { useSettingsStore } from '@renderer/store/settingsStore'
 import clsx from 'clsx'
 import React, { useRef } from 'react'
 
-export default function GlassBox({ children, className = '', ...rest }): React.JSX.Element {
+type GlassBoxProps = {
+  children?: React.ReactNode
+  className?: string
+} & React.HTMLAttributes<HTMLDivElement>
+
+export default function GlassBox({
+  children,
+  className,
+  ...rest
+}: GlassBoxProps): React.JSX.Element {
   const { borderRadius } = useSettingsStore()
   const ref = useRef<HTMLDivElement>(null)
 
@@ -23,11 +32,7 @@ export default function GlassBox({ children, className = '', ...rest }): React.J
       ref={ref}
       onMouseMove={handleMouseMove}
       className={clsx(
-        `group overflow-hidden flex flex-col items-center justify-center
-        px-12 py-10 backdrop-blur-sm hover:backdrop-blur-md bg-white/20 border-white
-         dark:bg-white/12 dark:border-white/16 border-2
-         shadow-2xl shadow-black/20 inset-shadow-[0_0_6px_rgba(255,255,255,0.25)]
-         ease-in-out duration-500`,
+        'group overflow-hidden backdrop-blur-sm hover:backdrop-blur-md bg-white/20 border-white dark:bg-white/12 dark:border-white/16 border shadow-2xl shadow-black/20 inset-shadow-[0_0_6px_rgba(255,255,255,0.25)] ease-in-out duration-500',
         className
       )}
       style={{ borderRadius: borderRadius * 2 }}

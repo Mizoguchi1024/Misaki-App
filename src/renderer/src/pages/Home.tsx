@@ -1,4 +1,4 @@
-import { App, ColorPicker, Dropdown, Input, InputRef } from 'antd'
+import { App, ColorPicker, Dropdown, Input, InputRef, Space } from 'antd'
 import { Sender } from '@ant-design/x'
 import MisakiLogo from '@renderer/assets/img/misaki-logo-symbol.svg?react'
 import { useEffect, useRef, useState } from 'react'
@@ -14,6 +14,7 @@ import { getSettings, updateSettings } from '@renderer/api/front/user'
 import { useAssistantStore } from '@renderer/store/assistantStore'
 import { listAssistants, updateAssistant } from '@renderer/api/front/assistant'
 import clsx from 'clsx'
+import { CloseOutlined } from '@ant-design/icons'
 
 export default function Home(): React.JSX.Element {
   const { t } = useTranslation('home')
@@ -41,7 +42,8 @@ export default function Home(): React.JSX.Element {
   const [assistantNameInputValue, setAssistantNameInputValue] = useState(
     assistants?.find((assistant) => assistant.id === enabledAssistantId)?.name || 'Misaki'
   )
-  const assistantInputRef = useRef<InputRef>(null)
+  const assistantNameInputRef = useRef<InputRef>(null)
+  const [senderValue, setSenderValue]= useState('')
   const [isTermsModalOpen, setIsTermsModalOpen] = useState(false)
   const [isPolicyModalOpen, setIsPolicyModalOpen] = useState(false)
 
@@ -104,7 +106,7 @@ export default function Home(): React.JSX.Element {
           </ColorPicker>
           <Input
             value={assistantNameInputValue}
-            ref={assistantInputRef}
+            ref={assistantNameInputRef}
             variant="borderless"
             maxLength={20}
             spellCheck={false}
@@ -116,7 +118,7 @@ export default function Home(): React.JSX.Element {
               jwt && 'cursor-text'
             )}
             onChange={(e) => setAssistantNameInputValue(e.target.value)}
-            onPressEnter={() => assistantInputRef.current!.blur()}
+            onPressEnter={() => assistantNameInputRef.current!.blur()}
             onBlur={() => handleAssistantNameSubmit(assistantNameInputValue)}
             inert={!jwt}
           />
@@ -128,6 +130,7 @@ export default function Home(): React.JSX.Element {
               : 'bg-white dark:bg-neutral-800',
             'max-w-2xl ease-in-out duration-500'
           )}
+          value={senderValue}
           loading={isStreaming}
           placeholder={!jwt ? t('pleaseLoginFirst') : t('chatWithMe')}
           readOnly={!jwt}
@@ -147,13 +150,18 @@ export default function Home(): React.JSX.Element {
               </div>
             )
           }}
-          onSubmit={async (value) => {
+          onChange={(value) => setSenderValue(value)}
+          onSubmit={async () => {
+            if (senderValue.length > 10000) {
+              appMessage.warning(t('messageMaxLength', { max: 10000 }))
+              return
+            }
             try {
               setFullMessages([])
               setMessages([])
               const newChat = (await createChat()).data
               setChats([newChat, ...(chats ?? [])])
-              sendMessage(newChat.id, { content: value })
+              sendMessage(newChat.id, { content: senderValue })
               navigate(`/chat/${newChat.id}`, {
                 viewTransition: true
               })
@@ -163,6 +171,18 @@ export default function Home(): React.JSX.Element {
           }}
           onCancel={() => {
             stopSendMessage()
+          }}
+          suffix={(_, info) => {
+            const { SendButton, LoadingButton, ClearButton } = info.components
+            return (
+              <Space size="small">
+                {senderValue && <ClearButton icon={<CloseOutlined />} />}
+                {isStreaming ? <LoadingButton /> : <SendButton />}
+              </Space>
+            )
+          }}
+          classNames={{
+            input: 'scrollbar-style'
           }}
         />
       </div>

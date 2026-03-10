@@ -10,5 +10,6 @@
         "section1": "By messaging the AI assistant Misaki, you agree to our\u00A0",
         "section2": "\u00A0and confirm that you have read our\u00A0",
         "section3": "."
-    }
+    },
+  "messageMaxLength": "Message max length: {{max}}"
 }

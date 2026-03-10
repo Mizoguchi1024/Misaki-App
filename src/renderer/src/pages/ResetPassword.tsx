@@ -16,10 +16,6 @@ type FieldType = {
   verifyCode: string
 }
 
-const onFinishFailed: FormProps<FieldType>['onFinishFailed'] = (errorInfo) => {
-  console.log('Failed:', errorInfo)
-}
-
 export default function ResetPassword(): React.JSX.Element {
   const { message: appMessage } = App.useApp()
   const [passwordFocus, setPasswordFocus] = useState(false)
@@ -74,7 +70,7 @@ export default function ResetPassword(): React.JSX.Element {
           passwordFocus ? 'opacity-100' : 'opacity-0'
         )}
       />
-      <GlassBox className="gap-12">
+      <GlassBox className="flex flex-col items-center justify-center px-12 py-10 gap-12">
         <h1 className="text-4xl font-medium select-none">{t('resetPassword')}</h1>
         <Form
           form={form}
@@ -82,7 +78,6 @@ export default function ResetPassword(): React.JSX.Element {
           size={'large'}
           variant={'filled'}
           onFinish={onFinish}
-          onFinishFailed={onFinishFailed}
           autoComplete="off"
           className="w-100"
           validateTrigger="onSubmit"

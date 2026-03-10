@@ -10,5 +10,6 @@
         "section1": "向 AI 助理 Misaki 发送消息即表示，你同意我们的",
         "section2": "并已阅读我们的",
         "section3": "。"
-    }
+    },
+  "messageMaxLength": "最大消息长度：{{max}}"
 }

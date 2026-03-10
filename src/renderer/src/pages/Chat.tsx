@@ -1,4 +1,10 @@
-import { EditOutlined, HeartOutlined, RedoOutlined, UserOutlined } from '@ant-design/icons'
+import {
+  CloseOutlined,
+  EditOutlined,
+  HeartOutlined,
+  RedoOutlined,
+  UserOutlined
+} from '@ant-design/icons'
 import {
   Actions,
   Bubble,
@@ -17,8 +23,9 @@ import { useChatStore } from '@renderer/store/chatStore'
 import { useModelStore } from '@renderer/store/modelStore'
 import { useSettingsStore } from '@renderer/store/settingsStore'
 import { useUserStore } from '@renderer/store/userStore'
-import { App, Avatar, Pagination, Skeleton, Typography } from 'antd'
-import { useEffect, useState } from 'react'
+import { App, Avatar, Pagination, Skeleton, Space, Typography } from 'antd'
+import { motion } from 'motion/react'
+import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useParams } from 'react-router-dom'
 
@@ -62,13 +69,16 @@ export default function Chat(): React.JSX.Element {
   const isStreaming = useChatStore((state) => state.isStreaming)
   const [senderValue, setSenderValue] = useState('')
   const [editingId, setEditingId] = useState('')
+  const containerRef = useRef<HTMLDivElement>(null)
+  const trackRef = useRef<HTMLDivElement>(null)
+  const [containerWidth, setContainerWidth] = useState(0)
+  const [trackWidth, setTrackWidth] = useState(0)
 
   useEffect(() => {
     const load = async (): Promise<void> => {
       try {
         if (!isStreaming) {
           const messagesRes = await listMessages(chatId!)
-          console.log('messagesRes', messagesRes)
           setFullMessages(messagesRes.data)
           setParentId(messagesRes.data[messagesRes.data.length - 1].id)
 
@@ -109,6 +119,31 @@ export default function Chat(): React.JSX.Element {
       setMessagesFromFull(fullMessages)
     }
   }, [parentId])
+
+  useEffect(() => {
+    if (!containerRef.current || !trackRef.current) return
+
+    const container = containerRef.current
+    const track = trackRef.current
+
+    const observer = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        if (entry.target === container) {
+          setContainerWidth(entry.target.clientWidth)
+        } else if (entry.target === track) {
+          setTrackWidth(entry.target.clientWidth)
+        }
+      }
+    })
+
+    observer.observe(container)
+    observer.observe(track)
+
+    setContainerWidth(container.clientWidth)
+    setTrackWidth(track.clientWidth)
+
+    return () => observer.disconnect()
+  }, [])
 
   const role: BubbleListProps['role'] = {
     ASSISTANT: {
@@ -288,23 +323,40 @@ export default function Chat(): React.JSX.Element {
           header: 'select-none'
         }}
       />
-      <div className="absolute bottom-1/12 left-1/2 -translate-x-1/2 max-w-md md:max-w-xl">
+      <div className="absolute bottom-1/12 left-1/2 -translate-x-1/2 w-full max-w-md md:max-w-xl ease-in-out duration-500">
         {promptsSuggestion && (
-          <Prompts
-            key={parentId}
-            items={chatsUI[chatId!]?.prompts?.map((prompt) => ({
-              key: prompt,
-              description: prompt
-            }))}
-            onItemClick={(info) => {
-              setSenderValue(info.data.description?.toString() ?? '')
-            }}
-            fadeInLeft
-            className="mb-2 mask-r-from-90%"
-            classNames={{
-              item: 'bg-white/70 dark:bg-white/20 border-none select-none'
-            }}
-          />
+          <div ref={containerRef} className="w-full mask-r-from-96%">
+            <motion.div
+              drag="x"
+              dragConstraints={{
+                left: containerWidth - trackWidth,
+                right: 0
+              }}
+              dragTransition={{
+                power: 0.1,
+                timeConstant: 100
+              }}
+              ref={trackRef}
+              className="w-max pr-4"
+            >
+              <Prompts
+                key={parentId}
+                items={chatsUI[chatId!]?.prompts?.map((prompt) => ({
+                  key: prompt,
+                  description: prompt
+                }))}
+                onItemClick={(info) => {
+                  setSenderValue(info.data.description?.toString() ?? '')
+                }}
+                fadeInLeft
+                className="mb-2 max-w-none w-max"
+                classNames={{
+                  list: 'w-max',
+                  item: 'py-2 active:scale-95 bg-white/70 dark:bg-white/20 border-none select-none transition-all ease-in-out duration-100'
+                }}
+              />
+            </motion.div>
+          </div>
         )}
         <Sender
           className="bg-white/70 dark:bg-white/20 backdrop-blur-xs hover:backdrop-blur-sm ease-in-out duration-500"
@@ -315,12 +367,27 @@ export default function Chat(): React.JSX.Element {
             setSenderValue(value)
           }}
           onSubmit={async () => {
+            if (senderValue.length > 10000) {
+              appMessage.warning(t('messageMaxLength', { max: 10000 }))
+              return
+            }
             setSenderValue('')
             await sendMessage(chatId!, { parentId: parentId ?? undefined, content: senderValue })
-            // TODO 输出完毕信号
           }}
           onCancel={async () => {
             stopSendMessage()
+          }}
+          suffix={(_, info) => {
+            const { SendButton, LoadingButton, ClearButton } = info.components
+            return (
+              <Space size="small">
+                {senderValue && <ClearButton icon={<CloseOutlined />} />}
+                {isStreaming ? <LoadingButton /> : <SendButton />}
+              </Space>
+            )
+          }}
+          classNames={{
+            input: 'scrollbar-style'
           }}
         />
       </div>

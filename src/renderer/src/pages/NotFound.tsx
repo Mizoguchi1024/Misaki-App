@@ -12,7 +12,7 @@ export default function NotFound(): React.JSX.Element {
   } = theme.useToken()
   return (
     <div className="h-full flex items-center justify-center">
-      <GlassBox className="gap-8 min-w-lg">
+      <GlassBox className="flex flex-col items-center justify-center px-12 py-10 gap-8 min-w-lg">
         <div>
           <Typography.Title className="select-none text-center" style={{ color: colorPrimary }}>
             404
