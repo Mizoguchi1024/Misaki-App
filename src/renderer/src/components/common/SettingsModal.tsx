@@ -76,6 +76,8 @@ export default function SettingsModal({ open, onCancel }): React.JSX.Element {
               <Input
                 value={baseUrlInputValue}
                 allowClear
+                maxLength={100}
+                spellCheck={false}
                 onChange={(e) => {
                   setBaseUrlInputValue(e.target.value)
                 }}

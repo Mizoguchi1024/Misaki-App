@@ -107,7 +107,7 @@ export default function Home(): React.JSX.Element {
             ref={assistantInputRef}
             variant="borderless"
             maxLength={8}
-            spellCheck="false"
+            spellCheck={false}
             className={clsx(
               'text-7xl md:text-8xl font-semibold text-neutral-900 dark:text-neutral-100 field-sizing-content',
               jwt && 'cursor-text'

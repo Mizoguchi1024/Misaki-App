@@ -85,7 +85,7 @@ export default function FeedbackModal({ open, onCancel }): React.JSX.Element {
               name="title"
               rules={[{ required: true, message: t('titleRequired') }]}
             >
-              <Input placeholder={t('title')} showCount maxLength={50}></Input>
+              <Input placeholder={t('title')} showCount maxLength={50} spellCheck={false}></Input>
             </Form.Item>
             <Form.Item<FieldType>
               name="type"
@@ -111,6 +111,7 @@ export default function FeedbackModal({ open, onCancel }): React.JSX.Element {
                 placeholder={t('content')}
                 showCount
                 maxLength={1000}
+                spellCheck={false}
                 className="scrollbar-style"
               />
             </Form.Item>

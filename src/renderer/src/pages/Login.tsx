@@ -68,7 +68,7 @@ export default function Login(): React.JSX.Element {
               { required: true, message: t('emailRequiredMessage') }
             ]}
           >
-            <Input prefix={<MailOutlined />} placeholder={t('email')} />
+            <Input prefix={<MailOutlined />} placeholder={t('email')} spellCheck={false} />
           </Form.Item>
           <Form.Item<FieldType>
             name="password"

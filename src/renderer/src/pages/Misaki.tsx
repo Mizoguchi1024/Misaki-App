@@ -349,6 +349,7 @@ export default function Misaki(): React.JSX.Element {
                     <Input
                       placeholder={t('name')}
                       maxLength={20}
+                      spellCheck={false}
                       className="field-sizing-content text-2xl font-semibold"
                     />
                   </Form.Item>
@@ -500,7 +501,12 @@ export default function Misaki(): React.JSX.Element {
                   label={t('personality')}
                   initialValue={assistant?.personality}
                 >
-                  <Input placeholder={t('personality')} maxLength={20} showCount />
+                  <Input
+                    placeholder={t('personality')}
+                    maxLength={20}
+                    showCount
+                    spellCheck={false}
+                  />
                 </Form.Item>
                 <Form.Item<FieldType>
                   name="detail"
@@ -511,8 +517,10 @@ export default function Misaki(): React.JSX.Element {
                     placeholder={t('detail')}
                     showCount
                     maxLength={50}
+                    spellCheck={false}
                     autoSize={{ minRows: 2, maxRows: 4 }}
-                  ></Input.TextArea>
+                    className="scrollbar-style"
+                  />
                 </Form.Item>
               </Form>
             )}
@@ -523,7 +531,7 @@ export default function Misaki(): React.JSX.Element {
               <Tooltip
                 title={
                   assistant?.name !== 'Misaki' &&
-                  t('sameName', { count: assistant?.duplicateName })
+                  t('sameName', { count: assistant?.duplicateName ?? 0 })
                 }
                 arrow={false}
                 classNames={{

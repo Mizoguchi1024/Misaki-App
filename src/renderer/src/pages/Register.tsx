@@ -90,7 +90,12 @@ export default function Register(): React.JSX.Element {
             ]}
           >
             <Space.Compact className="w-full">
-              <Input prefix={<MailOutlined />} placeholder={t('email')} allowClear />
+              <Input
+                prefix={<MailOutlined />}
+                placeholder={t('email')}
+                allowClear
+                spellCheck={false}
+              />
               <Button
                 color="primary"
                 variant="filled"
@@ -118,6 +123,7 @@ export default function Register(): React.JSX.Element {
                 </Tooltip>
               }
               allowClear
+              spellCheck={false}
             />
           </Form.Item>
           <Form.Item<FieldType>

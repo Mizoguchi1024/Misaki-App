@@ -117,7 +117,7 @@ export default function ProfileModal({ open, onCancel }): React.JSX.Element {
               initialValue={username}
               rules={[{ required: true }]}
             >
-              <Input placeholder={t('username')} maxLength={20} showCount />
+              <Input placeholder={t('username')} maxLength={20} showCount spellCheck={false} />
             </Form.Item>
             <Form.Item<FieldType>
               name="gender"
@@ -153,15 +153,17 @@ export default function ProfileModal({ open, onCancel }): React.JSX.Element {
               label={t('occupation')}
               initialValue={occupation}
             >
-              <Input placeholder={t('occupation')} maxLength={20} showCount />
+              <Input placeholder={t('occupation')} maxLength={20} showCount spellCheck={false} />
             </Form.Item>
             <Form.Item<FieldType> name="detail" label={t('detail')} initialValue={detail}>
               <Input.TextArea
                 placeholder={t('detail')}
                 showCount
                 maxLength={100}
+                spellCheck={false}
                 autoSize={{ minRows: 2, maxRows: 4 }}
-              ></Input.TextArea>
+                className="scrollbar-style"
+              />
             </Form.Item>
             <Form.Item name="createTime" label={t('createTime')}>
               <span>{createTime}</span>

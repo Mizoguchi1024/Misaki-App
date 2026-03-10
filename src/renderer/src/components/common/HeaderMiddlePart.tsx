@@ -30,6 +30,8 @@ export default function HeaderMiddlePart({ currentPage }): React.JSX.Element {
           <Input
             ref={chatTitleInputRef}
             variant="borderless"
+            maxLength={50}
+            spellCheck={false}
             className="font-medium field-sizing-content"
             value={chatTitleInput}
             onChange={(e) => setChatTitleInput(e.target.value)}

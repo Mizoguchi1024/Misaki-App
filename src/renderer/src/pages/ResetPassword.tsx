@@ -95,7 +95,12 @@ export default function ResetPassword(): React.JSX.Element {
             ]}
           >
             <Space.Compact className="w-full">
-              <Input prefix={<MailOutlined />} placeholder={t('email')} allowClear />
+              <Input
+                prefix={<MailOutlined />}
+                placeholder={t('email')}
+                allowClear
+                spellCheck={false}
+              />
               <Button
                 color="primary"
                 variant="filled"
