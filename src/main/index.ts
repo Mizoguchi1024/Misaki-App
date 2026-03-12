@@ -2,7 +2,6 @@ import { app, shell, BrowserWindow, ipcMain, nativeTheme } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
-import MCPClient from './mcp'
 
 // app.commandLine.appendSwitch('high-dpi-support', 'true')
 // app.commandLine.appendSwitch('force-device-scale-factor', '1')
@@ -44,7 +43,6 @@ function createWindow(): void {
   }
 }
 
-let mcpClient: MCPClient
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
@@ -68,14 +66,6 @@ app.whenReady().then(async () => {
     })
   })
 
-  mcpClient = new MCPClient()
-  try {
-    await mcpClient.connectToServer('src/main/mcp-servers/filesystem/index.ts')
-  } catch (e) {
-    console.error('Error:', e)
-    await mcpClient.cleanup()
-  }
-
   createWindow()
 
   app.on('activate', function () {
@@ -96,14 +86,6 @@ ipcMain.handle('get-versions', () => {
 
 ipcMain.on('system-theme', (event) => {
   event.returnValue = nativeTheme.shouldUseDarkColors
-})
-
-ipcMain.handle('mcp-server-version', async () => {
-  return mcpClient.version
-})
-
-ipcMain.handle('mcp-list-tools', async () => {
-  return mcpClient.tools
 })
 
 // Quit when all windows are closed, except on macOS. There, it's common

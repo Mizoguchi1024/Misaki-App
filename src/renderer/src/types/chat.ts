@@ -1,15 +1,20 @@
-export type ToolDefinition = {
-  name: string
-  description: string
-  parameters: Record<string, any>
-  strict?: boolean
-}
+import { Tool } from '@modelcontextprotocol/sdk/types.js'
 
 export type SendMessageFrontRequest = {
   content: string
   parentId?: string
   prefix?: string
-  tools?: ToolDefinition[]
+  tools?: Tool[]
+}
+
+export type McpServerFrontResponse = {
+  name: string
+  tools: McpToolFrontResponse[]
+}
+
+export type McpToolFrontResponse = {
+  name: string
+  description: string
 }
 
 export type ChatFrontResponse = {

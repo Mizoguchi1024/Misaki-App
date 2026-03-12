@@ -213,7 +213,7 @@ export default function Misaki(): React.JSX.Element {
                     </div>
                   </div>
                   {!publicAssistants || publicAssistants.length === 0 ? (
-                    <EmptyState className=" text-2xl" logoClassName="w-32 mb-4" />
+                    <EmptyState className="text-2xl" logoClassName="w-32" />
                   ) : (
                     <div className="grid grid-cols-2 gap-4 w-full">
                       {publicAssistants?.map((item) => (

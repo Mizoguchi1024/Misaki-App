@@ -5,7 +5,7 @@ import Home from '../pages/Home'
 import Login from '../pages/Login'
 import Register from '../pages/Register'
 import ResetPassword from '../pages/ResetPassword'
-import McpServer from '../pages/McpServer'
+import Mcp from '../pages/Mcp'
 import Search from '../pages/Search'
 import Script from '../pages/Script'
 import Misaki from '../pages/Misaki'
@@ -19,7 +19,7 @@ export const router = createBrowserRouter([
       { index: true, element: <Home />, handle: { page: 'home' } },
       { path: '/misaki', element: <Misaki />, handle: { page: 'misaki' } },
       { path: '/search', element: <Search />, handle: { page: 'search' } },
-      { path: '/mcp-server', element: <McpServer />, handle: { page: 'mcp-server' } },
+      { path: '/mcp', element: <Mcp />, handle: { page: 'mcp' } },
       { path: '/script', element: <Script />, handle: { page: 'script' } },
       { path: '/chat/:id', element: <Chat />, handle: { page: 'chat' } }
     ]

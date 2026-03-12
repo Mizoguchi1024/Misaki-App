@@ -15,6 +15,7 @@ import { useAssistantStore } from '@renderer/store/assistantStore'
 import { listAssistants, updateAssistant } from '@renderer/api/front/assistant'
 import clsx from 'clsx'
 import { CloseOutlined } from '@ant-design/icons'
+import { useMcpStore } from '@renderer/store/mcpStore'
 
 export default function Home(): React.JSX.Element {
   const { t } = useTranslation('home')
@@ -37,13 +38,14 @@ export default function Home(): React.JSX.Element {
     stopSendMessage
   } = useChatStore()
   const { assistants, setAssistants } = useAssistantStore()
+  const { tools } = useMcpStore()
   const navigate = useNavigate()
   const [colorPickerValue, setColorPickerValue] = useState(mainColor)
   const [assistantNameInputValue, setAssistantNameInputValue] = useState(
     assistants?.find((assistant) => assistant.id === enabledAssistantId)?.name || 'Misaki'
   )
   const assistantNameInputRef = useRef<InputRef>(null)
-  const [senderValue, setSenderValue]= useState('')
+  const [senderValue, setSenderValue] = useState('')
   const [isTermsModalOpen, setIsTermsModalOpen] = useState(false)
   const [isPolicyModalOpen, setIsPolicyModalOpen] = useState(false)
 
@@ -161,7 +163,7 @@ export default function Home(): React.JSX.Element {
               setMessages([])
               const newChat = (await createChat()).data
               setChats([newChat, ...(chats ?? [])])
-              sendMessage(newChat.id, { content: senderValue })
+              sendMessage(newChat.id, { content: senderValue, tools})
               navigate(`/chat/${newChat.id}`, {
                 viewTransition: true
               })

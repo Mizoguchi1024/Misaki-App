@@ -118,8 +118,8 @@ export default function MainLayout(): React.JSX.Element {
       icon: <SearchOutlined />
     },
     {
-      key: '/mcp-server',
-      label: t('mcpServer'),
+      key: '/mcp',
+      label: t('mcp'),
       icon: <DatabaseOutlined />
     },
     {

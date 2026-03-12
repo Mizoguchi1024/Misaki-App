@@ -36,7 +36,7 @@ export default function Search(): React.JSX.Element {
                 className={clsx(
                   backgroundPath &&
                     'bg-white/20 dark:bg-neutral-800/20 border-white/60 dark:border-white/16 inset-shadow-[0_0_6px_rgba(255,255,255,0.25)] backdrop-blur-xl hover:backdrop-blur-3xl',
-                  'mb-4 select-none cursor-pointer hover:shadow-xl dark:hover:shadow-neutral-600 ease-in-out duration-250 active:scale-96'
+                  'mb-4 select-none cursor-pointer hover:shadow-xl ease-in-out duration-250 active:scale-96'
                 )}
               >
                 <Skeleton loading={loading} active paragraph={{ rows: 1 }}>

@@ -26,20 +26,16 @@
     "@ant-design/x-markdown": "^2.3.0",
     "@electron-toolkit/preload": "^3.0.2",
     "@electron-toolkit/utils": "^4.0.0",
-    "@modelcontextprotocol/sdk": "^1.27.1",
     "@tailwindcss/vite": "^4.2.1",
-    "animejs": "^4.3.6",
     "antd": "^6.3.1",
     "axios": "^1.13.6",
     "clsx": "^2.1.1",
     "dayjs": "^1.11.19",
-    "diff": "^8.0.3",
     "electron-updater": "^6.7.3",
     "howler": "^2.2.4",
     "i18next": "^25.8.13",
     "i18next-http-backend": "^3.0.2",
     "jwt-decode": "^4.0.0",
-    "minimatch": "^10.2.1",
     "motion": "^12.35.2",
     "pixi.js": "^8.16.0",
     "react-i18next": "^16.5.4",
@@ -47,7 +43,6 @@
     "react-use": "^17.6.0",
     "tailwindcss": "^4.2.1",
     "untitled-pixi-live2d-engine": "^1.0.1",
-    "zod": "^4.3.6",
     "zustand": "^5.0.11"
   },
   "devDependencies": {
@@ -79,5 +74,5 @@
       "esbuild"
     ]
   },
-  "packageManager": "pnpm@10.30.0+sha512.2b5753de015d480eeb88f5b5b61e0051f05b4301808a82ec8b840c9d2adf7748eb352c83f5c1593ca703ff1017295bc3fdd3119abb9686efc96b9fcb18200937"
+  "packageManager": "pnpm@10.32.1+sha512.a706938f0e89ac1456b6563eab4edf1d1faf3368d1191fc5c59790e96dc918e4456ab2e67d613de1043d2e8c81f87303e6b40d4ffeca9df15ef1ad567348f2be"
 }

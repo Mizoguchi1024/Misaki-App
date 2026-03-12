@@ -67,6 +67,13 @@ export default function HeaderRightPart({ currentPage }): React.JSX.Element {
       )
     case 'misaki':
       return <UserDropdown />
+    case 'mcp':
+      return (
+        <div className="flex items-center gap-4">
+          <HelpDropdown />
+          <UserDropdown />
+        </div>
+      )
     default:
       return (
         <div className="flex items-center gap-4">
