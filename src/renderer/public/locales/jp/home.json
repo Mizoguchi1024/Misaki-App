@@ -11,5 +11,9 @@
         "section2": "に同意し、",
         "section3": "を確認したものとみなされます。"
     },
-  "messageMaxLength": "メッセージの最大長さ：{{max}}"
+  "messageMaxLength": "メッセージの最大長さ：{{max}}",
+  "think":"推理",
+  "code": "コード",
+  "codeOrMcp": "コード生成とMCPを同時に有効することはできません",
+  "none": "無"
 }

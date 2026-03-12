@@ -1,10 +1,8 @@
 import { App, Button, Drawer, Layout, Menu, MenuProps } from 'antd'
 import { useEffect, useState } from 'react'
 import { Outlet, UIMatch, useLocation, useMatches, useNavigate } from 'react-router-dom'
+import McpLogo from '@renderer/assets/img/mcp-logo.svg?react'
 import {
-  CodeOutlined,
-  DatabaseOutlined,
-  FolderOutlined,
   FormOutlined,
   MenuOutlined,
   MessageOutlined,
@@ -18,7 +16,7 @@ import HeaderRightPart from '../common/HeaderRightPart'
 import MisakiButton from '../common/MisakiButton'
 import HeaderMiddlePart from '../common/HeaderMiddlePart'
 import { listAssistants } from '@renderer/api/front/assistant'
-import { listChats } from '@renderer/api/front/chat'
+import { listChats, listMcpServers } from '@renderer/api/front/chat'
 import { checkIn, getProfile, getSettings } from '@renderer/api/front/user'
 import { useSettingsStore } from '@renderer/store/settingsStore'
 import { useAssistantStore } from '@renderer/store/assistantStore'
@@ -27,6 +25,7 @@ import dayjs from 'dayjs'
 import { useFeedbackStore } from '@renderer/store/feedbackStore'
 import { listModels } from '@renderer/api/front/model'
 import { useModelStore } from '@renderer/store/modelStore'
+import { useMcpStore } from '@renderer/store/mcpStore'
 
 const { Header, Content, Sider } = Layout
 
@@ -51,6 +50,7 @@ export default function MainLayout(): React.JSX.Element {
   const { setAssistants, reset: resetAssistantStore } = useAssistantStore()
   const { setModels, reset: resetModelStore } = useModelStore()
   const { reset: resetFeedbackStore } = useFeedbackStore()
+  const { setServers } = useMcpStore()
 
   const matches = useMatches() as UIMatch<unknown, { page?: string }>[]
   const currentPage = matches.at(-1)?.handle?.page
@@ -69,18 +69,21 @@ export default function MainLayout(): React.JSX.Element {
           return
         }
         try {
-          const [profileRes, settingsRes, chatsRes, assistantsRes, modelsRes] = await Promise.all([
-            getProfile(),
-            getSettings(),
-            listChats(),
-            listAssistants(),
-            listModels()
-          ])
+          const [profileRes, settingsRes, chatsRes, assistantsRes, modelsRes, mcpServersRes] =
+            await Promise.all([
+              getProfile(),
+              getSettings(),
+              listChats(),
+              listAssistants(),
+              listModels(),
+              listMcpServers()
+            ])
           setProfile(profileRes.data)
           setSettings(settingsRes.data)
           setChats(chatsRes.data)
           setAssistants(assistantsRes.data)
           setModels(modelsRes.data)
+          setServers(mcpServersRes.data)
 
           const isToday = dayjs(profileRes.data.lastCheckInDate, 'YYYY-MM-DD').isSame(
             dayjs(),
@@ -120,17 +123,7 @@ export default function MainLayout(): React.JSX.Element {
     {
       key: '/mcp',
       label: t('mcp'),
-      icon: <DatabaseOutlined />
-    },
-    {
-      key: '/script',
-      label: t('script'),
-      icon: <CodeOutlined />
-    },
-    {
-      key: '6',
-      label: t('fileManager'),
-      icon: <FolderOutlined />
+      icon: <McpLogo className="w-3.5" />
     },
     {
       type: 'divider'
@@ -207,7 +200,7 @@ export default function MainLayout(): React.JSX.Element {
           open={isDrawerOpen}
           onClose={() => setIsDrawerOpen(false)}
           destroyOnHidden
-          title={<MisakiButton />}
+          title={<MisakiButton onClickCallback={() => setIsDrawerOpen(false)} />}
           classNames={{
             title: 'pl-4'
           }}

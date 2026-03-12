@@ -8,7 +8,7 @@ import PolicyModal from '@renderer/components/common/PrivatePolicyModal'
 import { useTranslation } from 'react-i18next'
 import { createChat } from '@renderer/api/front/chat'
 import { useNavigate } from 'react-router-dom'
-import { useChatStore } from '@renderer/store/chatStore'
+import { CodeMap, useChatStore } from '@renderer/store/chatStore'
 import { useSettingsStore } from '@renderer/store/settingsStore'
 import { getSettings, updateSettings } from '@renderer/api/front/user'
 import { useAssistantStore } from '@renderer/store/assistantStore'
@@ -31,14 +31,16 @@ export default function Home(): React.JSX.Element {
   const {
     isStreaming,
     chats,
+    prefix,
     setChats,
     setMessages,
     setFullMessages,
     sendMessage,
-    stopSendMessage
+    stopSendMessage,
+    setPrefix
   } = useChatStore()
   const { assistants, setAssistants } = useAssistantStore()
-  const { tools } = useMcpStore()
+  const { mcpEnabled, servers, enabledServers, setMcpEnabled } = useMcpStore()
   const navigate = useNavigate()
   const [colorPickerValue, setColorPickerValue] = useState(mainColor)
   const [assistantNameInputValue, setAssistantNameInputValue] = useState(
@@ -78,115 +80,173 @@ export default function Home(): React.JSX.Element {
     }
   }
 
-  const items = [
-    {
-      key: '1',
-      label: '天气'
-    }
-  ]
-
   return (
     <div className="flex flex-col h-full w-full px-12 md:max-w-2xl md:mx-auto md:px-0">
-      <div className="flex flex-col flex-1 justify-center items-center">
-        <div className="flex items-center gap-1 mb-24">
-          <ColorPicker
-            value={colorPickerValue}
-            onChange={(color) => setColorPickerValue(color.toHexString())}
-            onChangeComplete={async (color) => {
-              await updateSettings({ mainColor: color.toHexString(), version: settingsVersion })
-              const settingsRes = await getSettings()
-              setSettings(settingsRes.data)
-            }}
-            disabledAlpha
-            arrow={false}
-            disabled={!jwt}
-          >
-            <MisakiLogo
-              className="w-26 md:w-34 shrink-0 cursor-pointer ease-in-out duration-250 active:scale-90"
-              fill={mainColor}
+      <div className="flex flex-1 justify-center items-center">
+        <div className="w-full min-h-80 flex flex-col justify-between items-center">
+          <div className="flex items-center gap-1 mb-6">
+            <ColorPicker
+              value={colorPickerValue}
+              onChange={(color) => setColorPickerValue(color.toHexString())}
+              onChangeComplete={async (color) => {
+                await updateSettings({ mainColor: color.toHexString(), version: settingsVersion })
+                const settingsRes = await getSettings()
+                setSettings(settingsRes.data)
+              }}
+              disabledAlpha
+              arrow={false}
+              disabled={!jwt}
+            >
+              <MisakiLogo
+                className="w-26 md:w-34 shrink-0 cursor-pointer ease-in-out duration-250 active:scale-90"
+                fill={mainColor}
+              />
+            </ColorPicker>
+            <Input
+              value={assistantNameInputValue}
+              ref={assistantNameInputRef}
+              variant="borderless"
+              maxLength={20}
+              spellCheck={false}
+              className={clsx(
+                assistantNameInputValue.length <= 10
+                  ? 'text-7xl md:text-8xl'
+                  : 'text-6xl md:text-7xl',
+                'font-semibold text-neutral-900 dark:text-neutral-100 field-sizing-content',
+                jwt && 'cursor-text'
+              )}
+              onChange={(e) => setAssistantNameInputValue(e.target.value)}
+              onPressEnter={() => assistantNameInputRef.current!.blur()}
+              onBlur={() => handleAssistantNameSubmit(assistantNameInputValue)}
+              inert={!jwt}
             />
-          </ColorPicker>
-          <Input
-            value={assistantNameInputValue}
-            ref={assistantNameInputRef}
-            variant="borderless"
-            maxLength={20}
-            spellCheck={false}
+          </div>
+          <Sender
             className={clsx(
-              assistantNameInputValue.length <= 10
-                ? 'text-7xl md:text-8xl'
-                : 'text-6xl md:text-7xl',
-              'font-semibold text-neutral-900 dark:text-neutral-100 field-sizing-content',
-              jwt && 'cursor-text'
+              backgroundPath
+                ? 'bg-white/60 dark:bg-neutral-800/60 backdrop-blur-xs hover:backdrop-blur-sm '
+                : 'bg-white dark:bg-neutral-800',
+              'max-w-2xl ease-in-out duration-500'
             )}
-            onChange={(e) => setAssistantNameInputValue(e.target.value)}
-            onPressEnter={() => assistantNameInputRef.current!.blur()}
-            onBlur={() => handleAssistantNameSubmit(assistantNameInputValue)}
-            inert={!jwt}
+            value={senderValue}
+            loading={isStreaming}
+            placeholder={!jwt ? t('pleaseLoginFirst') : t('chatWithMe')}
+            readOnly={!jwt}
+            autoSize={{ minRows: 1, maxRows: 8 }}
+            submitType="enter"
+            footer={() => {
+              return (
+                <Space>
+                  <Sender.Switch>{t('think')}</Sender.Switch>
+                  <Dropdown
+                    menu={{
+                      selectable: true,
+                      selectedKeys: [prefix],
+                      items: [
+                        { key: '```java', label: 'Java' },
+                        { key: '```python', label: 'Python' },
+                        { key: '```cpp', label: 'C++' },
+                        { key: '```typescript', label: 'TypeScript' },
+                        { key: '```javascript', label: 'JavaScript' }
+                      ],
+                      onSelect: ({ key }) => {
+                        setPrefix(key)
+                        if (mcpEnabled) {
+                          setMcpEnabled(false)
+                          appMessage.info(t('codeOrMcp'))
+                        }
+                      }
+                    }}
+                    disabled={!jwt}
+                    classNames={{
+                      item: 'my-1'
+                    }}
+                  >
+                    <Sender.Switch
+                      value={prefix ? true : false}
+                      onChange={() => {
+                        setPrefix('')
+                      }}
+                      checkedChildren={<span>{CodeMap[prefix]}</span>}
+                      unCheckedChildren={<span>{t('code')}</span>}
+                    />
+                  </Dropdown>
+                  <Dropdown
+                    menu={{
+                      selectedKeys: enabledServers,
+                      items: servers?.map((item) => ({
+                        key: item.name,
+                        label: item.name
+                      })) ?? [{ key: 'none', label: t('none') }],
+                      onClick: () => {
+                        navigate('/mcp', { viewTransition: true })
+                      }
+                    }}
+                    disabled={!jwt}
+                    classNames={{
+                      item: 'my-1'
+                    }}
+                  >
+                    <Sender.Switch
+                      value={mcpEnabled}
+                      onChange={(checked) => {
+                        setMcpEnabled(checked)
+                        if (checked && prefix) {
+                          setPrefix('')
+                          appMessage.info(t('codeOrMcp'))
+                        }
+                      }}
+                      checkedChildren={<span>MCP - {enabledServers.length}</span>}
+                      unCheckedChildren={<span>MCP</span>}
+                    />
+                  </Dropdown>
+                </Space>
+              )
+            }}
+            onChange={(value) => setSenderValue(value)}
+            onSubmit={async () => {
+              if (senderValue.length > 10000) {
+                appMessage.warning(t('messageMaxLength', { max: 10000 }))
+                return
+              }
+              try {
+                setFullMessages([])
+                setMessages([])
+                const newChat = (await createChat()).data
+                setChats([newChat, ...(chats ?? [])])
+                sendMessage(newChat.id, {
+                  content: senderValue,
+                  prefix: prefix || undefined,
+                  tools: mcpEnabled
+                    ? servers
+                        ?.filter((server) => enabledServers.includes(server.name))
+                        .flatMap((server) => server.tools.map((tool) => tool.name))
+                    : undefined
+                })
+                navigate(`/chat/${newChat.id}`, {
+                  viewTransition: true
+                })
+              } catch {
+                return
+              }
+            }}
+            onCancel={() => {
+              stopSendMessage()
+            }}
+            suffix={(_, info) => {
+              const { SendButton, LoadingButton, ClearButton } = info.components
+              return (
+                <Space size="small">
+                  {senderValue && <ClearButton icon={<CloseOutlined />} shape="circle" />}
+                  {isStreaming ? <LoadingButton /> : <SendButton />}
+                </Space>
+              )
+            }}
+            classNames={{
+              input: 'scrollbar-style'
+            }}
           />
         </div>
-        <Sender
-          className={clsx(
-            backgroundPath
-              ? 'bg-white/60 dark:bg-neutral-800/60 backdrop-blur-xs hover:backdrop-blur-sm '
-              : 'bg-white dark:bg-neutral-800',
-            'max-w-2xl ease-in-out duration-500'
-          )}
-          value={senderValue}
-          loading={isStreaming}
-          placeholder={!jwt ? t('pleaseLoginFirst') : t('chatWithMe')}
-          readOnly={!jwt}
-          submitType="enter"
-          footer={() => {
-            return (
-              <div className="flex gap-2">
-                <Sender.Switch color="default" disabled={!jwt}>
-                  {t('createScript')}
-                </Sender.Switch>
-                <Dropdown menu={{ items }} disabled={!jwt}>
-                  <Sender.Switch color="default">MCP · 3</Sender.Switch>
-                </Dropdown>
-                <Sender.Switch color="default" disabled={!jwt}>
-                  {t('meme')}
-                </Sender.Switch>
-              </div>
-            )
-          }}
-          onChange={(value) => setSenderValue(value)}
-          onSubmit={async () => {
-            if (senderValue.length > 10000) {
-              appMessage.warning(t('messageMaxLength', { max: 10000 }))
-              return
-            }
-            try {
-              setFullMessages([])
-              setMessages([])
-              const newChat = (await createChat()).data
-              setChats([newChat, ...(chats ?? [])])
-              sendMessage(newChat.id, { content: senderValue, tools})
-              navigate(`/chat/${newChat.id}`, {
-                viewTransition: true
-              })
-            } catch {
-              return
-            }
-          }}
-          onCancel={() => {
-            stopSendMessage()
-          }}
-          suffix={(_, info) => {
-            const { SendButton, LoadingButton, ClearButton } = info.components
-            return (
-              <Space size="small">
-                {senderValue && <ClearButton icon={<CloseOutlined />} />}
-                {isStreaming ? <LoadingButton /> : <SendButton />}
-              </Space>
-            )
-          }}
-          classNames={{
-            input: 'scrollbar-style'
-          }}
-        />
       </div>
       <div className="h-14 flex justify-center items-center select-none">
         <span className="text-balance text-center">

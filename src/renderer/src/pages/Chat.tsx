@@ -19,15 +19,17 @@ import Latex from '@ant-design/x-markdown/plugins/latex'
 import { createChatTitle, listChats, listMessages, listPrompts } from '@renderer/api/front/chat'
 import { getProfile } from '@renderer/api/front/user'
 import { useAssistantStore } from '@renderer/store/assistantStore'
-import { useChatStore } from '@renderer/store/chatStore'
+import { CodeMap, useChatStore } from '@renderer/store/chatStore'
+import { useMcpStore } from '@renderer/store/mcpStore'
 import { useModelStore } from '@renderer/store/modelStore'
 import { useSettingsStore } from '@renderer/store/settingsStore'
 import { useUserStore } from '@renderer/store/userStore'
-import { App, Avatar, Pagination, Skeleton, Space, Typography } from 'antd'
+import { App, Avatar, Dropdown, Pagination, Skeleton, Space, Typography } from 'antd'
 import { motion, useAnimation } from 'motion/react'
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
+import { useMeasure } from 'react-use'
 
 const Code: React.FC<ComponentProps> = (props) => {
   const { className, children } = props
@@ -45,6 +47,7 @@ const TableSkeleton = (): React.JSX.Element => <Skeleton.Node active style={{ wi
 
 export default function Chat(): React.JSX.Element {
   const { t } = useTranslation('chat')
+  const navigate = useNavigate()
   const { message: appMessage } = App.useApp()
   const { id: chatId } = useParams()
   const { username, avatarPath, setProfile } = useUserStore()
@@ -56,6 +59,7 @@ export default function Chat(): React.JSX.Element {
     chatsUI,
     fullMessages,
     parentId,
+    prefix,
     setChats,
     setMessages,
     setMessagesFromFull,
@@ -63,10 +67,12 @@ export default function Chat(): React.JSX.Element {
     setParentId,
     setChatPrompts,
     sendMessage,
-    stopSendMessage
+    stopSendMessage,
+    setPrefix
   } = useChatStore()
   const messages = useChatStore((state) => state.messages)
   const isStreaming = useChatStore((state) => state.isStreaming)
+  const { mcpEnabled, servers, enabledServers, setMcpEnabled } = useMcpStore()
   const [senderValue, setSenderValue] = useState('')
   const [editingId, setEditingId] = useState('')
   const containerRef = useRef<HTMLDivElement>(null)
@@ -75,6 +81,7 @@ export default function Chat(): React.JSX.Element {
   const [trackWidth, setTrackWidth] = useState(0)
   const controls = useAnimation()
   const [dragging, setDragging] = useState(false)
+  const [senderAreaRef, { height }] = useMeasure<HTMLDivElement>()
 
   useEffect(() => {
     const load = async (): Promise<void> => {
@@ -329,12 +336,16 @@ export default function Chat(): React.JSX.Element {
         className="h-full w-full mask-b-from-84% table-style"
         classNames={{
           scroll:
-            'pt-12 pb-36 w-full px-12 md:max-w-2xl md:px-0 md:mx-auto lg:max-w-3xl xl:max-w-4xl scrollbar-none scroll-smooth ease-in-out duration-500',
+            'pt-12 w-full px-12 md:max-w-2xl md:px-0 md:mx-auto lg:max-w-3xl xl:max-w-4xl scrollbar-none scroll-smooth ease-in-out duration-250',
           avatar: 'select-none',
           header: 'select-none'
         }}
+        styles={{ scroll: { paddingBottom: height } }}
       />
-      <div className="absolute bottom-1/12 left-1/2 -translate-x-1/2 w-full max-w-md md:max-w-xl ease-in-out duration-500">
+      <div
+        ref={senderAreaRef}
+        className="absolute bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md md:max-w-xl ease-in-out duration-500"
+      >
         {promptsSuggestion && (
           <div ref={containerRef} className="w-full overflow-hidden">
             <motion.div
@@ -378,6 +389,82 @@ export default function Chat(): React.JSX.Element {
           loading={isStreaming}
           placeholder={t('chatWithMe')}
           value={senderValue}
+          footer={(_, info) => {
+            const { SendButton, LoadingButton, ClearButton } = info.components
+            return (
+              <div className="flex justify-between">
+                <Space>
+                  <Sender.Switch>{t('think')}</Sender.Switch>
+                  <Dropdown
+                    placement="top"
+                    menu={{
+                      selectable: true,
+                      selectedKeys: [prefix],
+                      items: [
+                        { key: '```java', label: 'Java' },
+                        { key: '```python', label: 'Python' },
+                        { key: '```cpp', label: 'C++' },
+                        { key: '```typescript', label: 'TypeScript' },
+                        { key: '```javascript', label: 'JavaScript' }
+                      ],
+                      onSelect: ({ key }) => {
+                        setPrefix(key)
+                        if (mcpEnabled) {
+                          setMcpEnabled(false)
+                          appMessage.info(t('codeOrMcp'))
+                        }
+                      }
+                    }}
+                    classNames={{
+                      item: 'my-1'
+                    }}
+                  >
+                    <Sender.Switch
+                      value={prefix ? true : false}
+                      onChange={() => {
+                        setPrefix('')
+                      }}
+                      checkedChildren={<span>{CodeMap[prefix]}</span>}
+                      unCheckedChildren={<span>{t('code')}</span>}
+                    />
+                  </Dropdown>
+                  <Dropdown
+                    placement="top"
+                    menu={{
+                      selectedKeys: enabledServers,
+                      items: servers?.map((item) => ({
+                        key: item.name,
+                        label: item.name
+                      })) ?? [{ key: 'none', label: t('none') }],
+                      onClick: () => {
+                        navigate('/mcp', { viewTransition: true })
+                      }
+                    }}
+                    classNames={{
+                      item: 'my-1'
+                    }}
+                  >
+                    <Sender.Switch
+                      value={mcpEnabled}
+                      onChange={(checked) => {
+                        setMcpEnabled(checked)
+                        if (checked && prefix) {
+                          setPrefix('')
+                          appMessage.info(t('codeOrMcp'))
+                        }
+                      }}
+                      checkedChildren={<span>MCP - {enabledServers.length}</span>}
+                      unCheckedChildren={<span>MCP</span>}
+                    />
+                  </Dropdown>
+                </Space>
+                <Space size="small">
+                  {senderValue && <ClearButton icon={<CloseOutlined />} shape="circle" />}
+                  {isStreaming ? <LoadingButton /> : <SendButton />}
+                </Space>
+              </div>
+            )
+          }}
           onChange={(value) => {
             setSenderValue(value)
           }}
@@ -392,26 +479,18 @@ export default function Chat(): React.JSX.Element {
           onCancel={async () => {
             stopSendMessage()
           }}
-          suffix={(_, info) => {
-            const { SendButton, LoadingButton, ClearButton } = info.components
-            return (
-              <Space size="small">
-                {senderValue && <ClearButton icon={<CloseOutlined />} />}
-                {isStreaming ? <LoadingButton /> : <SendButton />}
-              </Space>
-            )
-          }}
+          suffix={false}
           classNames={{
             input: 'scrollbar-style'
           }}
         />
+        <div className="w-full my-2 text-center truncate select-none">
+          {t('answerMayNotBeAccurate', {
+            name:
+              assistants?.find((assistant) => assistant.id === enabledAssistantId)?.name || 'Misaki'
+          })}
+        </div>
       </div>
-      <span className="absolute bottom-6 left-1/2 -translate-x-1/2 select-none">
-        {t('answerMayNotBeAccurate', {
-          name:
-            assistants?.find((assistant) => assistant.id === enabledAssistantId)?.name || 'Misaki'
-        })}
-      </span>
     </div>
   )
 }

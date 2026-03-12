@@ -5,13 +5,18 @@ import { useNavigate } from 'react-router-dom'
 import MisakiLogo from '@renderer/assets/img/misaki-logo-symbol.svg?react'
 import { useSettingsStore } from '@renderer/store/settingsStore'
 import { useAssistantStore } from '@renderer/store/assistantStore'
+import React from 'react'
 import clsx from 'clsx'
 
-interface MisakiButtonProps {
+type MisakiButtonProps = {
   className?: string
+  onClickCallback?: () => void
 }
 
-export default function MisakiButton({ className }: MisakiButtonProps): React.JSX.Element {
+export default function MisakiButton({
+  className,
+  onClickCallback
+}: MisakiButtonProps): React.JSX.Element {
   const navigate = useNavigate()
   const { t } = useTranslation('misakiButton')
   const { message: appMessage } = App.useApp()
@@ -32,6 +37,7 @@ export default function MisakiButton({ className }: MisakiButtonProps): React.JS
         } else {
           appMessage.info(t('loginFirst'))
         }
+        onClickCallback?.()
       }}
     >
       <div className="flex items-center gap-1">

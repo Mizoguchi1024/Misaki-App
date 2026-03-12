@@ -4,5 +4,9 @@
   "chatWithMe": "話をしよう",
   "answerMayNotBeAccurate": "{{name}} も間違えることがあります。重要な情報は必ず確認してください。",
   "messageRequired": "メッセージを入力してください",
-  "messageMaxLength": "メッセージの最大長さ：{{max}}"
+  "messageMaxLength": "メッセージの最大長さ：{{max}}",
+  "think":"推理",
+  "code": "コード",
+  "codeOrMcp": "コード生成とMCPを同時に有効することはできません",
+  "none": "無"
 }

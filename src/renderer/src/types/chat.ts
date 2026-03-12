@@ -1,10 +1,8 @@
-import { Tool } from '@modelcontextprotocol/sdk/types.js'
-
 export type SendMessageFrontRequest = {
   content: string
   parentId?: string
   prefix?: string
-  tools?: Tool[]
+  tools?: string[]
 }
 
 export type McpServerFrontResponse = {

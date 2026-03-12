@@ -4,6 +4,7 @@
   <defs>
     <style>
       .st0 {
+        fill: none;
         stroke: currentColor;
         stroke-linecap: round;
         stroke-width: .5px;
@@ -11,18 +12,14 @@
       }
 
       .st1 {
-        stroke: currentColor;
-      }
-
-      .st1 {
         fill: none;
+        stroke: currentColor;
         stroke-width: 1px;
       }
 
       .st2 {
         fill: currentColor;
       }
-      
     </style>
   </defs>
   <line class="st0" x1="4.81" y1="5" x2="12.11" y2="8.48"/>

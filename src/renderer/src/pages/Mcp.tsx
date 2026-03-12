@@ -1,4 +1,4 @@
-import { DownOutlined, UpOutlined } from '@ant-design/icons'
+import { RightOutlined } from '@ant-design/icons'
 import { listMcpServers } from '@renderer/api/front/chat'
 import EmptyState from '@renderer/components/common/EmptyState'
 import { useMcpStore } from '@renderer/store/mcpStore'
@@ -35,7 +35,14 @@ export default function Mcp(): React.JSX.Element {
                     <Button
                       color="primary"
                       variant="link"
-                      icon={currentServerName === item.name ? <DownOutlined /> : <UpOutlined />}
+                      icon={
+                        <RightOutlined
+                          className={clsx(
+                            currentServerName === item.name && 'rotate-90',
+                            'ease-in-out duration-250'
+                          )}
+                        />
+                      }
                       onClick={() => {
                         if (currentServerName) {
                           setCurrentServerName('')

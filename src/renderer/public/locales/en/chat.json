@@ -4,5 +4,9 @@
   "chatWithMe": "Chat with me",
   "answerMayNotBeAccurate": "{{name}} may also make mistakes. Please verify important information.",
   "messageRequired": "Please enter message",
-  "messageMaxLength": "Message max length: {{max}}"
+  "messageMaxLength": "Message max length: {{max}}",
+  "think":"Think",
+  "code": "Code",
+  "codeOrMcp": "Code generation and MCP cannot be enabled on the same time",
+  "none": "None"
 }

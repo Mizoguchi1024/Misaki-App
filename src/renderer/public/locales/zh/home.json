@@ -11,5 +11,9 @@
         "section2": "并已阅读我们的",
         "section3": "。"
     },
-  "messageMaxLength": "最大消息长度：{{max}}"
+  "messageMaxLength": "最大消息长度：{{max}}",
+  "think":"思考",
+  "code": "代码",
+  "codeOrMcp": "代码生成与 MCP 不能同时开启",
+  "none": "无"
 }

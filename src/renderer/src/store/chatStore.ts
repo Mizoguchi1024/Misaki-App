@@ -15,6 +15,7 @@ interface ChatState {
   messages: MessageFrontResponse[] | null
   fullMessages: MessageFrontResponse[] | null
   parentId: string | null
+  prefix: string
 
   setChats: (chats: ChatFrontResponse[]) => void
   setMessages: (messages: MessageFrontResponse[]) => void
@@ -23,6 +24,7 @@ interface ChatState {
   setParentId: (parentId: string | null) => void
   setChatPinned: (chatId: string, pinned: boolean) => void
   setChatPrompts: (chatId: string, prompts: string[]) => void
+  setPrefix: (prefix: string) => void
   reset: () => void
   stopSendMessage: () => void
 
@@ -38,7 +40,16 @@ const initialState = {
   messages: null,
   fullMessages: null,
   prompts: null,
-  parentId: null
+  parentId: null,
+  prefix: ''
+}
+
+export const CodeMap = {
+  ['```java']: 'Java',
+  ['```python']: 'Python',
+  ['```cpp']: 'C++',
+  ['```typescript']: 'TypeScript',
+  ['```javascript']: 'JavaScript'
 }
 
 export const useChatStore = create<ChatState>()(
@@ -104,6 +115,7 @@ export const useChatStore = create<ChatState>()(
             }
           }
         })),
+      setPrefix: (prefix) => set({ prefix }),
       reset: () => set(initialState),
       stopSendMessage: () => {
         currentSendMessageController?.abort()
