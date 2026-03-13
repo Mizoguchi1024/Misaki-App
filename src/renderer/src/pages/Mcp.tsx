@@ -44,7 +44,7 @@ export default function Mcp(): React.JSX.Element {
                         />
                       }
                       onClick={() => {
-                        if (currentServerName) {
+                        if (currentServerName === item.name) {
                           setCurrentServerName('')
                         } else {
                           setCurrentServerName(item.name)
