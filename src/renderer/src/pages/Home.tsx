@@ -137,7 +137,7 @@ export default function Home(): React.JSX.Element {
             footer={() => {
               return (
                 <Space>
-                  <Sender.Switch>{t('think')}</Sender.Switch>
+                  <Sender.Switch disabled={!jwt}>{t('think')}</Sender.Switch>
                   <Dropdown
                     menu={{
                       selectable: true,

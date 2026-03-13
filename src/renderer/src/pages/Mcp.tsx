@@ -16,7 +16,6 @@ export default function Mcp(): React.JSX.Element {
     const load = async (): Promise<void> => {
       const serversRes = await listMcpServers()
       setServers(serversRes.data)
-      console.log('servers', serversRes)
     }
     load()
   }, [])

@@ -18,6 +18,7 @@ import { useModelStore } from '@renderer/store/modelStore'
 import { useSettingsStore } from '@renderer/store/settingsStore'
 import { useUserStore } from '@renderer/store/userStore'
 import { App, Avatar, Button, Dropdown, Pagination, Skeleton, Space, Typography } from 'antd'
+import clsx from 'clsx'
 import { AnimatePresence, motion, useAnimation } from 'motion/react'
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -77,6 +78,7 @@ export default function Chat(): React.JSX.Element {
   const [senderAreaRef, { height }] = useMeasure<HTMLDivElement>()
   const scrollRef = useRef<HTMLDivElement>(null)
   const [atBottom, setAtBottom] = useState(false)
+  const [showUserFooterId, setShowUserFooterId] = useState('')
 
   useEffect(() => {
     const load = async (): Promise<void> => {
@@ -156,7 +158,7 @@ export default function Chat(): React.JSX.Element {
         }}
       >
         <div
-          className="pt-12 w-full px-12 md:max-w-2xl lg:max-w-3xl xl:max-w-4xl md:mx-auto md:px-0 ease-in-out duration-200"
+          className="pt-12 w-full px-12 md:max-w-2xl lg:max-w-3xl xl:max-w-4xl md:mx-auto md:px-0 ease-in-out duration-250"
           style={{ paddingBottom: height + 12 }}
         >
           {messages &&
@@ -251,6 +253,13 @@ export default function Chat(): React.JSX.Element {
                     )
                   ) : (
                     <Actions
+                      className={clsx(
+                        (fullMessages?.filter((m) => m.parentId === item.parentId).length ?? 0) <=
+                          1 &&
+                          !(showUserFooterId === item.id) &&
+                          'opacity-0',
+                        'ease-in-out duration-250'
+                      )}
                       items={[
                         ...((fullMessages?.filter((m) => m.parentId === item.parentId).length ??
                           0) > 1
@@ -302,6 +311,8 @@ export default function Chat(): React.JSX.Element {
                     />
                   )
                 }
+                onMouseEnter={() => setShowUserFooterId(item.id)}
+                onMouseLeave={() => setShowUserFooterId('')}
                 classNames={{
                   avatar: 'select-none',
                   header: 'opacity-60 select-none'
