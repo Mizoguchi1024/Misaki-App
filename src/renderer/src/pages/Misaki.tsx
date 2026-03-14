@@ -282,17 +282,10 @@ export default function Misaki(): React.JSX.Element {
                             avatar={
                               <Avatar
                                 src={
+                                  getOssBaseUrl() +
                                   models?.find((model) => model.id === item.modelId)?.avatarPath
-                                    ? getOssBaseUrl() +
-                                      models?.find((model) => model.id === item.modelId)?.avatarPath
-                                    : null
                                 }
-                                icon={
-                                  models?.find((model) => model.id === item.modelId)
-                                    ?.avatarPath ? null : (
-                                    <HeartOutlined />
-                                  )
-                                }
+                                icon={<HeartOutlined />}
                                 draggable={false}
                               />
                             }

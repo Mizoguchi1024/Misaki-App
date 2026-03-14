@@ -100,11 +100,12 @@ export default function UserDropdown(): React.JSX.Element {
         }}
       >
         <Button size="large" color="default" variant="filled">
-          {avatarPath ? (
-            <Avatar size="small" src={getOssBaseUrl() + avatarPath} />
-          ) : (
-            <Avatar size="small" icon={<UserOutlined />} />
-          )}
+          <Avatar
+            size="small"
+            src={getOssBaseUrl() + avatarPath}
+            icon={<UserOutlined />}
+            draggable={false}
+          />
           {username}
         </Button>
       </Dropdown>

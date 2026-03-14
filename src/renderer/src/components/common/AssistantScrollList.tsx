@@ -104,16 +104,9 @@ export default function AssistantScrollList(): React.JSX.Element {
               <Avatar
                 draggable={false}
                 src={
-                  models?.find((model) => model.id === item.modelId)?.avatarPath
-                    ? getOssBaseUrl() +
-                      models?.find((model) => model.id === item.modelId)?.avatarPath
-                    : null
+                  getOssBaseUrl() + models?.find((model) => model.id === item.modelId)?.avatarPath
                 }
-                icon={
-                  models?.find((model) => model.id === item.modelId)?.avatarPath ? null : (
-                    <HeartOutlined />
-                  )
-                }
+                icon={<HeartOutlined />}
                 className={clsx(
                   'flex-none cursor-pointer select-none border-0 duration-250 active:scale-90',
                   assistant && item.id === assistant.id && 'outline-5'
@@ -134,6 +127,7 @@ export default function AssistantScrollList(): React.JSX.Element {
           }}
         >
           <Avatar
+            draggable={false}
             icon={<PlusOutlined />}
             className={clsx(
               'flex-none cursor-pointer border-0 duration-250 active:scale-90',

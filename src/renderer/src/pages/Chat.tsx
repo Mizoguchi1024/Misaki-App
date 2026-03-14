@@ -170,18 +170,14 @@ export default function Chat(): React.JSX.Element {
                   item.type === 'ASSISTANT' ? (
                     <Avatar
                       draggable={false}
-                      src={
-                        enabledAssistantModel?.avatarPath
-                          ? getOssBaseUrl() + enabledAssistantModel.avatarPath
-                          : null
-                      }
-                      icon={enabledAssistantModel?.avatarPath ? null : <HeartOutlined />}
+                      src={getOssBaseUrl() + enabledAssistantModel?.avatarPath}
+                      icon={<HeartOutlined />}
                     />
                   ) : (
                     <Avatar
                       draggable={false}
-                      src={avatarPath ? getOssBaseUrl() + avatarPath : null}
-                      icon={avatarPath ? null : <UserOutlined />}
+                      src={getOssBaseUrl() + avatarPath}
+                      icon={<UserOutlined />}
                     />
                   )
                 }
