@@ -109,6 +109,12 @@ export default function MainLayout(): React.JSX.Element {
     load()
   }, [])
 
+  useEffect(() => {
+    if (!jwt) {
+      navigate('/', { viewTransition: true })
+    }
+  }, [jwt])
+
   const agentItems: MenuProps['items'] = [
     {
       key: '/',

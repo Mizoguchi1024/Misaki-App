@@ -20,7 +20,7 @@ export default function Login(): React.JSX.Element {
   const { setAuthInfo, setRememberMe } = useUserStore()
   const [submitButtonLoading, setSubmitButtonLoading] = useState(false)
   const { t } = useTranslation('login')
-  const navigator = useNavigate()
+  const navigate = useNavigate()
 
   const onFinish: FormProps<FieldType>['onFinish'] = async (values) => {
     try {
@@ -30,7 +30,7 @@ export default function Login(): React.JSX.Element {
       setRememberMe(values.remember)
       appMessage.success(t('loginSuccess'))
       setSubmitButtonLoading(false)
-      navigator('/', { viewTransition: true })
+      navigate('/', { viewTransition: true })
     } catch {
       setTimeout(() => {
         setSubmitButtonLoading(false)
@@ -90,7 +90,7 @@ export default function Login(): React.JSX.Element {
               color="primary"
               variant="text"
               onClick={() => {
-                navigator('/reset-password', { viewTransition: true })
+                navigate('/reset-password', { viewTransition: true })
               }}
             >
               {t('forgotPassword')}

@@ -1,6 +1,7 @@
 import { Result } from '@renderer/types/result'
 import api from '../index'
 import {
+  CheckInFrontResponse,
   SettingsFrontResponse,
   UpdateSettingsFrontRequest,
   UpdateUserFrontRequest,

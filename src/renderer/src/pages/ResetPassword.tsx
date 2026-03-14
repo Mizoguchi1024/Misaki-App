@@ -19,7 +19,7 @@ type FieldType = {
 export default function ResetPassword(): React.JSX.Element {
   const { message: appMessage } = App.useApp()
   const [passwordFocus, setPasswordFocus] = useState(false)
-  const navigator = useNavigate()
+  const navigate = useNavigate()
   const { jwt, setProfile } = useUserStore()
   const [form] = Form.useForm<FieldType>()
   const [sendVerifyCodeLoading, setSendVerifyCodeLoading] = useState(false)
@@ -54,7 +54,7 @@ export default function ResetPassword(): React.JSX.Element {
       }
       appMessage.success(t('passwordReset'))
       setFinishLoading(false)
-      navigator('/', { viewTransition: true })
+      navigate('/', { viewTransition: true })
     } catch {
       setTimeout(() => {
         setFinishLoading(false)

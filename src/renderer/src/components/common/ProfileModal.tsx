@@ -49,7 +49,7 @@ export default function ProfileModal({ open, onCancel }): React.JSX.Element {
       await updateProfile({
         username: values.username,
         gender: values.gender,
-        birthday: values.birthday.format('YYYY-MM-DD'),
+        birthday: values.birthday?.format('YYYY-MM-DD') ?? undefined,
         avatarPath: values.avatarPath,
         occupation: values.occupation,
         detail: values.detail,
@@ -137,7 +137,7 @@ export default function ProfileModal({ open, onCancel }): React.JSX.Element {
             <Form.Item<FieldType>
               name="birthday"
               label={t('birthday')}
-              initialValue={dayjs(birthday)}
+              initialValue={birthday && dayjs(birthday)}
             >
               <DatePicker
                 placeholder={t('birthday')}

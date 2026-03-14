@@ -23,24 +23,21 @@ api.interceptors.response.use(
   (res) => res,
   (err) => {
     if (axios.isAxiosError(err)) {
-      const status = err.response?.status
+      const serverCode = err.response?.data?.code
       const serverMessage = err.response?.data?.message
 
-      if (status === 401) {
+      if (serverCode === 40102) {
         if (useUserStore.getState().jwt) {
           useUserStore.getState().reset()
           useSettingsStore.getState().resetCloudSettings()
           useChatStore.getState().reset()
           useAssistantStore.getState().reset()
           useFeedbackStore.getState().reset()
-
-          useSettingsStore.getState().staticMessage?.info(i18n.t('tokenExpired', { ns: 'api' }))
         }
-      } else {
-        useSettingsStore
-          .getState()
-          .staticMessage?.error(serverMessage ?? i18n.t('networkError', { ns: 'api' }))
       }
+      useSettingsStore
+        .getState()
+        .staticMessage?.error(serverMessage ?? i18n.t('networkError', { ns: 'api' }))
     } else {
       useSettingsStore.getState().staticMessage?.error(i18n.t('unknownError', { ns: 'api' }))
     }

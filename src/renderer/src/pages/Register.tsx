@@ -18,7 +18,7 @@ type FieldType = {
 export default function Register(): React.JSX.Element {
   const { message: appMessage } = App.useApp()
   const [passwordFocus, setPasswordFocus] = useState(false)
-  const navigator = useNavigate()
+  const navigate = useNavigate()
   const [form] = Form.useForm<FieldType>()
   const [sendVerifyCodeLoading, setSendVerifyCodeLoading] = useState(false)
   const [finishLoading, setFinishLoading] = useState(false)
@@ -49,7 +49,7 @@ export default function Register(): React.JSX.Element {
       })
       appMessage.success(t('registerSuccess'))
       setFinishLoading(false)
-      navigator('/login', { viewTransition: true })
+      navigate('/login', { viewTransition: true })
     } catch {
       setTimeout(() => {
         setFinishLoading(false)

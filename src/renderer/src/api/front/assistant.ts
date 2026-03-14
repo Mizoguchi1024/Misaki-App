@@ -17,9 +17,7 @@ export const listPublicAssistants = (
   pageSize: number
 ): Promise<PageResult<AssistantFrontResponse[]>> =>
   api
-    .get<
-      PageResult<AssistantFrontResponse[]>
-    >('/front/assistants/public', { params: { pageIndex, pageSize } })
+    .get<PageResult<AssistantFrontResponse[]>>('/front/assistants/public', { params: { pageIndex, pageSize } })
     .then((res) => res.data)
 
 export const createAssistant = (
