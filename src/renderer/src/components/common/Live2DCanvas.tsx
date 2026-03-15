@@ -3,8 +3,8 @@ import * as PIXI from 'pixi.js'
 import { Live2DModel } from 'untitled-pixi-live2d-engine/cubism'
 
 const Live2DCanvas = ({ modelUrl }): React.JSX.Element => {
-  const containerRef = useRef(null)
-  const appRef = useRef(null) // 存储 app 实例以便销毁
+  const containerRef = useRef<HTMLDivElement | null>(null)
+  const appRef = useRef<PIXI.Application | null>(null) // 存储 app 实例以便销毁
 
   useEffect(() => {
     let isMounted = true
@@ -26,7 +26,9 @@ const Live2DCanvas = ({ modelUrl }): React.JSX.Element => {
       }
 
       appRef.current = app
-      containerRef.current.appendChild(app.canvas)
+      if (containerRef.current) {
+        containerRef.current.appendChild(app.canvas)
+      }
 
       // 2. 加载模型
       try {
@@ -43,10 +45,10 @@ const Live2DCanvas = ({ modelUrl }): React.JSX.Element => {
           app.stage.addChild(model)
 
           // 响应窗口缩放
-          // app.renderer.on('resize', () => {
-          //   model.x = app.screen.width / 2
-          //   model.y = app.screen.height / 2
-          // })
+          app.renderer.on('resize', () => {
+            model.x = app.screen.width / 2 - 60
+            model.y = app.screen.height
+          })
         }
       } catch (error) {
         console.error('Live2D 模型加载失败:', error)
@@ -59,7 +61,7 @@ const Live2DCanvas = ({ modelUrl }): React.JSX.Element => {
     return () => {
       isMounted = false
       if (appRef.current) {
-        appRef.current.destroy(true, { children: true, texture: true })
+        appRef.current.destroy(true)
         appRef.current = null
       }
     }

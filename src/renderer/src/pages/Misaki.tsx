@@ -468,7 +468,7 @@ export default function Misaki(): React.JSX.Element {
                     >
                       <DatePicker
                         placeholder={t('birthday')}
-                        form="YYYY-MM-DD"
+                        format="YYYY-MM-DD"
                         disabledDate={(current) => current && current > dayjs().endOf('day')}
                       />
                     </Form.Item>

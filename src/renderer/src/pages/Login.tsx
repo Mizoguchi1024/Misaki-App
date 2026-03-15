@@ -7,6 +7,8 @@ import { login } from '@renderer/api/common/auth'
 import { useUserStore } from '@renderer/store/userStore'
 import { useState } from 'react'
 import clsx from 'clsx'
+import authBg from '@renderer/assets/img/auth-background.png'
+import passwordBg from '@renderer/assets/img/auth-background-password.png'
 
 type FieldType = {
   email: string
@@ -39,12 +41,16 @@ export default function Login(): React.JSX.Element {
   }
 
   return (
-    <div className="relative flex items-center justify-center h-full overflow-hidden bg-[url(src/assets/img/login-background.png)] bg-cover bg-center">
+    <div
+      className="relative flex items-center justify-center h-full overflow-hidden bg-cover bg-center"
+      style={{ backgroundImage: `url(${authBg})` }}
+    >
       <div
         className={clsx(
-          'absolute inset-0 bg-[url(src/assets/img/login-background-password.png)] bg-cover bg-center duration-500 ease-in-out',
+          'absolute inset-0 bg-cover bg-center duration-500 ease-in-out',
           passwordFocus ? 'opacity-100' : 'opacity-0'
         )}
+        style={{ backgroundImage: `url(${passwordBg})` }}
       />
       <GlassBox className="flex flex-col items-center justify-center px-12 py-10 gap-12">
         <h1 className="text-4xl font-medium select-none">{t('loginAccount')}</h1>
