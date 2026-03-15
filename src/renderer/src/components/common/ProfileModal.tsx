@@ -89,7 +89,6 @@ export default function ProfileModal({ open, onCancel }): React.JSX.Element {
             }}
           />
           <Form
-            variant="filled"
             name="basic"
             autoComplete="off"
             validateTrigger="onSubmit"
@@ -122,16 +121,10 @@ export default function ProfileModal({ open, onCancel }): React.JSX.Element {
               initialValue={gender}
               rules={[{ required: true }]}
             >
-              <Radio.Group>
-                <Radio.Button value={0} className="bg-black/4 dark:bg-white/8 border-none">
-                  {t('unknown')}
-                </Radio.Button>
-                <Radio.Button value={1} className="bg-black/4 dark:bg-white/8 border-none">
-                  {t('male')}
-                </Radio.Button>
-                <Radio.Button value={2} className="bg-black/4 dark:bg-white/8 border-none">
-                  {t('female')}
-                </Radio.Button>
+              <Radio.Group optionType="button" buttonStyle="solid">
+                <Radio.Button value={0}>{t('unknown')}</Radio.Button>
+                <Radio.Button value={1}>{t('male')}</Radio.Button>
+                <Radio.Button value={2}>{t('female')}</Radio.Button>
               </Radio.Group>
             </Form.Item>
             <Form.Item<FieldType>
