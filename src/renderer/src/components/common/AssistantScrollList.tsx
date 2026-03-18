@@ -68,7 +68,7 @@ export default function AssistantScrollList(): React.JSX.Element {
   return (
     <div
       ref={containerRef}
-      className="max-w-60 md:max-w-100 lg:max-w-160 h-full overflow-hidden mask-x-from-90%" // TODO Mask固定宽度
+      className="max-w-60 md:max-w-100 lg:max-w-160 h-full overflow-hidden mask-x-from-90% ease-in-out duration-250" // TODO Mask固定宽度
     >
       <motion.div
         drag="x"

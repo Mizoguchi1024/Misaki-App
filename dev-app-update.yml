@@ -1,3 +1,3 @@
 provider: generic
 url: https://example.com/auto-updates
-updaterCacheDirName: misaki-app-updater
+updaterCacheDirName: misaki-updater

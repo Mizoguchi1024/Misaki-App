@@ -166,7 +166,7 @@ export default function Misaki(): React.JSX.Element {
 
   return (
     <div className="flex flex-col items-center h-full w-full relative px-12 md:px-0">
-      <Live2DCanvas modelUrl={'/hiyori_free_en/runtime/hiyori_free_t08.model3.json'} />
+      <Live2DCanvas modelUrl={'./hiyori_free_en/runtime/hiyori_free_t08.model3.json'} />
       <GlassBox
         className={clsx(
           isEditing ? 'h-5/6' : 'h-7/24',

@@ -16,7 +16,7 @@ import HeaderRightPart from '../common/HeaderRightPart'
 import MisakiButton from '../common/MisakiButton'
 import HeaderMiddlePart from '../common/HeaderMiddlePart'
 import { listAssistants } from '@renderer/api/front/assistant'
-import { listChats, listMcpServers } from '@renderer/api/front/chat'
+import { listChats } from '@renderer/api/front/chat'
 import { checkIn, getProfile, getSettings } from '@renderer/api/front/user'
 import { useSettingsStore } from '@renderer/store/settingsStore'
 import { useAssistantStore } from '@renderer/store/assistantStore'
@@ -26,6 +26,7 @@ import { useFeedbackStore } from '@renderer/store/feedbackStore'
 import { listModels } from '@renderer/api/front/model'
 import { useModelStore } from '@renderer/store/modelStore'
 import { useMcpStore } from '@renderer/store/mcpStore'
+import { listMcpServers } from '@renderer/api/front/mcp'
 
 const { Header, Content, Sider } = Layout
 

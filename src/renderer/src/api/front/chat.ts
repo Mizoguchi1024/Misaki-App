@@ -1,7 +1,6 @@
 import {
   ChatFrontResponse,
   ListPromptsFrontRequest,
-  McpServerFrontResponse,
   MessageFrontResponse,
   SendMessageFrontRequest,
   UpdateChatTitleFrontRequest
@@ -11,9 +10,6 @@ import { Result } from '@renderer/types/result'
 
 export const createChat = (): Promise<Result<ChatFrontResponse>> =>
   api.post<Result<ChatFrontResponse>>('/front/chats').then((res) => res.data)
-
-export const listMcpServers = (): Promise<Result<McpServerFrontResponse[]>> =>
-  api.get<Result<McpServerFrontResponse[]>>('/front/chats/mcp').then((res) => res.data)
 
 export const listPrompts = (id: string, data: ListPromptsFrontRequest): Promise<Result<string[]>> =>
   api.post<Result<string[]>>(`/front/chats/${id}/prompts`, data).then((res) => res.data)
@@ -30,8 +26,13 @@ export const updateChatTitle = (
 ): Promise<Result<void>> =>
   api.put<Result<void>>(`/front/chats/${id}/title`, data).then((res) => res.data)
 
-export const listChats = (): Promise<Result<ChatFrontResponse[]>> =>
-  api.get<Result<ChatFrontResponse[]>>('/front/chats').then((res) => res.data)
+export const listChats = (
+  pageIndex: number,
+  pageSize: number
+): Promise<Result<ChatFrontResponse[]>> =>
+  api
+    .get<Result<ChatFrontResponse[]>>('/front/chats', { params: { pageIndex, pageSize } })
+    .then((res) => res.data)
 
 export const searchChats = (keyword: string): Promise<Result<ChatFrontResponse[]>> =>
   api

@@ -13,7 +13,6 @@ function createWindow(): void {
     minWidth: 640,
     minHeight: 640,
     useContentSize: true,
-    // resizable: false,
     show: false,
     autoHideMenuBar: true,
     icon: icon,

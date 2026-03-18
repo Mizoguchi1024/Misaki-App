@@ -1,5 +1,5 @@
 import { RightOutlined } from '@ant-design/icons'
-import { listMcpServers } from '@renderer/api/front/chat'
+import { listMcpServers } from '@renderer/api/front/mcp'
 import EmptyState from '@renderer/components/common/EmptyState'
 import { useMcpStore } from '@renderer/store/mcpStore'
 import { useSettingsStore } from '@renderer/store/settingsStore'

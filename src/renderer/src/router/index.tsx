@@ -1,4 +1,4 @@
-import { createBrowserRouter } from 'react-router-dom'
+import { createHashRouter } from 'react-router-dom'
 import MainLayout from '../components/layout/MainLayout'
 import AuthLayout from '../components/layout/AuthLayout'
 import Home from '../pages/Home'
@@ -12,7 +12,7 @@ import Misaki from '../pages/Misaki'
 import NotFound from '../pages/NotFound'
 import Chat from '../pages/Chat'
 
-export const router = createBrowserRouter([
+export const router = createHashRouter([
   {
     element: <MainLayout />,
     children: [

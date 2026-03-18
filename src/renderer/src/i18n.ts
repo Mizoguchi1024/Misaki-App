@@ -11,9 +11,10 @@ i18n
   .use(initReactI18next)
   .init({
     fallbackLng: 'zh',
+    fallbackNS: 'mainLayout',
     lng: language,
     backend: {
-      loadPath: '/locales/{{lng}}/{{ns}}.json'
+      loadPath: './locales/{{lng}}/{{ns}}.json'
     },
     interpolation: {
       escapeValue: false
