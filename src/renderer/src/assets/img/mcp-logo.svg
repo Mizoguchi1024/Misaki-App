@@ -1,17 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg id="_图层_1" xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 24 24">
+<svg id="mcp-logo" xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 24 24">
   <!-- Generator: Adobe Illustrator 30.2.1, SVG Export Plug-In . SVG Version: 2.1.1 Build 1)  -->
   <defs>
     <style>
-      .st0 {
+      #mcp-logo .st0 {
         fill: none;
-        stroke: black;
+        stroke: currentColor;
         stroke-linecap: round;
         stroke-width: 1.5px;
-      }
-
-      .dark .st0{
-        stroke: white;
       }
     </style>
   </defs>

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg id="Misaki" xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 24 24">
+<svg id="misaki-logo-dashed" xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 24 24">
   <!-- Generator: Adobe Illustrator 30.2.1, SVG Export Plug-In . SVG Version: 2.1.1 Build 1)  -->
   <defs>
     <style>
-      .st0 {
+      #misaki-logo-dashed .st0 {
         fill: none;
         stroke: currentColor;
         stroke-dasharray: 2 2;

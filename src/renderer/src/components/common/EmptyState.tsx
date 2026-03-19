@@ -1,5 +1,5 @@
 import { getSettings } from '@renderer/api/front/user'
-import DashedMisakiLogo from '@renderer/assets/img/misaki-logo-symbol-dashed.svg?react'
+import DashedMisakiLogo from '@renderer/assets/img/misaki-logo-dashed.svg?react'
 import { useUserStore } from '@renderer/store/userStore'
 import { useQuery } from '@tanstack/react-query'
 import clsx from 'clsx'

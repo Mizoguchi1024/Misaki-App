@@ -1,8 +1,8 @@
 import { App, Button, Drawer, Layout, Menu, MenuProps, Spin } from 'antd'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Outlet, UIMatch, useLocation, useMatches, useNavigate } from 'react-router-dom'
 import McpLogo from '@renderer/assets/img/mcp-logo.svg?react'
-import {
+import Icon, {
   FormOutlined,
   LoadingOutlined,
   MenuOutlined,
@@ -23,13 +23,12 @@ import { useAssistantStore } from '@renderer/store/assistantStore'
 import clsx from 'clsx'
 import dayjs from 'dayjs'
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import InfiniteScroll from 'react-infinite-scroll-component'
 import { PageResult } from '@renderer/types/result'
 import { ChatFrontResponse } from '@renderer/types/chat'
 
 const { Header, Content, Sider } = Layout
 
-const chatsPageSize = 10
+const chatsPageSize = 15
 
 export default function MainLayout(): React.JSX.Element {
   const { t } = useTranslation('mainLayout')
@@ -40,7 +39,7 @@ export default function MainLayout(): React.JSX.Element {
   const location = useLocation()
   const navigate = useNavigate()
   const { jwt, rememberMe, reset: resetUserStore } = useUserStore()
-  const { getOssBaseUrl, setStaticMessage, reset: resetSettingsStore } = useSettingsStore()
+  const { getOssBaseUrl, setStaticMessage } = useSettingsStore()
   const { chatsUI, reset: resetChatStore } = useChatStore()
   const { reset: resetAssistantStore } = useAssistantStore()
 
@@ -79,9 +78,9 @@ export default function MainLayout(): React.JSX.Element {
 
     if (jwt && !rememberMe) {
       resetUserStore()
-      resetSettingsStore()
       resetChatStore()
       resetAssistantStore()
+      queryClient.removeQueries()
     }
   }, [])
 
@@ -97,7 +96,8 @@ export default function MainLayout(): React.JSX.Element {
   const {
     data: chatsData,
     fetchNextPage,
-    hasNextPage
+    hasNextPage,
+    isFetchingNextPage
   } = useInfiniteQuery({
     queryKey: ['chats'],
     queryFn: ({ pageParam = 1 }): Promise<PageResult<ChatFrontResponse[]>> => {
@@ -105,13 +105,12 @@ export default function MainLayout(): React.JSX.Element {
     },
     enabled: !!jwt,
     initialPageParam: 1,
-    getNextPageParam: (lastPage: any) => {
+    getNextPageParam: (lastPage: PageResult<ChatFrontResponse[]>) => {
       const { pageIndex, total } = lastPage.data
-      if (pageIndex * chatsPageSize >= +total) {
-        return undefined
-      }
-      return pageIndex + 1
-    }
+      return +pageIndex * chatsPageSize < +total ? +pageIndex + 1 : undefined
+    },
+    refetchOnMount: false,
+    refetchOnWindowFocus: false
   })
   const chats = chatsData?.pages.flatMap((page) => page.data.list) ?? []
 
@@ -135,7 +134,7 @@ export default function MainLayout(): React.JSX.Element {
     {
       key: '/mcp',
       label: t('mcp'),
-      icon: <McpLogo className="w-3.5" />
+      icon: <Icon component={McpLogo} />
     },
     {
       type: 'divider'
@@ -160,6 +159,32 @@ export default function MainLayout(): React.JSX.Element {
 
   const siderMenuItems = [...agentItems, ...siderChatItems]
   const drawerMenuItems = [...agentItems, ...drawerChatItems]
+
+  const sentinelRef = useRef(null)
+  const scrollableDivRef = useRef(null)
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const target = entries[0]
+        if (target.isIntersecting && !isFetchingNextPage && hasNextPage) {
+          fetchNextPage()
+        }
+      },
+      {
+        root: scrollableDivRef.current, // 默认是浏览器视口，如果是局部容器，请传容器的 ref.current
+        rootMargin: '20px', // 提前 20px 触发，优化体验
+        threshold: 0.1 // 哨兵出现 10% 时触发
+      }
+    )
+
+    if (sentinelRef.current) {
+      observer.observe(sentinelRef.current)
+    }
+
+    return () => {
+      if (sentinelRef.current) observer.unobserve(sentinelRef.current)
+    }
+  }, [isFetchingNextPage])
 
   return (
     <Layout className="h-screen w-screen overflow-hidden relative z-0">
@@ -243,19 +268,12 @@ export default function MainLayout(): React.JSX.Element {
               : 'bg-white dark:bg-neutral-800'
           )}
         >
-          <InfiniteScroll
-            dataLength={siderMenuItems.length}
-            next={fetchNextPage}
-            hasMore={hasNextPage}
-            loader={
-              <div className="text-center">
-                <Spin indicator={<LoadingOutlined spin />} />
-              </div>
-            }
-            className="scrollbar-none"
+          <div
+            ref={scrollableDivRef}
+            className="h-full overflow-y-auto scroll-smooth scrollbar-none mask-b-from-86%"
           >
             <Menu
-              className="select-none h-full overflow-y-auto scroll-smooth scrollbar-none bg-transparent mask-b-from-94%"
+              className=" bg-transparent select-none"
               theme="light"
               selectedKeys={[location.pathname]}
               onClick={(e) => navigate(e.key, { viewTransition: true })}
@@ -266,7 +284,14 @@ export default function MainLayout(): React.JSX.Element {
               items={siderMenuItems}
               disabled={!jwt}
             />
-          </InfiniteScroll>
+            <div ref={sentinelRef} className="h-2.5">
+              {isFetchingNextPage && (
+                <div className="text-center">
+                  <Spin indicator={<LoadingOutlined spin />} />
+                </div>
+              )}
+            </div>
+          </div>
         </Sider>
         <Content>
           <Outlet />

@@ -1,48 +1,51 @@
-import { LoadingOutlined, MessageOutlined, SearchOutlined } from '@ant-design/icons'
+import { CloseOutlined, LoadingOutlined, MessageOutlined, SearchOutlined } from '@ant-design/icons'
 import { Sender } from '@ant-design/x'
 import { listChats, searchChats } from '@renderer/api/front/chat'
 import EmptyState from '@renderer/components/common/EmptyState'
-import { Card, Skeleton, Spin } from 'antd'
+import { Card, Skeleton, Space, Spin } from 'antd'
 import clsx from 'clsx'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
-import InfiniteScroll from 'react-infinite-scroll-component'
-import { useInfiniteQuery, useQuery } from '@tanstack/react-query'
+import { keepPreviousData, useInfiniteQuery, useQuery } from '@tanstack/react-query'
 import { getSettings } from '@renderer/api/front/user'
 import { PageResult } from '@renderer/types/result'
 import { ChatFrontResponse } from '@renderer/types/chat'
 
-const chatsPageSize = 10
+const chatsPageSize = 15
 
 export default function Search(): React.JSX.Element {
   const { t } = useTranslation('search')
   const navigate = useNavigate()
+  const [searchInputValue, setSearchInputValue] = useState('')
   const [keyword, setKeyword] = useState('')
+  const sentinelRef = useRef(null)
+  const scrollableDivRef = useRef(null)
 
   const {
     data: chatsData,
     fetchNextPage,
-    hasNextPage
+    hasNextPage,
+    isFetchingNextPage
   } = useInfiniteQuery({
     queryKey: ['chats'],
     queryFn: ({ pageParam = 1 }): Promise<PageResult<ChatFrontResponse[]>> => {
       return listChats(pageParam, chatsPageSize)
     },
     initialPageParam: 1,
-    getNextPageParam: (lastPage: any) => {
+    getNextPageParam: (lastPage: PageResult<ChatFrontResponse[]>) => {
       const { pageIndex, total } = lastPage.data
-      if (pageIndex * chatsPageSize >= +total) {
-        return undefined
-      }
-      return pageIndex + 1
-    }
+      return +pageIndex * chatsPageSize < +total ? +pageIndex + 1 : undefined
+    },
+    refetchOnMount: false,
+    refetchOnWindowFocus: false
   })
   const chats = chatsData?.pages.flatMap((page) => page.data.list) ?? []
 
-  const { data: resultsData, isLoading } = useQuery({
+  const { data: resultsData, isFetching } = useQuery({
     queryKey: ['chats', keyword],
     queryFn: () => searchChats(keyword),
+    placeholderData: keepPreviousData,
     enabled: !!keyword
   })
   const results = resultsData?.data ?? []
@@ -52,6 +55,30 @@ export default function Search(): React.JSX.Element {
     queryFn: getSettings
   })
   const backgroundPath = settingsData?.data.backgroundPath
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const target = entries[0]
+        if (target.isIntersecting && !isFetchingNextPage && hasNextPage) {
+          fetchNextPage()
+        }
+      },
+      {
+        root: scrollableDivRef.current, // 默认是浏览器视口，如果是局部容器，请传容器的 ref.current
+        rootMargin: '20px', // 提前 20px 触发，优化体验
+        threshold: 0.1 // 哨兵出现 10% 时触发
+      }
+    )
+
+    if (sentinelRef.current) {
+      observer.observe(sentinelRef.current)
+    }
+
+    return () => {
+      if (sentinelRef.current) observer.unobserve(sentinelRef.current)
+    }
+  }, [isFetchingNextPage])
 
   return (
     <div className="h-full relative">
@@ -69,7 +96,7 @@ export default function Search(): React.JSX.Element {
                     'mb-4 select-none cursor-pointer hover:shadow-xl ease-in-out duration-250 active:scale-96'
                   )}
                 >
-                  <Skeleton loading={isLoading} active paragraph={{ rows: 1 }}>
+                  <Skeleton loading={isFetching} active paragraph={{ rows: 1 }}>
                     <Card.Meta
                       avatar={<MessageOutlined className="text-2xl" />}
                       title={item.title || t('newChat')}
@@ -87,11 +114,8 @@ export default function Search(): React.JSX.Element {
           <EmptyState className="w-full h-full text-2xl" logoClassName="w-32" />
         )
       ) : chats.length > 0 ? (
-        <InfiniteScroll
-          dataLength={chats.length}
-          next={fetchNextPage}
-          hasMore={hasNextPage}
-          loader={<Spin indicator={<LoadingOutlined spin />} />}
+        <div
+          ref={scrollableDivRef}
           className="px-4 h-full overflow-y-auto scrollbar-style mask-end"
         >
           <div className="px-12 pt-12 pb-40 w-full md:max-w-2xl md:mx-auto md:px-0">
@@ -116,21 +140,31 @@ export default function Search(): React.JSX.Element {
               </Card>
             ))}
           </div>
-        </InfiniteScroll>
+          <div ref={sentinelRef} className="h-2.5">
+            {isFetchingNextPage && (
+              <div className="text-center">
+                <Spin indicator={<LoadingOutlined spin />} />
+              </div>
+            )}
+          </div>
+        </div>
       ) : (
         <EmptyState className="w-full h-full text-2xl" logoClassName="w-32" />
       )}
       <Sender
         className="absolute bottom-1/12 left-1/2 -translate-x-1/2 max-w-md md:max-w-xl bg-white/70 dark:bg-white/20 backdrop-blur-xs hover:backdrop-blur-sm ease-in-out duration-500"
         placeholder={t('searchChats')}
-        loading={isLoading}
+        loading={isFetching}
+        value={searchInputValue}
+        onChange={(value) => setSearchInputValue(value)}
         onSubmit={(value) => setKeyword(value)}
         suffix={(_, info) => {
-          const { SendButton, LoadingButton } = info.components
-          return isLoading ? (
-            <LoadingButton />
-          ) : (
-            <SendButton type="primary" icon={<SearchOutlined />} disabled={false} />
+          const { SendButton, LoadingButton, ClearButton } = info.components
+          return (
+            <Space size="small">
+              {searchInputValue && <ClearButton icon={<CloseOutlined />} shape="circle" />}
+              {isFetching ? <LoadingButton /> : <SendButton icon={<SearchOutlined />} />}
+            </Space>
           )
         }}
       />

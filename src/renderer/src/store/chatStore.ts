@@ -14,10 +14,11 @@ interface ChatState {
   setPrefix: (prefix: string) => void
   setChatPinned: (chatId: string, pinned: boolean) => void
   setChatPrompts: (chatId: string, prompts: string[]) => void
-  reset: () => void
-  stopSendMessage: () => void
 
   sendMessage: (chatId: string, data: SendMessageFrontRequest) => Promise<void>
+  stopSendMessage: () => void
+
+  reset: () => void
 }
 
 let currentSendMessageController: AbortController | null = null

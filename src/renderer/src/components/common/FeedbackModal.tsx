@@ -3,12 +3,11 @@ import {
   CloseCircleOutlined,
   DeleteOutlined,
   InfoCircleOutlined,
-  LoadingOutlined,
   StopOutlined,
   SyncOutlined
 } from '@ant-design/icons'
 import { createFeedback, deleteFeedback, listFeedbacks } from '@renderer/api/front/feedback'
-import { App, Button, Card, Divider, Form, Input, Modal, Select, Spin, Tabs, Tag } from 'antd'
+import { App, Button, Card, Divider, Form, Input, Modal, Select, Tabs, Tag } from 'antd'
 import { useTranslation } from 'react-i18next'
 import EmptyState from './EmptyState'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
@@ -19,7 +18,7 @@ export default function FeedbackModal({ open, onCancel }): React.JSX.Element {
   const { message: appMessage } = App.useApp()
   const queryClient = useQueryClient()
 
-  const { data, isLoading } = useQuery({
+  const { data } = useQuery({
     queryKey: ['feedbacks'],
     queryFn: listFeedbacks
   })
@@ -121,46 +120,44 @@ export default function FeedbackModal({ open, onCancel }): React.JSX.Element {
       label: t('history'),
       children: (
         <div className="h-120 pl-6 pr-2 overflow-y-auto scrollbar-style mask-end">
-          <Spin spinning={isLoading} indicator={<LoadingOutlined spin />}>
-            {feedbacks && feedbacks.length > 0 ? (
-              <div className="flex flex-col gap-4 pb-12">
-                {feedbacks?.map((item) => (
-                  <Card
-                    key={item.id}
-                    title={item.title}
-                    extra={
-                      <div className="flex gap-2">
-                        <Tag>{feedbackTypeMap[item.type]}</Tag>
-                        <Tag
-                          color={feedbackStatusMap[item.status].color}
-                          icon={feedbackStatusMap[item.status].icon}
-                        >
-                          {feedbackStatusMap[item.status].text}
-                        </Tag>
-                      </div>
-                    }
-                    actions={[
-                      <DeleteOutlined
-                        key="delete"
-                        className="text-red-500"
-                        onClick={async () => deleteFeedbackMutation.mutate(item.id)}
-                      />
-                    ]}
-                  >
-                    <div className="w-full">{item.content}</div>
-                    {item.reply && (
-                      <>
-                        <Divider />
-                        <div className="w-full">{item.reply}</div>
-                      </>
-                    )}
-                  </Card>
-                ))}
-              </div>
-            ) : (
-              <EmptyState className="w-full h-full text-lg" logoClassName="w-24" />
-            )}
-          </Spin>
+          {feedbacks.length > 0 ? (
+            <div className="flex flex-col gap-4 pb-12">
+              {feedbacks?.map((item) => (
+                <Card
+                  key={item.id}
+                  title={item.title}
+                  extra={
+                    <div className="flex gap-2">
+                      <Tag>{feedbackTypeMap[item.type]}</Tag>
+                      <Tag
+                        color={feedbackStatusMap[item.status].color}
+                        icon={feedbackStatusMap[item.status].icon}
+                      >
+                        {feedbackStatusMap[item.status].text}
+                      </Tag>
+                    </div>
+                  }
+                  actions={[
+                    <DeleteOutlined
+                      key="delete"
+                      className="text-red-500"
+                      onClick={async () => deleteFeedbackMutation.mutate(item.id)}
+                    />
+                  ]}
+                >
+                  <div className="w-full">{item.content}</div>
+                  {item.reply && (
+                    <>
+                      <Divider />
+                      <div className="w-full">{item.reply}</div>
+                    </>
+                  )}
+                </Card>
+              ))}
+            </div>
+          ) : (
+            <EmptyState className="w-full h-full text-lg" logoClassName="w-24" />
+          )}
         </div>
       )
     }

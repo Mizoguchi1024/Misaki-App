@@ -15,12 +15,13 @@ import { useSettingsStore } from '@renderer/store/settingsStore'
 import ProfileModal from './ProfileModal'
 import FeedbackModal from './FeedbackModal'
 import { useNavigate } from 'react-router-dom'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { getProfile } from '@renderer/api/front/user'
 
 export default function UserDropdown(): React.JSX.Element {
   const { t } = useTranslation('userDropdown')
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
   const { reset: resetUserStore } = useUserStore()
   const { getOssBaseUrl } = useSettingsStore()
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false)
@@ -82,6 +83,7 @@ export default function UserDropdown(): React.JSX.Element {
         break
       case 'logout':
         resetUserStore()
+        queryClient.removeQueries()
         navigate('/', { viewTransition: true })
         break
     }
