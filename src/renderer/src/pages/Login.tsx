@@ -13,23 +13,23 @@ import passwordBg from '@renderer/assets/img/auth-background-password.png'
 type FieldType = {
   email: string
   password: string
-  remember: boolean
+  rememberMe: boolean
 }
 
 export default function Login(): React.JSX.Element {
-  const { message: appMessage } = App.useApp()
-  const [passwordFocus, setPasswordFocus] = useState(false)
-  const { setAuthInfo, setRememberMe } = useUserStore()
-  const [submitButtonLoading, setSubmitButtonLoading] = useState(false)
   const { t } = useTranslation('login')
+  const { message: appMessage } = App.useApp()
   const navigate = useNavigate()
+  const { setJwt, setRememberMe } = useUserStore()
+  const [passwordFocus, setPasswordFocus] = useState(false)
+  const [submitButtonLoading, setSubmitButtonLoading] = useState(false)
 
   const onFinish: FormProps<FieldType>['onFinish'] = async (values) => {
     try {
       setSubmitButtonLoading(true)
       const loginRes = await login({ email: values.email, password: values.password })
-      setAuthInfo(loginRes.data)
-      setRememberMe(values.remember)
+      setJwt(loginRes.data.jwt)
+      setRememberMe(values.rememberMe)
       appMessage.success(t('loginSuccess'))
       setSubmitButtonLoading(false)
       navigate('/', { viewTransition: true })
@@ -56,7 +56,7 @@ export default function Login(): React.JSX.Element {
         <h1 className="text-4xl font-medium select-none">{t('loginAccount')}</h1>
         <Form
           name="basic"
-          initialValues={{ remember: true }}
+          initialValues={{ rememberMe: true }}
           size={'large'}
           variant={'filled'}
           onFinish={onFinish}
@@ -89,7 +89,7 @@ export default function Login(): React.JSX.Element {
             />
           </Form.Item>
           <div className="flex justify-between items-start pl-2">
-            <Form.Item<FieldType> name="remember" valuePropName="checked">
+            <Form.Item<FieldType> name="rememberMe" valuePropName="checked">
               <Checkbox className="select-none">{t('rememberMe')}</Checkbox>
             </Form.Item>
             <Button

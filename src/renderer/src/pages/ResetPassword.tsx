@@ -1,33 +1,27 @@
 import { InfoCircleOutlined, LockOutlined, MailOutlined } from '@ant-design/icons'
 import { resetPassword, sendVerifyCode } from '@renderer/api/common/auth'
-import { getProfile } from '@renderer/api/front/user'
 import GlassBox from '@renderer/components/common/GlassBox'
 import { useSettingsStore } from '@renderer/store/settingsStore'
-import { useUserStore } from '@renderer/store/userStore'
-import { App, Button, Form, FormProps, Input, Space, Tooltip } from 'antd'
-import clsx from 'clsx'
+import { App, Button, Form, Input, Space, Tooltip } from 'antd'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { ResetPasswordRequest } from '@renderer/types/auth'
 import authBg from '@renderer/assets/img/auth-background.png'
 import passwordBg from '@renderer/assets/img/auth-background-password.png'
-
-type FieldType = {
-  email: string
-  password: string
-  verifyCode: string
-}
+import clsx from 'clsx'
 
 export default function ResetPassword(): React.JSX.Element {
+  const { t } = useTranslation('resetPassword')
   const { message: appMessage } = App.useApp()
-  const [passwordFocus, setPasswordFocus] = useState(false)
   const navigate = useNavigate()
-  const { jwt, setProfile } = useUserStore()
-  const [form] = Form.useForm<FieldType>()
+  const queryClient = useQueryClient()
+  const { language } = useSettingsStore()
+  const [form] = Form.useForm<ResetPasswordRequest>()
+  const [passwordFocus, setPasswordFocus] = useState(false)
   const [sendVerifyCodeLoading, setSendVerifyCodeLoading] = useState(false)
   const [finishLoading, setFinishLoading] = useState(false)
-  const { t } = useTranslation('resetPassword')
-  const { language } = useSettingsStore()
 
   const onSendVerifyCode = async (): Promise<void> => {
     try {
@@ -42,27 +36,15 @@ export default function ResetPassword(): React.JSX.Element {
     }
   }
 
-  const onFinish: FormProps<FieldType>['onFinish'] = async (values) => {
-    try {
-      setFinishLoading(true)
-      await resetPassword({
-        email: values.email,
-        password: values.password,
-        verifyCode: values.verifyCode
-      })
-      if (jwt) {
-        const profileRes = await getProfile()
-        setProfile(profileRes.data)
-      }
+  const updateMutation = useMutation({
+    mutationFn: resetPassword,
+    onSuccess: () => {
       appMessage.success(t('passwordReset'))
       setFinishLoading(false)
+      queryClient.invalidateQueries({ queryKey: ['user'] })
       navigate('/', { viewTransition: true })
-    } catch {
-      setTimeout(() => {
-        setFinishLoading(false)
-      }, 1000)
     }
-  }
+  })
 
   return (
     <div
@@ -83,12 +65,21 @@ export default function ResetPassword(): React.JSX.Element {
           name="basic"
           size={'large'}
           variant={'filled'}
-          onFinish={onFinish}
           autoComplete="off"
           className="w-100"
           validateTrigger="onSubmit"
+          onFinish={(values) => {
+            try {
+              setFinishLoading(true)
+              updateMutation.mutate(values)
+            } catch {
+              setTimeout(() => {
+                setFinishLoading(false)
+              }, 1000)
+            }
+          }}
         >
-          <Form.Item<FieldType>
+          <Form.Item<ResetPasswordRequest>
             name="email"
             rules={[
               { type: 'email', message: t('emailTypeMessage') },
@@ -112,8 +103,7 @@ export default function ResetPassword(): React.JSX.Element {
               </Button>
             </Space.Compact>
           </Form.Item>
-
-          <Form.Item<FieldType>
+          <Form.Item<ResetPasswordRequest>
             name="password"
             rules={[
               { required: true, message: t('passwordRequiredMessage') },
@@ -134,8 +124,7 @@ export default function ResetPassword(): React.JSX.Element {
               onBlur={() => setPasswordFocus(false)}
             />
           </Form.Item>
-
-          <Form.Item<FieldType>
+          <Form.Item<ResetPasswordRequest>
             name="verifyCode"
             rules={[
               { required: true, message: t('verifyCodeRequiredMessage') },

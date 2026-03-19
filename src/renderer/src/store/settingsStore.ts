@@ -1,6 +1,5 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import { SettingsFrontResponse } from '@renderer/types/user'
 import zh_CN from 'antd/locale/zh_CN'
 import en_US from 'antd/locale/en_US'
 import ja_JP from 'antd/locale/ja_JP'
@@ -17,26 +16,14 @@ interface SettingsState {
   appearance: number // 0:跟随系统 1:浅色 2:暗色
   borderRadius: number
 
-  mainColor: string // #3142ef
-  promptsSuggestion: boolean
-  ttsAutoplay: boolean
-  backgroundPath: string | null
-  backgroundOpacity: number
-  backgroundBlur: number
-  enabledAssistantId: string | null
-
-  version: number
-
   getApiBaseUrl: () => string
   getOssBaseUrl: () => string
 
   setStaticMessage: (staticMessage: any) => void
-  setSettings: (settingsFrontResponse: SettingsFrontResponse) => void
   setPartial: (patch: Partial<SettingsState>) => void
 
   reset: () => void
   resetLocalSettings: () => void
-  resetCloudSettings: () => void
 }
 
 const initialState = {
@@ -44,16 +31,8 @@ const initialState = {
   baseUrl: 'http://localhost',
   appearance: 0,
   language: 0,
-  promptsSuggestion: false,
-  ttsAutoplay: false,
   fontSize: 14,
-  mainColor: '#3142ef',
-  borderRadius: 12,
-  backgroundPath: null,
-  backgroundOpacity: 100,
-  backgroundBlur: 0,
-  enabledAssistantId: null,
-  version: 0
+  borderRadius: 12
 }
 
 const initialLocalState = {
@@ -62,17 +41,6 @@ const initialLocalState = {
   fontSize: 14,
   appearance: 0,
   borderRadius: 12
-}
-
-const initialCloudState = {
-  mainColor: '#3142ef',
-  promptsSuggestion: false,
-  ttsAutoplay: false,
-  backgroundPath: null,
-  backgroundOpacity: 100,
-  backgroundBlur: 0,
-  enabledAssistantId: null,
-  version: 0
 }
 
 export enum LanguageEnum {
@@ -112,11 +80,9 @@ export const useSettingsStore = create<SettingsState>()(
       getApiBaseUrl: () => `${get().baseUrl}:8080/api`,
       getOssBaseUrl: () => `${get().baseUrl}:9000`,
       setStaticMessage: (staticMessage) => set({ staticMessage }),
-      setSettings: (settingsFrontResponse) => set(settingsFrontResponse),
       setPartial: (patch) => set((state) => ({ ...state, ...patch })),
       reset: () => set(initialState),
-      resetLocalSettings: () => set(initialLocalState),
-      resetCloudSettings: () => set(initialCloudState)
+      resetLocalSettings: () => set(initialLocalState)
     }),
     {
       name: 'settings-store'

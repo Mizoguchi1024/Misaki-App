@@ -19,49 +19,54 @@ import { useTranslation } from 'react-i18next'
 import ImageUpload from './ImageUpload'
 import { UploadResponse } from '@renderer/types/common'
 import { useNavigate } from 'react-router-dom'
-import { deleteAllChats, listChats } from '@renderer/api/front/chat'
-import { useChatStore } from '@renderer/store/chatStore'
+import { deleteAllChats } from '@renderer/api/front/chat'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 export default function SettingsModal({ open, onCancel }): React.JSX.Element {
   const { t } = useTranslation('settingsModal')
   const { message: appMessage } = App.useApp()
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
   const { jwt } = useUserStore()
-  const {
-    baseUrl,
-    language,
-    fontSize,
-    appearance,
-    mainColor,
-    borderRadius,
-    promptsSuggestion,
-    ttsAutoplay,
-    backgroundPath,
-    backgroundOpacity,
-    backgroundBlur,
-    version: settingsVersion,
-    setSettings,
-    setPartial,
-    resetLocalSettings
-  } = useSettingsStore()
-  const { setChats } = useChatStore()
+  const { baseUrl, language, fontSize, appearance, borderRadius, setPartial, resetLocalSettings } =
+    useSettingsStore()
   const [baseUrlInputValue, setBaseUrlInputValue] = useState(baseUrl.replace('http://', ''))
+
+  const { data: settingsData } = useQuery({
+    queryKey: ['settings'],
+    queryFn: getSettings,
+    enabled: !!jwt
+  })
+  const {
+    mainColor = '#3142EF',
+    backgroundPath,
+    backgroundBlur,
+    backgroundOpacity,
+    ttsAutoplay,
+    promptsSuggestion,
+    version: settingsVersion
+  } = settingsData?.data ?? {}
+
+  const updateSettingsMutation = useMutation({
+    mutationFn: updateSettings,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['settings'] })
+    }
+  })
+
+  const deleteAllChatsMutation = useMutation({
+    mutationFn: deleteAllChats,
+    onSuccess: () => {
+      appMessage.success(t('allChatsDeleted'))
+      queryClient.invalidateQueries({ queryKey: ['chats'] })
+    }
+  })
+
   const [colorPickerValue, setColorPickerValue] = useState(mainColor)
 
   useEffect(() => {
     setColorPickerValue(mainColor)
   }, [mainColor])
-
-  useEffect(() => {
-    const load = async (): Promise<void> => {
-      const settingsRes = await getSettings()
-      setSettings(settingsRes.data)
-    }
-
-    if (open && jwt) {
-      load()
-    }
-  }, [open])
 
   const tabItems = [
     {
@@ -109,7 +114,7 @@ export default function SettingsModal({ open, onCancel }): React.JSX.Element {
             <span>{t('resetLocalSettings')}</span>
             <Button
               color="danger"
-              variant="outlined"
+              variant="filled"
               onClick={() => {
                 resetLocalSettings()
               }}
@@ -147,17 +152,18 @@ export default function SettingsModal({ open, onCancel }): React.JSX.Element {
                 showText
                 value={colorPickerValue}
                 onChange={(color) => setColorPickerValue(color.toHexString())}
-                onChangeComplete={async (color) => {
-                  await updateSettings({
+                onChangeComplete={(color) =>
+                  updateSettingsMutation.mutate({
                     mainColor: color.toHexString(),
-                    version: settingsVersion
+                    version: settingsVersion!
                   })
-                  const settingsRes = await getSettings()
-                  setSettings(settingsRes.data)
-                }}
+                }
                 disabledAlpha
                 arrow={false}
-              ></ColorPicker>
+                classNames={{
+                  description: 'font-mono'
+                }}
+              />
             </div>
           )}
           <div className="flex justify-between items-center min-h-8 flex-none">
@@ -200,17 +206,11 @@ export default function SettingsModal({ open, onCancel }): React.JSX.Element {
               <ImageUpload
                 imgPath={backgroundPath}
                 onSuccess={async (data: UploadResponse) => {
-                  try {
-                    await updateSettings({
-                      backgroundPath: data.path,
-                      version: settingsVersion!
-                    })
-                    appMessage.success(t('uploadSuccess'))
-                    const settingsRes = await getSettings()
-                    setSettings(settingsRes.data)
-                  } catch {
-                    return
-                  }
+                  updateSettingsMutation.mutate({
+                    backgroundPath: data.path,
+                    version: settingsVersion!
+                  })
+                  appMessage.success(t('uploadSuccess'))
                 }}
               />
             </div>
@@ -221,15 +221,13 @@ export default function SettingsModal({ open, onCancel }): React.JSX.Element {
                 <span>{t('deleteBackground')}</span>
                 <Button
                   color="danger"
-                  variant="outlined"
+                  variant="filled"
                   onClick={async () => {
-                    await updateSettings({
+                    updateSettingsMutation.mutate({
                       backgroundPath: '',
                       version: settingsVersion!
                     })
                     appMessage.success(t('backgroundDeleted'))
-                    const settingsRes = await getSettings()
-                    setSettings(settingsRes.data)
                   }}
                 >
                   {t('delete')}
@@ -243,17 +241,12 @@ export default function SettingsModal({ open, onCancel }): React.JSX.Element {
                   defaultValue={backgroundOpacity}
                   className="w-36 mr-2"
                   marks={{ 0: '0', 100: '100' }}
-                  onChange={(value) => {
-                    setPartial({ backgroundOpacity: value })
-                  }}
-                  onChangeComplete={async (value) => {
-                    await updateSettings({
+                  onChangeComplete={async (value) =>
+                    updateSettingsMutation.mutate({
                       backgroundOpacity: value,
                       version: settingsVersion!
                     })
-                    const settingsRes = await getSettings()
-                    setSettings(settingsRes.data)
-                  }}
+                  }
                 />
               </div>
               <div className="flex justify-between items-center min-h-8 flex-none">
@@ -264,17 +257,12 @@ export default function SettingsModal({ open, onCancel }): React.JSX.Element {
                   defaultValue={backgroundBlur}
                   className="w-36 mr-2"
                   marks={{ 0: '0', 50: '50' }}
-                  onChange={(value) => {
-                    setPartial({ backgroundBlur: value })
-                  }}
-                  onChangeComplete={async (value) => {
-                    await updateSettings({
+                  onChangeComplete={async (value) =>
+                    updateSettingsMutation.mutate({
                       backgroundBlur: value,
                       version: settingsVersion!
                     })
-                    const settingsRes = await getSettings()
-                    setSettings(settingsRes.data)
-                  }}
+                  }
                 />
               </div>
             </>
@@ -292,7 +280,8 @@ export default function SettingsModal({ open, onCancel }): React.JSX.Element {
                 <div className="flex justify-between items-center min-h-8 flex-none">
                   <span>{t('resetPassword')}</span>
                   <Button
-                    type="default"
+                    color="default"
+                    variant="filled"
                     onClick={() => navigate('/reset-password', { viewTransition: true })}
                   >
                     {t('reset')}
@@ -302,7 +291,7 @@ export default function SettingsModal({ open, onCancel }): React.JSX.Element {
                   <span>{t('deleteAccount')}</span>
                   <Button
                     color="danger"
-                    variant="outlined"
+                    variant="filled"
                     onClick={() => {
                       deleteUser()
                     }}
@@ -322,38 +311,32 @@ export default function SettingsModal({ open, onCancel }): React.JSX.Element {
                   <span>{t('promptsSuggestion')}</span>
                   <Switch
                     checked={promptsSuggestion}
-                    onChange={async (checked) => {
-                      await updateSettings({ promptsSuggestion: checked, version: settingsVersion })
-                      const settingsRes = await getSettings()
-                      setSettings(settingsRes.data)
-                    }}
-                  ></Switch>
+                    onChange={async (checked) =>
+                      updateSettingsMutation.mutate({
+                        promptsSuggestion: checked,
+                        version: settingsVersion!
+                      })
+                    }
+                  />
                 </div>
                 <div className="flex justify-between items-center min-h-8 flex-none">
                   <span>{t('ttsAutoplay')}</span>
                   <Switch
                     checked={ttsAutoplay}
-                    onChange={async (checked) => {
-                      await updateSettings({ ttsAutoplay: checked, version: settingsVersion })
-                      const settingsRes = await getSettings()
-                      setSettings(settingsRes.data)
-                    }}
-                  ></Switch>
+                    onChange={async (checked) =>
+                      updateSettingsMutation.mutate({
+                        ttsAutoplay: checked,
+                        version: settingsVersion!
+                      })
+                    }
+                  />
                 </div>
                 <div className="flex justify-between items-center min-h-8 flex-none">
                   <span>{t('deleteAllChats')}</span>
                   <Button
-                    danger
-                    onClick={async () => {
-                      try {
-                        await deleteAllChats()
-                        appMessage.success(t('allChatsDeleted'))
-                        const chatsRes = await listChats()
-                        setChats(chatsRes.data)
-                      } catch {
-                        return
-                      }
-                    }}
+                    color="danger"
+                    variant="filled"
+                    onClick={() => deleteAllChatsMutation.mutate()}
                   >
                     {t('delete')}
                   </Button>

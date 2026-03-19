@@ -11,26 +11,28 @@ import { useTranslation } from 'react-i18next'
 import AboutModal from './AboutModal'
 import SettingsModal from './SettingsModal'
 import { useState } from 'react'
-import { useChatStore } from '@renderer/store/chatStore'
 import { useSettingsStore } from '@renderer/store/settingsStore'
 import ProfileModal from './ProfileModal'
 import FeedbackModal from './FeedbackModal'
-import { useAssistantStore } from '@renderer/store/assistantStore'
-import { useFeedbackStore } from '@renderer/store/feedbackStore'
 import { useNavigate } from 'react-router-dom'
+import { useQuery } from '@tanstack/react-query'
+import { getProfile } from '@renderer/api/front/user'
 
 export default function UserDropdown(): React.JSX.Element {
   const { t } = useTranslation('userDropdown')
   const navigate = useNavigate()
-  const { username, avatarPath, reset: resetUserStore } = useUserStore()
-  const { getOssBaseUrl, resetCloudSettings: resetSettingsStore } = useSettingsStore()
-  const { reset: resetChatStore } = useChatStore()
-  const { reset: resetAssistantStore } = useAssistantStore()
-  const { reset: resetFeedbackStore } = useFeedbackStore()
+  const { reset: resetUserStore } = useUserStore()
+  const { getOssBaseUrl } = useSettingsStore()
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false)
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false)
   const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState(false)
   const [isAboutModalOpen, setIsAboutModalOpen] = useState(false)
+
+  const { data: userData } = useQuery({
+    queryKey: ['user'],
+    queryFn: getProfile
+  })
+  const { username, avatarPath } = userData?.data ?? {}
 
   const list: MenuProps['items'] = [
     {
@@ -80,10 +82,6 @@ export default function UserDropdown(): React.JSX.Element {
         break
       case 'logout':
         resetUserStore()
-        resetSettingsStore()
-        resetChatStore()
-        resetAssistantStore()
-        resetFeedbackStore()
         navigate('/', { viewTransition: true })
         break
     }

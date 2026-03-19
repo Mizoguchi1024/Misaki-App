@@ -1,4 +1,6 @@
-import { useChatStore } from '@renderer/store/chatStore'
+import { ChatFrontResponse } from '@renderer/types/chat'
+import { PageResult } from '@renderer/types/result'
+import { InfiniteData, useQueryClient } from '@tanstack/react-query'
 import { Descriptions, Modal } from 'antd'
 import { useTranslation } from 'react-i18next'
 import { useParams } from 'react-router-dom'
@@ -6,8 +8,12 @@ import { useParams } from 'react-router-dom'
 export default function ChatDetailModal({ open, onCancel }): React.JSX.Element {
   const { t } = useTranslation('chatDetailModal')
   const { id: chatId } = useParams()
-  const { chats } = useChatStore()
-  const chat = chats?.find((chat) => chat.id === chatId)
+  const queryClient = useQueryClient()
+
+  const chat = queryClient
+    .getQueryData<InfiniteData<PageResult<ChatFrontResponse[]>>>(['chats'])
+    ?.pages.flatMap((page) => page.data.list)
+    .find((chat) => chat.id === chatId)
 
   return (
     <Modal

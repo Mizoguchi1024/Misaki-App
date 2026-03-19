@@ -1,27 +1,44 @@
-import { useChatStore } from '@renderer/store/chatStore'
 import { Input, InputRef } from 'antd'
 import { useParams } from 'react-router-dom'
 import AssistantScrollList from './AssistantScrollList'
 import { useTranslation } from 'react-i18next'
-import { listChats, updateChatTitle } from '@renderer/api/front/chat'
+import { updateChatTitle } from '@renderer/api/front/chat'
 import { useEffect, useRef, useState } from 'react'
+import { InfiniteData, useMutation, useQueryClient } from '@tanstack/react-query'
+import { PageResult, Result } from '@renderer/types/result'
+import { ChatFrontResponse, UpdateChatTitleFrontRequest } from '@renderer/types/chat'
 
 export default function HeaderMiddlePart({ currentPage }): React.JSX.Element {
   const { t } = useTranslation('headerMiddlePart')
-  const { chats, setChats } = useChatStore()
   const { id: chatId } = useParams()
-  const [chatTitleInput, setChatTitleInput] = useState(
-    chats?.find((chat) => chat.id === chatId)?.title || t('newChat')
-  )
   const chatTitleInputRef = useRef<InputRef>(null)
+  const queryClient = useQueryClient()
+
+  const chat = queryClient
+    .getQueryData<InfiniteData<PageResult<ChatFrontResponse[]>>>(['chats'])
+    ?.pages.flatMap((page) => page.data.list)
+    .find((chat) => chat.id === chatId)
+
+  const [chatTitleInput, setChatTitleInput] = useState(chat?.title || t('newChat'))
+
+  const updateChatTitleMutation = useMutation<
+    Result<void>,
+    Error,
+    { id: string; data: UpdateChatTitleFrontRequest }
+  >({
+    mutationFn: ({ id, data }) => updateChatTitle(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['chats'] })
+    }
+  })
 
   useEffect(() => {
-    const load = async (): Promise<void> => {
-      setChatTitleInput(chats?.find((chat) => chat.id === chatId)?.title || t('newChat'))
+    const load = (): void => {
+      setChatTitleInput(chat?.title || t('newChat'))
     }
 
     load()
-  }, [chatId, chats])
+  }, [chat])
 
   switch (currentPage) {
     case 'chat':
@@ -35,28 +52,23 @@ export default function HeaderMiddlePart({ currentPage }): React.JSX.Element {
             className="font-medium field-sizing-content"
             value={chatTitleInput}
             onChange={(e) => setChatTitleInput(e.target.value)}
-            onClick={() =>
-              setChatTitleInput(chats?.find((chat) => chat.id === chatId)?.title ?? '')
-            }
+            onClick={() => setChatTitleInput(chat?.title ?? '')}
             onPressEnter={() => chatTitleInputRef.current?.blur()}
             onBlur={async () => {
               if (!chatTitleInput) {
-                setChatTitleInput(chats?.find((chat) => chat.id === chatId)?.title || t('newChat'))
+                setChatTitleInput(chat?.title || t('newChat'))
                 return
               }
-              if (chatTitleInput === chats?.find((chat) => chat.id === chatId)?.title) {
+              if (chatTitleInput === chat?.title) {
                 return
               }
-              try {
-                await updateChatTitle(chatId!, {
+              updateChatTitleMutation.mutate({
+                id: chat!.id,
+                data: {
                   title: chatTitleInput,
-                  version: chats?.find((chat) => chat.id === chatId)?.version ?? 0
-                })
-                const chatRes = await listChats()
-                setChats(chatRes.data)
-              } catch {
-                return
-              }
+                  version: chat!.version
+                }
+              })
             }}
           />
         </div>

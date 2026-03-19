@@ -1,9 +1,10 @@
-import { App, Button, Drawer, Layout, Menu, MenuProps } from 'antd'
+import { App, Button, Drawer, Layout, Menu, MenuProps, Spin } from 'antd'
 import { useEffect, useState } from 'react'
 import { Outlet, UIMatch, useLocation, useMatches, useNavigate } from 'react-router-dom'
 import McpLogo from '@renderer/assets/img/mcp-logo.svg?react'
 import {
   FormOutlined,
+  LoadingOutlined,
   MenuOutlined,
   MessageOutlined,
   PushpinOutlined,
@@ -15,100 +16,104 @@ import { useChatStore } from '@renderer/store/chatStore'
 import HeaderRightPart from '../common/HeaderRightPart'
 import MisakiButton from '../common/MisakiButton'
 import HeaderMiddlePart from '../common/HeaderMiddlePart'
-import { listAssistants } from '@renderer/api/front/assistant'
 import { listChats } from '@renderer/api/front/chat'
 import { checkIn, getProfile, getSettings } from '@renderer/api/front/user'
 import { useSettingsStore } from '@renderer/store/settingsStore'
 import { useAssistantStore } from '@renderer/store/assistantStore'
 import clsx from 'clsx'
 import dayjs from 'dayjs'
-import { useFeedbackStore } from '@renderer/store/feedbackStore'
-import { listModels } from '@renderer/api/front/model'
-import { useModelStore } from '@renderer/store/modelStore'
-import { useMcpStore } from '@renderer/store/mcpStore'
-import { listMcpServers } from '@renderer/api/front/mcp'
+import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import InfiniteScroll from 'react-infinite-scroll-component'
+import { PageResult } from '@renderer/types/result'
+import { ChatFrontResponse } from '@renderer/types/chat'
 
 const { Header, Content, Sider } = Layout
+
+const chatsPageSize = 10
 
 export default function MainLayout(): React.JSX.Element {
   const { t } = useTranslation('mainLayout')
   const { message: appMessage } = App.useApp()
+  const queryClient = useQueryClient()
   const [collapsed, setCollapsed] = useState(false)
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
   const location = useLocation()
   const navigate = useNavigate()
-  const { jwt, rememberMe, setProfile, reset: resetUserStore } = useUserStore()
-  const {
-    backgroundPath,
-    backgroundOpacity,
-    backgroundBlur,
-    getOssBaseUrl,
-    setStaticMessage,
-    setSettings,
-    reset: resetSettingsStore
-  } = useSettingsStore()
-  const { chats, chatsUI, setChats, reset: resetChatStore } = useChatStore()
-  const { setAssistants, reset: resetAssistantStore } = useAssistantStore()
-  const { setModels, reset: resetModelStore } = useModelStore()
-  const { reset: resetFeedbackStore } = useFeedbackStore()
-  const { setServers } = useMcpStore()
+  const { jwt, rememberMe, reset: resetUserStore } = useUserStore()
+  const { getOssBaseUrl, setStaticMessage, reset: resetSettingsStore } = useSettingsStore()
+  const { chatsUI, reset: resetChatStore } = useChatStore()
+  const { reset: resetAssistantStore } = useAssistantStore()
 
   const matches = useMatches() as UIMatch<unknown, { page?: string }>[]
   const currentPage = matches.at(-1)?.handle?.page
 
+  const { data: userData, isSuccess: userDataLoadSuccess } = useQuery({
+    queryKey: ['user'],
+    queryFn: getProfile,
+    enabled: !!jwt
+  })
+  const { lastCheckInDate } = userData?.data ?? {}
+
+  const checkInMutation = useMutation({
+    mutationFn: checkIn,
+    onSuccess: (data) => {
+      appMessage.success(
+        t('checkInSuccess', {
+          token: data.data.token,
+          crystal: data.data.crystal
+        })
+      )
+      queryClient.invalidateQueries({ queryKey: ['user'] })
+    }
+  })
+
+  const { data: settingsData } = useQuery({
+    queryKey: ['settings'],
+    queryFn: getSettings,
+    enabled: !!jwt
+  })
+  const { backgroundPath, backgroundBlur, backgroundOpacity } = settingsData?.data ?? {}
+
   useEffect(() => {
     setStaticMessage(appMessage)
-    const load = async (): Promise<void> => {
-      if (jwt) {
-        if (!rememberMe) {
-          resetUserStore()
-          resetSettingsStore()
-          resetChatStore()
-          resetAssistantStore()
-          resetModelStore()
-          resetFeedbackStore()
-          return
-        }
-        try {
-          const [profileRes, settingsRes, chatsRes, assistantsRes, modelsRes, mcpServersRes] =
-            await Promise.all([
-              getProfile(),
-              getSettings(),
-              listChats(),
-              listAssistants(),
-              listModels(),
-              listMcpServers()
-            ])
-          setProfile(profileRes.data)
-          setSettings(settingsRes.data)
-          setChats(chatsRes.data)
-          setAssistants(assistantsRes.data)
-          setModels(modelsRes.data)
-          setServers(mcpServersRes.data)
 
-          const isToday = dayjs(profileRes.data.lastCheckInDate, 'YYYY-MM-DD').isSame(
-            dayjs(),
-            'day'
-          )
-          if (!isToday) {
-            const checkInRes = await checkIn()
-            appMessage.success(
-              t('checkInSuccess', {
-                token: checkInRes.data.token,
-                crystal: checkInRes.data.crystal
-              })
-            )
-            const newProfileRes = await getProfile()
-            setProfile(newProfileRes.data)
-          }
-        } catch {
-          return
-        }
+    if (jwt && !rememberMe) {
+      resetUserStore()
+      resetSettingsStore()
+      resetChatStore()
+      resetAssistantStore()
+    }
+  }, [])
+
+  useEffect(() => {
+    if (userDataLoadSuccess) {
+      const isToday = dayjs(lastCheckInDate, 'YYYY-MM-DD').isSame(dayjs(), 'day')
+      if (!isToday) {
+        checkInMutation.mutate()
       }
     }
+  }, [userDataLoadSuccess])
 
-    load()
-  }, [])
+  const {
+    data: chatsData,
+    fetchNextPage,
+    hasNextPage
+  } = useInfiniteQuery({
+    queryKey: ['chats'],
+    queryFn: ({ pageParam = 1 }): Promise<PageResult<ChatFrontResponse[]>> => {
+      return listChats(pageParam, chatsPageSize)
+    },
+    enabled: !!jwt,
+    initialPageParam: 1,
+    getNextPageParam: (lastPage: any) => {
+      const { pageIndex, total } = lastPage.data
+      if (pageIndex * chatsPageSize >= +total) {
+        return undefined
+      }
+      return pageIndex + 1
+    }
+  })
+  const chats = chatsData?.pages.flatMap((page) => page.data.list) ?? []
 
   useEffect(() => {
     if (!jwt) {
@@ -238,18 +243,30 @@ export default function MainLayout(): React.JSX.Element {
               : 'bg-white dark:bg-neutral-800'
           )}
         >
-          <Menu
-            className="select-none h-full overflow-y-auto scroll-smooth scrollbar-none bg-transparent mask-b-from-94%"
-            theme="light"
-            selectedKeys={[location.pathname]}
-            onClick={(e) => navigate(e.key, { viewTransition: true })}
-            onAuxClick={
-              (e) => console.log(e) // TODO 右键菜单
+          <InfiniteScroll
+            dataLength={siderMenuItems.length}
+            next={fetchNextPage}
+            hasMore={hasNextPage}
+            loader={
+              <div className="text-center">
+                <Spin indicator={<LoadingOutlined spin />} />
+              </div>
             }
-            mode="inline"
-            items={siderMenuItems}
-            disabled={!jwt}
-          />
+            className="scrollbar-none"
+          >
+            <Menu
+              className="select-none h-full overflow-y-auto scroll-smooth scrollbar-none bg-transparent mask-b-from-94%"
+              theme="light"
+              selectedKeys={[location.pathname]}
+              onClick={(e) => navigate(e.key, { viewTransition: true })}
+              onAuxClick={
+                (e) => console.log(e) // TODO 右键菜单
+              }
+              mode="inline"
+              items={siderMenuItems}
+              disabled={!jwt}
+            />
+          </InfiniteScroll>
         </Sider>
         <Content>
           <Outlet />

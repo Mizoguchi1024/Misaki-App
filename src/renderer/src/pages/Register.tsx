@@ -2,29 +2,23 @@ import { InfoCircleOutlined, LockOutlined, MailOutlined, UserOutlined } from '@a
 import { register, sendVerifyCode } from '@renderer/api/common/auth'
 import GlassBox from '@renderer/components/common/GlassBox'
 import { useSettingsStore } from '@renderer/store/settingsStore'
-import { App, Button, Form, FormProps, Input, Space, Tooltip } from 'antd'
-import clsx from 'clsx'
+import { App, Button, Form, Input, Space, Tooltip } from 'antd'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import authBg from '@renderer/assets/img/auth-background.png'
 import passwordBg from '@renderer/assets/img/auth-background-password.png'
-
-type FieldType = {
-  email: string
-  username: string
-  password: string
-  verifyCode: string
-}
+import { RegisterRequest } from '@renderer/types/auth'
+import clsx from 'clsx'
 
 export default function Register(): React.JSX.Element {
+  const { t } = useTranslation('register')
   const { message: appMessage } = App.useApp()
-  const [passwordFocus, setPasswordFocus] = useState(false)
   const navigate = useNavigate()
-  const [form] = Form.useForm<FieldType>()
+  const [form] = Form.useForm<RegisterRequest>()
+  const [passwordFocus, setPasswordFocus] = useState(false)
   const [sendVerifyCodeLoading, setSendVerifyCodeLoading] = useState(false)
   const [finishLoading, setFinishLoading] = useState(false)
-  const { t } = useTranslation('register')
   const { language } = useSettingsStore()
 
   const handleSendVerifyCode = async (): Promise<void> => {
@@ -36,25 +30,6 @@ export default function Register(): React.JSX.Element {
     } finally {
       setTimeout(() => {
         setSendVerifyCodeLoading(false)
-      }, 1000)
-    }
-  }
-
-  const onFinish: FormProps<FieldType>['onFinish'] = async (values) => {
-    try {
-      setFinishLoading(true)
-      await register({
-        email: values.email,
-        username: values.username,
-        password: values.password,
-        verifyCode: values.verifyCode
-      })
-      appMessage.success(t('registerSuccess'))
-      setFinishLoading(false)
-      navigate('/login', { viewTransition: true })
-    } catch {
-      setTimeout(() => {
-        setFinishLoading(false)
       }, 1000)
     }
   }
@@ -78,12 +53,24 @@ export default function Register(): React.JSX.Element {
           name="basic"
           size={'large'}
           variant={'filled'}
-          onFinish={onFinish}
           autoComplete="off"
           className="w-100"
           validateTrigger="onSubmit"
+          onFinish={async (values) => {
+            try {
+              setFinishLoading(true)
+              await register(values)
+              appMessage.success(t('registerSuccess'))
+              setFinishLoading(false)
+              navigate('/login', { viewTransition: true })
+            } catch {
+              setTimeout(() => {
+                setFinishLoading(false)
+              }, 1000)
+            }
+          }}
         >
-          <Form.Item<FieldType>
+          <Form.Item<RegisterRequest>
             name="email"
             rules={[
               { type: 'email', message: t('emailTypeMessage') },
@@ -107,7 +94,7 @@ export default function Register(): React.JSX.Element {
               </Button>
             </Space.Compact>
           </Form.Item>
-          <Form.Item<FieldType>
+          <Form.Item<RegisterRequest>
             name="username"
             rules={[
               { required: true, message: t('usernameRequiredMessage') },
@@ -127,7 +114,7 @@ export default function Register(): React.JSX.Element {
               spellCheck={false}
             />
           </Form.Item>
-          <Form.Item<FieldType>
+          <Form.Item<RegisterRequest>
             name="password"
             rules={[
               { required: true, message: t('passwordRequiredMessage') },
@@ -148,7 +135,7 @@ export default function Register(): React.JSX.Element {
               onBlur={() => setPasswordFocus(false)}
             />
           </Form.Item>
-          <Form.Item<FieldType>
+          <Form.Item<RegisterRequest>
             name="verifyCode"
             rules={[
               { required: true, message: t('verifyCodeRequiredMessage') },

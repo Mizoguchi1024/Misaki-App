@@ -3,42 +3,58 @@ import { Avatar, Badge, theme, Tooltip } from 'antd'
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useAssistantStore } from '@renderer/store/assistantStore'
-import { useModelStore } from '@renderer/store/modelStore'
 import { useSettingsStore } from '@renderer/store/settingsStore'
 import { motion } from 'motion/react'
 import clsx from 'clsx'
+import { useQuery } from '@tanstack/react-query'
+import { getSettings } from '@renderer/api/front/user'
+import { listModels } from '@renderer/api/front/model'
+import { listAssistants } from '@renderer/api/front/assistant'
 
 const { useToken } = theme
 
 export default function AssistantScrollList(): React.JSX.Element {
   const { t } = useTranslation('assistantScrollList')
-  const { mainColor, enabledAssistantId, getOssBaseUrl } = useSettingsStore()
-  const { assistants, assistant, setAssistant } = useAssistantStore()
-  const { models } = useModelStore()
+  const { getOssBaseUrl } = useSettingsStore()
+  const { currentAssistantId, setCurrentAssistantId } = useAssistantStore()
   const containerRef = useRef<HTMLDivElement>(null)
   const trackRef = useRef<HTMLDivElement>(null)
   const [containerWidth, setContainerWidth] = useState(0)
   const [trackWidth, setTrackWidth] = useState(0)
+
+  const { data: settingsData } = useQuery({
+    queryKey: ['settings'],
+    queryFn: getSettings
+  })
+  const { mainColor, enabledAssistantId } = settingsData?.data ?? {}
   const [initialEnabledAssistantId] = useState(enabledAssistantId)
+
+  const { data: modelsData } = useQuery({
+    queryKey: ['models'],
+    queryFn: listModels
+  })
+  const models = modelsData?.data ?? []
+
+  const { data: assistantsData } = useQuery({
+    queryKey: ['assistants'],
+    queryFn: listAssistants
+  })
+  const assistants = assistantsData?.data ?? []
+
   const orderedAssistants = assistants
     ? [
         ...assistants.filter((item) => item.id === initialEnabledAssistantId),
         ...assistants.filter((item) => item.id !== initialEnabledAssistantId)
       ]
     : null
+
   const {
     token: { colorSuccess }
   } = useToken()
 
   useEffect(() => {
-    setAssistant(assistants?.find((item) => item.id === enabledAssistantId) || null)
+    setCurrentAssistantId(enabledAssistantId || '')
   }, [])
-
-  useEffect(() => {
-    if (assistant && !assistants?.some((item) => item.id === assistant.id)) {
-      setAssistant(assistants?.find((item) => item.id === enabledAssistantId) || null)
-    }
-  }, [assistants])
 
   useEffect(() => {
     if (!containerRef.current || !trackRef.current) return
@@ -109,12 +125,10 @@ export default function AssistantScrollList(): React.JSX.Element {
                 icon={<HeartOutlined />}
                 className={clsx(
                   'flex-none cursor-pointer select-none border-0 duration-250 active:scale-90',
-                  assistant && item.id === assistant.id && 'outline-5'
+                  item.id === currentAssistantId && 'outline-5'
                 )}
                 style={{ outlineColor: mainColor }}
-                onClick={() => {
-                  setAssistant(assistants?.find((assistant) => assistant.id === item.id) || null)
-                }}
+                onClick={() => setCurrentAssistantId(item.id)}
               />
             </Badge>
           </Tooltip>
@@ -131,12 +145,10 @@ export default function AssistantScrollList(): React.JSX.Element {
             icon={<PlusOutlined />}
             className={clsx(
               'flex-none cursor-pointer border-0 duration-250 active:scale-90',
-              !assistant && 'outline-5'
+              !currentAssistantId && 'outline-5'
             )}
             style={{ outlineColor: mainColor }}
-            onClick={() => {
-              setAssistant(null)
-            }}
+            onClick={() => setCurrentAssistantId('')}
           />
         </Tooltip>
       </motion.div>

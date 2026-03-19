@@ -9,76 +9,102 @@ import { useTranslation } from 'react-i18next'
 import { createChat } from '@renderer/api/front/chat'
 import { useNavigate } from 'react-router-dom'
 import { CodeMap, useChatStore } from '@renderer/store/chatStore'
-import { useSettingsStore } from '@renderer/store/settingsStore'
 import { getSettings, updateSettings } from '@renderer/api/front/user'
-import { useAssistantStore } from '@renderer/store/assistantStore'
 import { listAssistants, updateAssistant } from '@renderer/api/front/assistant'
-import clsx from 'clsx'
 import { CloseOutlined } from '@ant-design/icons'
 import { useMcpStore } from '@renderer/store/mcpStore'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { Result } from '@renderer/types/result'
+import { UpdateAssistantFrontRequest } from '@renderer/types/assistant'
+import { listMcpServers } from '@renderer/api/front/mcp'
+import clsx from 'clsx'
 
 export default function Home(): React.JSX.Element {
   const { t } = useTranslation('home')
   const { message: appMessage } = App.useApp()
-  const { jwt } = useUserStore()
-  const {
-    mainColor,
-    backgroundPath,
-    enabledAssistantId,
-    version: settingsVersion,
-    setSettings
-  } = useSettingsStore()
-  const {
-    isStreaming,
-    chats,
-    prefix,
-    setChats,
-    setMessages,
-    setFullMessages,
-    sendMessage,
-    stopSendMessage,
-    setPrefix
-  } = useChatStore()
-  const { assistants, setAssistants } = useAssistantStore()
-  const { mcpEnabled, servers, enabledServers, setMcpEnabled } = useMcpStore()
+  const queryClient = useQueryClient()
   const navigate = useNavigate()
-  const [colorPickerValue, setColorPickerValue] = useState(mainColor)
-  const [assistantNameInputValue, setAssistantNameInputValue] = useState(
-    assistants?.find((assistant) => assistant.id === enabledAssistantId)?.name || 'Misaki'
-  )
+  const { jwt } = useUserStore()
+  const { isStreaming, prefix, sendMessage, stopSendMessage, setPrefix } = useChatStore()
+  const { mcpEnabled, enabledServers, setMcpEnabled } = useMcpStore()
   const assistantNameInputRef = useRef<InputRef>(null)
   const [senderValue, setSenderValue] = useState('')
   const [isTermsModalOpen, setIsTermsModalOpen] = useState(false)
   const [isPolicyModalOpen, setIsPolicyModalOpen] = useState(false)
 
+  const { data: settingsData } = useQuery({
+    queryKey: ['settings'],
+    queryFn: getSettings,
+    enabled: !!jwt
+  })
+  const {
+    mainColor = '#3142EF',
+    backgroundPath,
+    enabledAssistantId,
+    version: settingsVersion = 0
+  } = settingsData?.data ?? {}
+  const [colorPickerValue, setColorPickerValue] = useState(mainColor)
   useEffect(() => {
     setColorPickerValue(mainColor)
   }, [mainColor])
 
-  useEffect(() => {
-    const assistant = assistants?.find((assistant) => assistant.id === enabledAssistantId)
-    if (assistant) {
-      setAssistantNameInputValue(assistant.name)
-    } else {
-      setAssistantNameInputValue('Misaki')
+  const updateSettingsMutation = useMutation({
+    mutationFn: updateSettings,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['settings'] })
     }
-  }, [enabledAssistantId])
+  })
 
-  const handleAssistantNameSubmit = async (name: string): Promise<void> => {
-    const enabledAssistant = assistants?.find((assistant) => assistant.id === enabledAssistantId)
-    if (name && enabledAssistant) {
-      if (name == enabledAssistant.name) return
-      await updateAssistant(enabledAssistantId!, {
-        name,
-        version: enabledAssistant.version
-      })
-      const assistantRes = await listAssistants()
-      setAssistants(assistantRes.data)
+  const { data: assistantData } = useQuery({
+    queryKey: ['assistants'],
+    queryFn: listAssistants,
+    enabled: !!jwt
+  })
+  const assistants = assistantData?.data ?? []
+  const enabledAssistant = assistants?.find((assistant) => assistant.id === enabledAssistantId)
+  const [assistantNameInputValue, setAssistantNameInputValue] = useState<string>()
+
+  const updateAssistantMutation = useMutation<
+    Result<void>,
+    Error,
+    { id: string; data: UpdateAssistantFrontRequest }
+  >({
+    mutationFn: ({ id, data }) => updateAssistant(id, data),
+    onSuccess: () => {
       appMessage.success(t('nameUpdated'))
-    } else {
-      setAssistantNameInputValue(enabledAssistant?.name || 'Misaki')
+      queryClient.invalidateQueries({ queryKey: ['assistants'] })
     }
-  }
+  })
+
+  const { data: serversData } = useQuery({
+    queryKey: ['mcpServers'],
+    queryFn: listMcpServers,
+    enabled: !!jwt
+  })
+  const servers = serversData?.data ?? []
+
+  const createChatMutation = useMutation({
+    mutationFn: createChat,
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ['chats'] })
+      sendMessage(data.data.id, {
+        content: senderValue,
+        prefix: prefix || undefined,
+        tools: mcpEnabled
+          ? servers
+              ?.filter((server) => enabledServers.includes(server.name))
+              .flatMap((server) => server.tools.map((tool) => tool.name))
+          : undefined
+      })
+      navigate(`/chat/${data.data.id}`, {
+        viewTransition: true
+      })
+    }
+  })
+
+  useEffect(() => {
+    setAssistantNameInputValue(enabledAssistant?.name || 'Misaki')
+  }, [enabledAssistant])
 
   return (
     <div className="flex flex-col h-full w-full px-12 md:max-w-2xl md:mx-auto md:px-0">
@@ -88,11 +114,12 @@ export default function Home(): React.JSX.Element {
             <ColorPicker
               value={colorPickerValue}
               onChange={(color) => setColorPickerValue(color.toHexString())}
-              onChangeComplete={async (color) => {
-                await updateSettings({ mainColor: color.toHexString(), version: settingsVersion })
-                const settingsRes = await getSettings()
-                setSettings(settingsRes.data)
-              }}
+              onChangeComplete={(color) =>
+                updateSettingsMutation.mutate({
+                  mainColor: color.toHexString(),
+                  version: settingsVersion!
+                })
+              }
               disabledAlpha
               arrow={false}
               disabled={!jwt}
@@ -112,7 +139,7 @@ export default function Home(): React.JSX.Element {
               maxLength={20}
               spellCheck={false}
               className={clsx(
-                assistantNameInputValue.length <= 10
+                (assistantNameInputValue?.length ?? 0 <= 10)
                   ? 'text-7xl md:text-8xl'
                   : 'text-6xl md:text-7xl',
                 'font-semibold text-neutral-900 dark:text-neutral-100 field-sizing-content',
@@ -120,7 +147,23 @@ export default function Home(): React.JSX.Element {
               )}
               onChange={(e) => setAssistantNameInputValue(e.target.value)}
               onPressEnter={() => assistantNameInputRef.current!.blur()}
-              onBlur={() => handleAssistantNameSubmit(assistantNameInputValue)}
+              onBlur={() => {
+                if (
+                  assistantNameInputValue &&
+                  enabledAssistant &&
+                  assistantNameInputValue !== enabledAssistant.name
+                ) {
+                  updateAssistantMutation.mutate({
+                    id: enabledAssistantId!,
+                    data: {
+                      name: assistantNameInputValue,
+                      version: enabledAssistant.version
+                    }
+                  })
+                } else {
+                  setAssistantNameInputValue(enabledAssistant?.name || 'Misaki')
+                }
+              }}
               inert={!jwt}
             />
           </div>
@@ -207,31 +250,12 @@ export default function Home(): React.JSX.Element {
               )
             }}
             onChange={(value) => setSenderValue(value)}
-            onSubmit={async () => {
+            onSubmit={() => {
               if (senderValue.length > 10000) {
                 appMessage.warning(t('messageMaxLength', { max: 10000 }))
                 return
               }
-              try {
-                setFullMessages([])
-                setMessages([])
-                const newChat = (await createChat()).data
-                setChats([newChat, ...(chats ?? [])])
-                sendMessage(newChat.id, {
-                  content: senderValue,
-                  prefix: prefix || undefined,
-                  tools: mcpEnabled
-                    ? servers
-                        ?.filter((server) => enabledServers.includes(server.name))
-                        .flatMap((server) => server.tools.map((tool) => tool.name))
-                    : undefined
-                })
-                navigate(`/chat/${newChat.id}`, {
-                  viewTransition: true
-                })
-              } catch {
-                return
-              }
+              createChatMutation.mutate()
             }}
             onCancel={() => {
               stopSendMessage()

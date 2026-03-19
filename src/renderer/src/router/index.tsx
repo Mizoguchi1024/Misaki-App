@@ -7,7 +7,6 @@ import Register from '../pages/Register'
 import ResetPassword from '../pages/ResetPassword'
 import Mcp from '../pages/Mcp'
 import Search from '../pages/Search'
-import Script from '../pages/Script'
 import Misaki from '../pages/Misaki'
 import NotFound from '../pages/NotFound'
 import Chat from '../pages/Chat'
@@ -20,7 +19,6 @@ export const router = createHashRouter([
       { path: '/misaki', element: <Misaki />, handle: { page: 'misaki' } },
       { path: '/search', element: <Search />, handle: { page: 'search' } },
       { path: '/mcp', element: <Mcp />, handle: { page: 'mcp' } },
-      { path: '/script', element: <Script />, handle: { page: 'script' } },
       { path: '/chat/:id', element: <Chat />, handle: { page: 'chat' } }
     ]
   },

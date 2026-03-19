@@ -1,28 +1,32 @@
 import { RightOutlined } from '@ant-design/icons'
 import { listMcpServers } from '@renderer/api/front/mcp'
+import { getSettings } from '@renderer/api/front/user'
 import EmptyState from '@renderer/components/common/EmptyState'
 import { useMcpStore } from '@renderer/store/mcpStore'
-import { useSettingsStore } from '@renderer/store/settingsStore'
+import { useQuery } from '@tanstack/react-query'
 import { Button, Card, Divider, Space, Switch } from 'antd'
 import clsx from 'clsx'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 
 export default function Mcp(): React.JSX.Element {
-  const { servers, enabledServers, setServers, setEnabledServers } = useMcpStore()
-  const { backgroundPath } = useSettingsStore()
-  const [currentServerName, setCurrentServerName] = useState('')
+  const { enabledServers, setEnabledServers } = useMcpStore()
+  const [extendedServerName, setExtendedServerName] = useState('')
 
-  useEffect(() => {
-    const load = async (): Promise<void> => {
-      const serversRes = await listMcpServers()
-      setServers(serversRes.data)
-    }
-    load()
-  }, [])
+  const { data: serversData } = useQuery({
+    queryKey: ['mcpServers'],
+    queryFn: listMcpServers
+  })
+  const servers = serversData?.data ?? []
+
+  const { data: settingsData } = useQuery({
+    queryKey: ['settings'],
+    queryFn: getSettings
+  })
+  const backgroundPath = settingsData?.data.backgroundPath
 
   return (
     <div className="h-full w-full overflow-y-auto scrollbar-style mask-end px-4">
-      {servers && servers.length > 0 ? (
+      {servers.length > 0 ? (
         <div className="pt-12 pb-40 w-full px-12 md:max-w-2xl md:mx-auto md:px-0">
           {servers.map((item) => (
             <Card
@@ -37,16 +41,16 @@ export default function Mcp(): React.JSX.Element {
                       icon={
                         <RightOutlined
                           className={clsx(
-                            currentServerName === item.name && 'rotate-90',
+                            extendedServerName === item.name && 'rotate-90',
                             'ease-in-out duration-250'
                           )}
                         />
                       }
                       onClick={() => {
-                        if (currentServerName === item.name) {
-                          setCurrentServerName('')
+                        if (extendedServerName === item.name) {
+                          setExtendedServerName('')
                         } else {
-                          setCurrentServerName(item.name)
+                          setExtendedServerName(item.name)
                         }
                       }}
                     />
@@ -74,7 +78,7 @@ export default function Mcp(): React.JSX.Element {
                 body: 'transition-all ease-in-out duration-250'
               }}
             >
-              {currentServerName === item.name ? (
+              {extendedServerName === item.name ? (
                 item.tools.map((tool, index) => (
                   <div key={tool.name}>
                     <Card.Meta title={tool.name} description={tool.description} />

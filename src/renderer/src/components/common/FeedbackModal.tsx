@@ -3,30 +3,43 @@ import {
   CloseCircleOutlined,
   DeleteOutlined,
   InfoCircleOutlined,
+  LoadingOutlined,
   StopOutlined,
   SyncOutlined
 } from '@ant-design/icons'
 import { createFeedback, deleteFeedback, listFeedbacks } from '@renderer/api/front/feedback'
-import { useFeedbackStore } from '@renderer/store/feedbackStore'
-import { App, Button, Card, Divider, Form, FormProps, Input, Modal, Select, Tabs, Tag } from 'antd'
-import { useEffect } from 'react'
+import { App, Button, Card, Divider, Form, Input, Modal, Select, Spin, Tabs, Tag } from 'antd'
 import { useTranslation } from 'react-i18next'
 import EmptyState from './EmptyState'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { AddFeedbackFrontRequest } from '@renderer/types/feedback'
 
 export default function FeedbackModal({ open, onCancel }): React.JSX.Element {
   const { t } = useTranslation('feedbackModal')
   const { message: appMessage } = App.useApp()
-  const { feedbacks, setFeedbacks } = useFeedbackStore()
+  const queryClient = useQueryClient()
 
-  useEffect(() => {
-    const load = async (): Promise<void> => {
-      const feedbacksRes = await listFeedbacks()
-      setFeedbacks(feedbacksRes.data)
+  const { data, isLoading } = useQuery({
+    queryKey: ['feedbacks'],
+    queryFn: listFeedbacks
+  })
+  const feedbacks = data?.data ?? []
+
+  const createFeedbackMutation = useMutation({
+    mutationFn: createFeedback,
+    onSuccess: () => {
+      appMessage.success(t('feedbackCreated'))
+      queryClient.invalidateQueries({ queryKey: ['feedbacks'] })
     }
-    if (open) {
-      load()
+  })
+
+  const deleteFeedbackMutation = useMutation({
+    mutationFn: deleteFeedback,
+    onSuccess: () => {
+      appMessage.success(t('feedbackDeleted'))
+      queryClient.invalidateQueries({ queryKey: ['feedbacks'] })
     }
-  }, [open])
+  })
 
   const feedbackTypeMap = {
     0: t('bug'),
@@ -44,27 +57,6 @@ export default function FeedbackModal({ open, onCancel }): React.JSX.Element {
     4: { text: t('closed'), color: 'default', icon: <StopOutlined /> }
   }
 
-  type FieldType = {
-    title: string
-    type: number
-    content: string
-  }
-
-  const onFinish: FormProps<FieldType>['onFinish'] = async (values) => {
-    try {
-      await createFeedback({
-        title: values.title,
-        type: values.type,
-        content: values.content
-      })
-      appMessage.success(t('feedbackCreated'))
-      const feedbacksRes = await listFeedbacks()
-      setFeedbacks(feedbacksRes.data)
-    } catch (e) {
-      console.error(e)
-    }
-  }
-
   const tabItems = [
     {
       key: '1',
@@ -75,16 +67,16 @@ export default function FeedbackModal({ open, onCancel }): React.JSX.Element {
           autoComplete="off"
           validateTrigger="onSubmit"
           className="h-120 p-2 ml-4 flex flex-col justify-between overflow-y-auto scrollbar-none"
-          onFinish={onFinish}
+          onFinish={(values) => createFeedbackMutation.mutate(values)}
         >
           <div>
-            <Form.Item<FieldType>
+            <Form.Item<AddFeedbackFrontRequest>
               name="title"
               rules={[{ required: true, message: t('titleRequired') }]}
             >
               <Input placeholder={t('title')} showCount maxLength={50} spellCheck={false}></Input>
             </Form.Item>
-            <Form.Item<FieldType>
+            <Form.Item<AddFeedbackFrontRequest>
               name="type"
               rules={[{ required: true, message: t('typeRequired') }]}
             >
@@ -99,7 +91,7 @@ export default function FeedbackModal({ open, onCancel }): React.JSX.Element {
                 ]}
               ></Select>
             </Form.Item>
-            <Form.Item<FieldType>
+            <Form.Item<AddFeedbackFrontRequest>
               name="content"
               rules={[{ required: true, message: t('contentRequired') }]}
             >
@@ -129,80 +121,71 @@ export default function FeedbackModal({ open, onCancel }): React.JSX.Element {
       label: t('history'),
       children: (
         <div className="h-120 pl-6 pr-2 overflow-y-auto scrollbar-style mask-end">
-          {feedbacks && feedbacks.length > 0 ? (
-            <div className="flex flex-col gap-4 pb-12">
-              {feedbacks?.map((item) => (
-                <Card
-                  key={item.id}
-                  title={item.title}
-                  extra={
-                    <div className="flex gap-2">
-                      <Tag>{feedbackTypeMap[item.type]}</Tag>
-                      <Tag
-                        color={feedbackStatusMap[item.status].color}
-                        icon={feedbackStatusMap[item.status].icon}
-                      >
-                        {feedbackStatusMap[item.status].text}
-                      </Tag>
-                    </div>
-                  }
-                  actions={[
-                    <DeleteOutlined
-                      key="delete"
-                      className="text-red-500"
-                      onClick={async () => {
-                        try {
-                          await deleteFeedback(item.id)
-                          appMessage.success(t('feedbackDeleted'))
-                          const feedbacksRes = await listFeedbacks()
-                          setFeedbacks(feedbacksRes.data)
-                        } catch (e) {
-                          console.error(e)
-                        }
-                      }}
-                    />
-                  ]}
-                >
-                  <div className="w-full">{item.content}</div>
-                  {item.reply && (
-                    <>
-                      <Divider />
-                      <div className="w-full">{item.reply}</div>
-                    </>
-                  )}
-                </Card>
-              ))}
-            </div>
-          ) : (
-            <EmptyState className="w-full h-full text-lg" logoClassName="w-24" />
-          )}
+          <Spin spinning={isLoading} indicator={<LoadingOutlined spin />}>
+            {feedbacks && feedbacks.length > 0 ? (
+              <div className="flex flex-col gap-4 pb-12">
+                {feedbacks?.map((item) => (
+                  <Card
+                    key={item.id}
+                    title={item.title}
+                    extra={
+                      <div className="flex gap-2">
+                        <Tag>{feedbackTypeMap[item.type]}</Tag>
+                        <Tag
+                          color={feedbackStatusMap[item.status].color}
+                          icon={feedbackStatusMap[item.status].icon}
+                        >
+                          {feedbackStatusMap[item.status].text}
+                        </Tag>
+                      </div>
+                    }
+                    actions={[
+                      <DeleteOutlined
+                        key="delete"
+                        className="text-red-500"
+                        onClick={async () => deleteFeedbackMutation.mutate(item.id)}
+                      />
+                    ]}
+                  >
+                    <div className="w-full">{item.content}</div>
+                    {item.reply && (
+                      <>
+                        <Divider />
+                        <div className="w-full">{item.reply}</div>
+                      </>
+                    )}
+                  </Card>
+                ))}
+              </div>
+            ) : (
+              <EmptyState className="w-full h-full text-lg" logoClassName="w-24" />
+            )}
+          </Spin>
         </div>
       )
     }
   ]
 
   return (
-    <>
-      <Modal
-        title={t('feedback')}
-        centered
-        footer={null}
-        open={open}
-        onCancel={onCancel}
-        className="select-none"
-        destroyOnHidden
-      >
-        <Tabs
-          animated
-          items={tabItems}
-          tabPlacement="start"
-          classNames={{
-            item: 'pl-0.5',
-            header: 'pt-1',
-            content: 'p-0'
-          }}
-        />
-      </Modal>
-    </>
+    <Modal
+      title={t('feedback')}
+      centered
+      footer={null}
+      open={open}
+      onCancel={onCancel}
+      className="select-none"
+      destroyOnHidden
+    >
+      <Tabs
+        animated
+        items={tabItems}
+        tabPlacement="start"
+        classNames={{
+          item: 'pl-0.5',
+          header: 'pt-1',
+          content: 'p-0'
+        }}
+      />
+    </Modal>
   )
 }

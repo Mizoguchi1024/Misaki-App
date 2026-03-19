@@ -8,9 +8,9 @@ import HelpDropdown from './HelpDropdown'
 import TokenTag from './TokenTag'
 
 export default function HeaderRightPart({ currentPage }): React.JSX.Element {
+  const { t } = useTranslation('headerRightPart')
   const { jwt } = useUserStore()
   const navigate = useNavigate()
-  const { t } = useTranslation('headerRightPart')
 
   if (!jwt) {
     switch (currentPage) {

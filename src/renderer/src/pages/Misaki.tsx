@@ -19,14 +19,16 @@ import {
   listPublicAssistants,
   updateAssistant
 } from '@renderer/api/front/assistant'
+import { listModels } from '@renderer/api/front/model'
 import { getSettings, updateSettings } from '@renderer/api/front/user'
 import EmptyState from '@renderer/components/common/EmptyState'
 import GlassBox from '@renderer/components/common/GlassBox'
 import Live2DCanvas from '@renderer/components/common/Live2DCanvas'
 import { useAssistantStore } from '@renderer/store/assistantStore'
-import { useModelStore } from '@renderer/store/modelStore'
 import { useSettingsStore } from '@renderer/store/settingsStore'
-import { Page } from '@renderer/types/result'
+import { UpdateAssistantFrontRequest } from '@renderer/types/assistant'
+import { Result } from '@renderer/types/result'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import {
   App,
   Avatar,
@@ -61,107 +63,121 @@ type FieldType = {
 export default function Misaki(): React.JSX.Element {
   const { t } = useTranslation('misaki')
   const { message: appMessage } = App.useApp()
-  const {
-    enabledAssistantId,
-    version: settingsVersion,
-    getOssBaseUrl,
-    setSettings
-  } = useSettingsStore()
-  const {
-    assistant,
-    assistants,
-    publicAssistants,
-    setAssistant,
-    setAssistants,
-    setPublicAssistants
-  } = useAssistantStore()
-  const { models } = useModelStore()
+  const queryClient = useQueryClient()
+  const { getOssBaseUrl } = useSettingsStore()
+  const { currentAssistantId, setCurrentAssistantId } = useAssistantStore()
   const [isEditing, setIsEditing] = useState(false)
   const [isShopOpen, setIsShopOpen] = useState(false)
   const [form] = Form.useForm<FieldType>()
-  const [publicAssistantsPage, setPublicAssistantsPage] = useState<Page>({
-    total: 0,
+  const [publicAssistantsPage, setPublicAssistantsPage] = useState({
     pageIndex: 1,
     pageSize: 4
   })
 
-  const genderMap = {
-    0: t('unknown'),
-    1: t('male'),
-    2: t('female')
-  }
+  const { data: assistantsData } = useQuery({
+    queryKey: ['assistants'],
+    queryFn: listAssistants
+  })
+  const assistants = assistantsData?.data ?? []
+  const currentAssistant = assistants.find((item) => item.id === currentAssistantId)
 
-  useEffect(() => {
-    const load = async (): Promise<void> => {
-      const assistantsRes = await listAssistants()
-      setAssistants(assistantsRes.data)
+  const updateAssistantMutation = useMutation<
+    Result<void>,
+    Error,
+    { id: string; data: UpdateAssistantFrontRequest }
+  >({
+    mutationFn: ({ id, data }) => updateAssistant(id, data),
+    onSuccess: () => {
+      appMessage.success(t('assistantSaved'))
+      queryClient.invalidateQueries({ queryKey: ['assistants'] })
     }
-    load()
-  }, [])
+  })
+
+  const createAssistantMutation = useMutation({
+    mutationFn: createAssistant,
+    onSuccess: (data) => {
+      appMessage.success(t('assistantCreated'))
+      queryClient.invalidateQueries({ queryKey: ['assistants'] })
+      setCurrentAssistantId(data.data.id)
+    }
+  })
+
+  const { data: publicAssistantsData } = useQuery({
+    queryKey: ['publicAssistants', publicAssistantsPage.pageIndex, publicAssistantsPage.pageSize],
+    queryFn: () =>
+      listPublicAssistants(publicAssistantsPage.pageIndex, publicAssistantsPage.pageSize)
+  })
+  const { total = 0 } = publicAssistantsData?.data ?? {}
+  const publicAssistants = publicAssistantsData?.data.list ?? []
+
+  const likeAssistantMutation = useMutation({
+    mutationFn: likeAssistant,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [
+          'publicAssistants',
+          publicAssistantsPage.pageIndex,
+          publicAssistantsPage.pageSize
+        ]
+      })
+    }
+  })
+
+  const copyAssistantMutation = useMutation({
+    mutationFn: copyAssistant,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['assistants']
+      })
+      appMessage.success(t('assistantCopied'))
+    }
+  })
+
+  const deleteAssistantMutation = useMutation({
+    mutationFn: deleteAssistant,
+    onSuccess: () => {
+      appMessage.success(t('assistantDeleted'))
+      queryClient.invalidateQueries({
+        queryKey: ['assistants']
+      })
+      setCurrentAssistantId(enabledAssistantId)
+    }
+  })
+
+  const { data: modelsData } = useQuery({
+    queryKey: ['models'],
+    queryFn: listModels
+  })
+  const models = modelsData?.data ?? []
+
+  const { data: settingsData } = useQuery({
+    queryKey: ['settings'],
+    queryFn: getSettings
+  })
+  const { enabledAssistantId = '0', version: settingsVersion = 0 } = settingsData?.data ?? {}
+
+  const updateSettingsMutation = useMutation({
+    mutationFn: updateSettings,
+    onSuccess: () => {
+      appMessage.success(t('assistantEnabled'))
+      queryClient.invalidateQueries({ queryKey: ['settings'] })
+    }
+  })
 
   useEffect(() => {
-    if (!assistant) {
+    if (!currentAssistantId) {
       form.resetFields()
       setIsEditing(true)
     } else {
       setIsEditing(false)
       setIsShopOpen(false)
     }
-  }, [assistant])
+  }, [currentAssistantId])
 
-  useEffect(() => {
-    // 加载公开助手分页数据
-    const load = async (): Promise<void> => {
-      const publicAssistantsRes = await listPublicAssistants(
-        publicAssistantsPage.pageIndex,
-        publicAssistantsPage.pageSize
-      )
-      setPublicAssistants(publicAssistantsRes.data.list)
-      setPublicAssistantsPage({
-        ...publicAssistantsPage,
-        total: +publicAssistantsRes.data.total
-      })
-    }
-    if (isShopOpen) {
-      load()
-    }
-  }, [isShopOpen, publicAssistantsPage.pageIndex, publicAssistantsPage.pageSize])
-
-  const onFinish = async (values: FieldType): Promise<void> => {
-    try {
-      if (assistant) {
-        await updateAssistant(assistant.id, {
-          name: values.name,
-          gender: values.gender,
-          birthday: values.birthday.format('YYYY-MM-DD'),
-          personality: values.personality,
-          detail: values.detail,
-          modelId: values.modelId,
-          publicFlag: values.publicFlag,
-          version: assistant.version
-        })
-        appMessage.success(t('assistantSaved'))
-        const assistantsRes = await listAssistants()
-        setAssistants(assistantsRes.data)
-        setAssistant(assistantsRes.data.find((item) => item.id === assistant.id) || null)
-      } else {
-        const createAssistantRes = await createAssistant({
-          name: values.name,
-          gender: values.gender,
-          birthday: values.birthday.format('YYYY-MM-DD'),
-          personality: values.personality,
-          detail: values.detail,
-          modelId: values.modelId,
-          publicFlag: values.publicFlag
-        })
-        appMessage.success(t('assistantCreated'))
-        const assistantsRes = await listAssistants()
-        setAssistants(assistantsRes.data)
-        setAssistant(createAssistantRes.data)
-      }
-    } finally {
-      setIsEditing(false)
-    }
+  const genderMap = {
+    0: t('unknown'),
+    1: t('male'),
+    2: t('female')
   }
 
   return (
@@ -212,7 +228,7 @@ export default function Misaki(): React.JSX.Element {
                       </Tooltip>
                     </div>
                   </div>
-                  {!publicAssistants || publicAssistants.length === 0 ? (
+                  {publicAssistants.length === 0 ? (
                     <EmptyState className="text-2xl" logoClassName="w-32" />
                   ) : (
                     <div className="grid grid-cols-2 gap-4 w-full">
@@ -232,22 +248,7 @@ export default function Misaki(): React.JSX.Element {
                                   icon={<HeartOutlined />}
                                   color={item.likedFlag ? 'primary' : 'default'}
                                   variant="filled"
-                                  onClick={async () => {
-                                    try {
-                                      await likeAssistant(item.id)
-                                      const publicAssistantsRes = await listPublicAssistants(
-                                        publicAssistantsPage.pageIndex,
-                                        publicAssistantsPage.pageSize
-                                      )
-                                      setPublicAssistants(publicAssistantsRes.data.list)
-                                      setPublicAssistantsPage({
-                                        ...publicAssistantsPage,
-                                        total: +publicAssistantsRes.data.total
-                                      })
-                                    } catch {
-                                      return
-                                    }
-                                  }}
+                                  onClick={() => likeAssistantMutation.mutate(item.id)}
                                 >
                                   {item.likes}
                                 </Button>
@@ -262,16 +263,7 @@ export default function Misaki(): React.JSX.Element {
                                   color="default"
                                   variant="filled"
                                   shape="circle"
-                                  onClick={async () => {
-                                    try {
-                                      await copyAssistant(item.id)
-                                      appMessage.success(t('assistantCopied'))
-                                      const assistantsRes = await listAssistants()
-                                      setAssistants(assistantsRes.data)
-                                    } catch {
-                                      return
-                                    }
-                                  }}
+                                  onClick={() => copyAssistantMutation.mutate(item.id)}
                                 />
                               </Tooltip>
                             </div>
@@ -300,7 +292,7 @@ export default function Misaki(): React.JSX.Element {
                     </div>
                   )}
                   <Pagination
-                    total={publicAssistantsPage.total}
+                    total={+total}
                     current={publicAssistantsPage.pageIndex}
                     pageSize={publicAssistantsPage.pageSize}
                     onChange={(page, pageSize) => {
@@ -331,7 +323,33 @@ export default function Misaki(): React.JSX.Element {
                     wrapperCol={{ span: 20 }}
                     labelAlign="left"
                     requiredMark={false}
-                    onFinish={onFinish}
+                    initialValues={{
+                      ...currentAssistant,
+                      birthday: currentAssistant?.birthday
+                        ? dayjs(currentAssistant.birthday)
+                        : undefined
+                    }}
+                    onFinish={(values) => {
+                      try {
+                        if (currentAssistantId) {
+                          updateAssistantMutation.mutate({
+                            id: currentAssistantId,
+                            data: {
+                              ...values,
+                              birthday: values.birthday.format('YYYY-MM-DD'),
+                              version: currentAssistant?.version ?? 0
+                            }
+                          })
+                        } else {
+                          createAssistantMutation.mutate({
+                            ...values,
+                            birthday: values.birthday.format('YYYY-MM-DD')
+                          })
+                        }
+                      } finally {
+                        setIsEditing(false)
+                      }
+                    }}
                     validateMessages={{ required: t('requiredTemplate') }}
                     variant="filled"
                     className="w-full h-full flex flex-col justify-between select-none"
@@ -340,7 +358,6 @@ export default function Misaki(): React.JSX.Element {
                       <Form.Item
                         name="name"
                         rules={[{ required: true, message: t('nameRequired') }]}
-                        initialValue={assistant?.name}
                         wrapperCol={{ span: 24 }}
                         className="m-0"
                       >
@@ -352,7 +369,7 @@ export default function Misaki(): React.JSX.Element {
                         />
                       </Form.Item>
                       <div className="flex gap-4">
-                        {assistant ? (
+                        {currentAssistantId ? (
                           <Tooltip
                             title={t('delete')}
                             arrow={false}
@@ -365,25 +382,13 @@ export default function Misaki(): React.JSX.Element {
                               variant="filled"
                               shape="circle"
                               icon={<DeleteOutlined />}
-                              onClick={async () => {
-                                try {
-                                  if (assistant.id === enabledAssistantId) {
-                                    appMessage.warning(t('canNotDeleteEnabledAssistant'))
-                                    return
-                                  }
-                                  await deleteAssistant(assistant.id)
-                                  appMessage.success(t('assistantDeleted'))
-                                  const assistantsRes = await listAssistants()
-                                  setAssistants(assistantsRes.data)
-                                  setAssistant(
-                                    assistantsRes.data.find(
-                                      (item) => item.id === enabledAssistantId
-                                    ) || null
-                                  )
-                                  setIsEditing(false)
-                                } catch {
+                              onClick={() => {
+                                if (currentAssistantId === enabledAssistantId) {
+                                  appMessage.warning(t('canNotDeleteEnabledAssistant'))
                                   return
                                 }
+                                deleteAssistantMutation.mutate(currentAssistantId)
+                                setIsEditing(false)
                               }}
                             />
                           </Tooltip>
@@ -417,17 +422,15 @@ export default function Misaki(): React.JSX.Element {
                             shape="circle"
                             icon={<CloseOutlined />}
                             onClick={() => {
-                              if (!assistant) {
-                                setAssistant(
-                                  assistants?.find((item) => item.id === enabledAssistantId) || null
-                                )
+                              if (!currentAssistantId) {
+                                setCurrentAssistantId(enabledAssistantId)
                               }
                               setIsEditing(!isEditing)
                             }}
                           />
                         </Tooltip>
                         <Tooltip
-                          title={assistant ? t('save') : t('create')}
+                          title={currentAssistantId ? t('save') : t('create')}
                           arrow={false}
                           classNames={{
                             container: 'select-none'
@@ -446,7 +449,6 @@ export default function Misaki(): React.JSX.Element {
                     <Form.Item<FieldType>
                       name="gender"
                       label={t('gender')}
-                      initialValue={assistant?.gender || 0}
                       rules={[{ required: true }]}
                     >
                       <Radio.Group>
@@ -461,11 +463,7 @@ export default function Misaki(): React.JSX.Element {
                         </Radio.Button>
                       </Radio.Group>
                     </Form.Item>
-                    <Form.Item<FieldType>
-                      name="birthday"
-                      label={t('birthday')}
-                      initialValue={dayjs(assistant?.birthday)}
-                    >
+                    <Form.Item<FieldType> name="birthday" label={t('birthday')}>
                       <DatePicker
                         placeholder={t('birthday')}
                         format="YYYY-MM-DD"
@@ -475,7 +473,6 @@ export default function Misaki(): React.JSX.Element {
                     <Form.Item<FieldType>
                       name="modelId"
                       label={t('model')}
-                      initialValue={assistant?.modelId || models?.[0].id}
                       rules={[{ required: true }]}
                     >
                       <Select
@@ -487,7 +484,6 @@ export default function Misaki(): React.JSX.Element {
                     <Form.Item<FieldType>
                       name="publicFlag"
                       label={t('publicFlag')}
-                      initialValue={assistant?.publicFlag || false}
                       rules={[{ required: true }]}
                     >
                       <Switch
@@ -495,11 +491,7 @@ export default function Misaki(): React.JSX.Element {
                         unCheckedChildren={<LockOutlined />}
                       />
                     </Form.Item>
-                    <Form.Item<FieldType>
-                      name="personality"
-                      label={t('personality')}
-                      initialValue={assistant?.personality}
-                    >
+                    <Form.Item<FieldType> name="personality" label={t('personality')}>
                       <Input
                         placeholder={t('personality')}
                         maxLength={20}
@@ -507,11 +499,7 @@ export default function Misaki(): React.JSX.Element {
                         spellCheck={false}
                       />
                     </Form.Item>
-                    <Form.Item<FieldType>
-                      name="detail"
-                      label={t('detail')}
-                      initialValue={assistant?.detail}
-                    >
+                    <Form.Item<FieldType> name="detail" label={t('detail')}>
                       <Input.TextArea
                         placeholder={t('detail')}
                         showCount
@@ -537,15 +525,15 @@ export default function Misaki(): React.JSX.Element {
               <div className="flex justify-between w-full mb-4">
                 <Tooltip
                   title={
-                    assistant?.name !== 'Misaki' &&
-                    t('sameName', { count: assistant?.duplicateName ?? 0 })
+                    currentAssistant?.name !== 'Misaki' &&
+                    t('sameName', { count: currentAssistant?.duplicateName ?? 0 })
                   }
                   arrow={false}
                   classNames={{
                     container: 'select-none'
                   }}
                 >
-                  <span className="text-2xl font-semibold">{assistant?.name}</span>
+                  <span className="text-2xl font-semibold">{currentAssistant?.name}</span>
                 </Tooltip>
                 <div className="flex gap-4">
                   <Tooltip
@@ -567,30 +555,23 @@ export default function Misaki(): React.JSX.Element {
                     />
                   </Tooltip>
                   <Tooltip
-                    title={t(assistant?.id === enabledAssistantId ? 'enabled' : 'enable')}
+                    title={t(currentAssistantId === enabledAssistantId ? 'enabled' : 'enable')}
                     arrow={false}
                     classNames={{
                       container: 'select-none'
                     }}
                   >
                     <Button
-                      color={assistant?.id === enabledAssistantId ? 'green' : 'default'}
+                      color={currentAssistantId === enabledAssistantId ? 'green' : 'default'}
                       variant="filled"
                       shape="circle"
                       icon={<CheckOutlined />}
-                      onClick={async () => {
-                        if (assistant?.id !== enabledAssistantId) {
-                          try {
-                            await updateSettings({
-                              enabledAssistantId: assistant?.id,
-                              version: settingsVersion
-                            })
-                            appMessage.success(t('assistantEnabled'))
-                            const settingsRes = await getSettings()
-                            setSettings(settingsRes.data)
-                          } catch {
-                            return
-                          }
+                      onClick={() => {
+                        if (currentAssistantId !== enabledAssistantId) {
+                          updateSettingsMutation.mutate({
+                            enabledAssistantId: currentAssistantId,
+                            version: settingsVersion
+                          })
                         }
                       }}
                     />
@@ -608,13 +589,15 @@ export default function Misaki(): React.JSX.Element {
                     key: '1',
                     label: t('gender'),
                     span: { sm: 2, md: 1 },
-                    children: <span className="truncate">{genderMap[assistant?.gender || 0]}</span>
+                    children: (
+                      <span className="truncate">{genderMap[currentAssistant?.gender || 0]}</span>
+                    )
                   },
                   {
                     key: '2',
                     label: t('birthday'),
                     span: { sm: 2, md: 1 },
-                    children: <span className="truncate">{assistant?.birthday}</span>
+                    children: <span className="truncate">{currentAssistant?.birthday}</span>
                   },
                   {
                     key: '3',
@@ -622,7 +605,7 @@ export default function Misaki(): React.JSX.Element {
                     span: { sm: 2, md: 1 },
                     children: (
                       <span className="truncate">
-                        {assistant?.publicFlag ? t('public') : t('private')}
+                        {currentAssistant?.publicFlag ? t('public') : t('private')}
                       </span>
                     )
                   },
@@ -632,7 +615,7 @@ export default function Misaki(): React.JSX.Element {
                     span: { sm: 2, md: 1 },
                     children: (
                       <span className="truncate">
-                        {dayjs(assistant?.createTime).format('YYYY-MM-DD')}
+                        {dayjs(currentAssistant?.createTime).format('YYYY-MM-DD')}
                       </span>
                     )
                   },
@@ -640,13 +623,13 @@ export default function Misaki(): React.JSX.Element {
                     key: '5',
                     span: 2,
                     label: t('personality'),
-                    children: <span>{assistant?.personality || t('none')}</span>
+                    children: <span>{currentAssistant?.personality || t('none')}</span>
                   },
                   {
                     key: '6',
                     span: 'filled',
                     label: t('detail'),
-                    children: <span>{assistant?.detail || t('none')}</span>
+                    children: <span>{currentAssistant?.detail || t('none')}</span>
                   }
                 ]}
               />

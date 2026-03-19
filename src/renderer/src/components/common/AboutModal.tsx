@@ -1,14 +1,16 @@
+import React from 'react'
+import { useEffect, useState } from 'react'
+import { App, Button, Modal } from 'antd'
 import { HeartFilled, HeartOutlined } from '@ant-design/icons'
 import { getMisakiLikes, likeMisaki } from '@renderer/api/front/about'
 import { useUserStore } from '@renderer/store/userStore'
-import { App, Button, Modal } from 'antd'
-import React from 'react'
-import { useEffect, useState } from 'react'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 
 export default function AboutModal({ open, onCancel }): React.JSX.Element {
   const { t } = useTranslation('aboutModal')
   const { message: appMessage } = App.useApp()
+  const queryClient = useQueryClient()
   const { jwt } = useUserStore()
   const [versions, setVersions] = useState({
     misaki: '',
@@ -16,20 +18,29 @@ export default function AboutModal({ open, onCancel }): React.JSX.Element {
     chromium: '',
     electron: ''
   })
-  const [likes, setLikes] = useState(0)
-  const [likedFlag, setLikedFlag] = useState(false)
 
   useEffect(() => {
     window.api.getVersions().then(setVersions)
-    const load = async (): Promise<void> => {
-      const aboutRes = await getMisakiLikes()
-      setLikes(aboutRes.data.likes)
-      setLikedFlag(aboutRes.data.likedFlag)
-    }
-    if (jwt) {
-      load()
-    }
   }, [])
+
+  const { data: aboutData, isLoading } = useQuery({
+    queryKey: ['about'],
+    queryFn: getMisakiLikes,
+    enabled: !!jwt
+  })
+  const { likes, likedFlag } = aboutData?.data ?? {}
+
+  const likeMisakiMutation = useMutation({
+    mutationFn: likeMisaki,
+    onSuccess: () => {
+      if (likedFlag) {
+        appMessage.info(t('sad'))
+      } else {
+        appMessage.success(t('thanks'))
+      }
+      queryClient.invalidateQueries({ queryKey: ['about'] })
+    }
+  })
 
   return (
     <Modal
@@ -71,17 +82,8 @@ export default function AboutModal({ open, onCancel }): React.JSX.Element {
               type={likedFlag ? 'primary' : 'default'}
               icon={likedFlag ? <HeartFilled /> : <HeartOutlined />}
               size="large"
-              onClick={async () => {
-                await likeMisaki()
-                const aboutRes = await getMisakiLikes()
-                setLikes(aboutRes.data.likes)
-                setLikedFlag(aboutRes.data.likedFlag)
-                if (aboutRes.data.likedFlag) {
-                  appMessage.success(t('thanks'))
-                } else {
-                  appMessage.info(t('sad'))
-                }
-              }}
+              loading={isLoading}
+              onClick={() => likeMisakiMutation.mutate()}
             >
               {likes}
             </Button>

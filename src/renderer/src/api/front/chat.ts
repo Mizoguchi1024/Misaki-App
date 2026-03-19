@@ -6,7 +6,7 @@ import {
   UpdateChatTitleFrontRequest
 } from '@renderer/types/chat'
 import api from '../index'
-import { Result } from '@renderer/types/result'
+import { PageResult, Result } from '@renderer/types/result'
 
 export const createChat = (): Promise<Result<ChatFrontResponse>> =>
   api.post<Result<ChatFrontResponse>>('/front/chats').then((res) => res.data)
@@ -29,9 +29,9 @@ export const updateChatTitle = (
 export const listChats = (
   pageIndex: number,
   pageSize: number
-): Promise<Result<ChatFrontResponse[]>> =>
+): Promise<PageResult<ChatFrontResponse[]>> =>
   api
-    .get<Result<ChatFrontResponse[]>>('/front/chats', { params: { pageIndex, pageSize } })
+    .get<PageResult<ChatFrontResponse[]>>('/front/chats', { params: { pageIndex, pageSize } })
     .then((res) => res.data)
 
 export const searchChats = (keyword: string): Promise<Result<ChatFrontResponse[]>> =>

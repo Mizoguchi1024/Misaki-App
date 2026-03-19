@@ -1,20 +1,29 @@
+import { getSettings } from '@renderer/api/front/user'
 import GlassBox from '@renderer/components/common/GlassBox'
-import { Button, theme, Typography } from 'antd'
+import { useUserStore } from '@renderer/store/userStore'
+import { useQuery } from '@tanstack/react-query'
+import { Button, Typography } from 'antd'
 import { useTranslation } from 'react-i18next'
 import { useLocation, useNavigate } from 'react-router-dom'
 
 export default function NotFound(): React.JSX.Element {
-  const navigate = useNavigate()
   const { t } = useTranslation('notFound')
+  const navigate = useNavigate()
   const location = useLocation()
-  const {
-    token: { colorPrimary }
-  } = theme.useToken()
+  const { jwt } = useUserStore()
+
+  const { data: settingsData } = useQuery({
+    queryKey: ['settings'],
+    queryFn: getSettings,
+    enabled: !!jwt
+  })
+  const { mainColor = '#3142EF' } = settingsData?.data ?? {}
+
   return (
     <div className="h-full flex items-center justify-center">
       <GlassBox className="flex flex-col items-center justify-center px-12 py-10 gap-8 min-w-lg">
         <div>
-          <Typography.Title className="select-none text-center" style={{ color: colorPrimary }}>
+          <Typography.Title className="select-none text-center" style={{ color: mainColor }}>
             404
           </Typography.Title>
           <Typography.Title className="select-none text-center">{t('notFound')}</Typography.Title>

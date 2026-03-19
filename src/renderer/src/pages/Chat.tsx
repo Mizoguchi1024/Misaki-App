@@ -11,12 +11,9 @@ import XMarkdown, { ComponentProps } from '@ant-design/x-markdown'
 import Latex from '@ant-design/x-markdown/plugins/latex'
 import { createChatTitle, listChats, listMessages, listPrompts } from '@renderer/api/front/chat'
 import { getProfile } from '@renderer/api/front/user'
-import { useAssistantStore } from '@renderer/store/assistantStore'
 import { CodeMap, useChatStore } from '@renderer/store/chatStore'
 import { useMcpStore } from '@renderer/store/mcpStore'
-import { useModelStore } from '@renderer/store/modelStore'
 import { useSettingsStore } from '@renderer/store/settingsStore'
-import { useUserStore } from '@renderer/store/userStore'
 import { App, Avatar, Button, Dropdown, Pagination, Skeleton, Space, Typography } from 'antd'
 import clsx from 'clsx'
 import { AnimatePresence, motion, useAnimation } from 'motion/react'
@@ -44,20 +41,11 @@ export default function Chat(): React.JSX.Element {
   const navigate = useNavigate()
   const { message: appMessage } = App.useApp()
   const { id: chatId } = useParams()
-  const { username, avatarPath, setProfile } = useUserStore()
-  const { promptsSuggestion, enabledAssistantId, getOssBaseUrl } = useSettingsStore()
-  const { assistants } = useAssistantStore()
-  const { models } = useModelStore()
+  const { getOssBaseUrl } = useSettingsStore()
   const {
-    chats,
     chatsUI,
-    fullMessages,
     parentId,
     prefix,
-    setChats,
-    setMessages,
-    setMessagesFromFull,
-    setFullMessages,
     setParentId,
     setChatPrompts,
     sendMessage,

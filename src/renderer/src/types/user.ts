@@ -39,6 +39,7 @@ export type UpdateSettingsFrontRequest = {
 }
 
 export type SettingsFrontResponse = {
+  mainColor: string
   promptsSuggestion: boolean
   ttsAutoplay: boolean
   colorPrimary: string

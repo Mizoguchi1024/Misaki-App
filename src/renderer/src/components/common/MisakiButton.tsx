@@ -3,10 +3,11 @@ import { App, Button } from 'antd'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import MisakiLogo from '@renderer/assets/img/misaki-logo-symbol.svg?react'
-import { useSettingsStore } from '@renderer/store/settingsStore'
-import { useAssistantStore } from '@renderer/store/assistantStore'
 import React from 'react'
 import clsx from 'clsx'
+import { useQuery } from '@tanstack/react-query'
+import { listAssistants } from '@renderer/api/front/assistant'
+import { getSettings } from '@renderer/api/front/user'
 
 type MisakiButtonProps = {
   className?: string
@@ -21,8 +22,21 @@ export default function MisakiButton({
   const { t } = useTranslation('misakiButton')
   const { message: appMessage } = App.useApp()
   const { jwt } = useUserStore()
-  const { mainColor, enabledAssistantId } = useSettingsStore()
-  const { assistants } = useAssistantStore()
+
+  const { data: settingsData } = useQuery({
+    queryKey: ['settings'],
+    queryFn: getSettings,
+    enabled: !!jwt
+  })
+  const { mainColor = '#3142EF', enabledAssistantId } = settingsData?.data ?? {}
+
+  const { data: assistantData } = useQuery({
+    queryKey: ['assistant'],
+    queryFn: listAssistants,
+    enabled: !!jwt
+  })
+  const assistants = assistantData?.data ?? []
+
   const assistantName =
     assistants?.find((assistant) => assistant.id === enabledAssistantId)?.name || 'Misaki'
 

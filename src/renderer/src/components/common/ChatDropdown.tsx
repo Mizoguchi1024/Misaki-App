@@ -4,21 +4,32 @@ import {
   InfoCircleOutlined,
   PushpinOutlined
 } from '@ant-design/icons'
-import { deleteChat, listChats } from '@renderer/api/front/chat'
+import { deleteChat } from '@renderer/api/front/chat'
 import { Dropdown, Button, MenuProps, App } from 'antd'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate, useParams } from 'react-router-dom'
 import ChatDetailModal from './ChatDetailModal'
 import { useChatStore } from '@renderer/store/chatStore'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 export default function ChatDropdown(): React.JSX.Element {
   const { t } = useTranslation('chatDropdown')
   const { message: appMessage } = App.useApp()
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
   const { id: chatId } = useParams()
+  const { chatsUI, setChatPinned } = useChatStore()
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false)
-  const { chats, chatsUI, setChats, setChatPinned } = useChatStore()
+
+  const deleteChatMutation = useMutation({
+    mutationFn: deleteChat,
+    onSuccess: () => {
+      appMessage.success(t('chatDeleted'))
+      queryClient.invalidateQueries({ queryKey: ['chats'] })
+      navigate('/', { viewTransition: true })
+    }
+  })
 
   const list: MenuProps['items'] = [
     {
@@ -45,23 +56,13 @@ export default function ChatDropdown(): React.JSX.Element {
   const onClick: MenuProps['onClick'] = async ({ key }) => {
     switch (key) {
       case 'pin':
-        if (!chatId || !chats) break
-        setChatPinned(chatId, !chatsUI[chatId]?.pinned)
+        setChatPinned(chatId!, !chatsUI[chatId!]?.pinned)
         break
       case 'detail':
         setIsDetailModalOpen(true)
         break
       case 'delete':
-        try {
-          await deleteChat(chatId!)
-          appMessage.success(t('chatDeleted'))
-          const chatsRes = await listChats()
-          setChats(chatsRes.data)
-          navigate('/', { viewTransition: true })
-        } catch {
-          return
-        }
-
+        deleteChatMutation.mutate(chatId!)
         break
     }
   }

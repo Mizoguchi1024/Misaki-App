@@ -1,8 +1,4 @@
-import {
-  ChatFrontResponse,
-  MessageFrontResponse,
-  SendMessageFrontRequest
-} from '@renderer/types/chat'
+import { MessageFrontResponse, SendMessageFrontRequest } from '@renderer/types/chat'
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { useSettingsStore } from './settingsStore'
@@ -10,21 +6,14 @@ import { useUserStore } from './userStore'
 
 interface ChatState {
   isStreaming: boolean
-  chats: ChatFrontResponse[] | null
   chatsUI: Record<string, { pinned: boolean; prompts: string[] }>
-  messages: MessageFrontResponse[] | null
-  fullMessages: MessageFrontResponse[] | null
   parentId: string | null
   prefix: string
 
-  setChats: (chats: ChatFrontResponse[]) => void
-  setMessages: (messages: MessageFrontResponse[]) => void
-  setMessagesFromFull: (messages: MessageFrontResponse[]) => void
-  setFullMessages: (fullMessages: MessageFrontResponse[]) => void
   setParentId: (parentId: string | null) => void
+  setPrefix: (prefix: string) => void
   setChatPinned: (chatId: string, pinned: boolean) => void
   setChatPrompts: (chatId: string, prompts: string[]) => void
-  setPrefix: (prefix: string) => void
   reset: () => void
   stopSendMessage: () => void
 
@@ -57,8 +46,6 @@ export const useChatStore = create<ChatState>()(
     (set) => ({
       ...initialState,
 
-      setChats: (chats) => set({ chats }),
-      setMessages: (messages) => set({ messages }),
       setMessagesFromFull: (messageFrontResponse: MessageFrontResponse[]) =>
         set((state) => {
           if (!messageFrontResponse.length) {
@@ -93,7 +80,6 @@ export const useChatStore = create<ChatState>()(
             parentId: path.length ? path[path.length - 1].id : ''
           }
         }),
-      setFullMessages: (fullMessages) => set({ fullMessages }),
       setParentId: (parentId) => set({ parentId }),
       setChatPinned: (id, pinned) =>
         set((state) => ({
