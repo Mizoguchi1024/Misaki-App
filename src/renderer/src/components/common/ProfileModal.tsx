@@ -70,7 +70,7 @@ export default function ProfileModal({ open, onCancel }): React.JSX.Element {
           labelAlign="left"
           requiredMark={false}
           onFinish={onFinish}
-          validateMessages={{ required: t('requiredTemplate') }}
+          validateMessages={{ required: t('requiredTemplate', { label: '${label}' }) }}
           className="w-full"
           initialValues={{
             ...user,

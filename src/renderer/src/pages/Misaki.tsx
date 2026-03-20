@@ -53,9 +53,9 @@ import { useTranslation } from 'react-i18next'
 type FieldType = {
   name: string
   gender: number
-  birthday: dayjs.Dayjs
-  personality: string
-  detail: string
+  birthday?: dayjs.Dayjs
+  personality?: string
+  detail?: string
   modelId: string
   publicFlag: boolean
 }
@@ -66,7 +66,8 @@ export default function Misaki(): React.JSX.Element {
   const queryClient = useQueryClient()
   const { getOssBaseUrl } = useSettingsStore()
   const { currentAssistantId, setCurrentAssistantId } = useAssistantStore()
-  const [isEditing, setIsEditing] = useState(false)
+  const [isEditingManually, setIsEditingManually] = useState(false)
+  const isEditing = !currentAssistantId || isEditingManually
   const [isShopOpen, setIsShopOpen] = useState(false)
   const [form] = Form.useForm<FieldType>()
   const [publicAssistantsPage, setPublicAssistantsPage] = useState({
@@ -90,6 +91,8 @@ export default function Misaki(): React.JSX.Element {
     onSuccess: () => {
       appMessage.success(t('assistantSaved'))
       queryClient.invalidateQueries({ queryKey: ['assistants'] })
+      setCurrentAssistantId(enabledAssistantId)
+      setIsEditingManually(false)
     }
   })
 
@@ -99,6 +102,29 @@ export default function Misaki(): React.JSX.Element {
       appMessage.success(t('assistantCreated'))
       queryClient.invalidateQueries({ queryKey: ['assistants'] })
       setCurrentAssistantId(data.data.id)
+      setIsEditingManually(false)
+    }
+  })
+
+  const copyAssistantMutation = useMutation({
+    mutationFn: copyAssistant,
+    onSuccess: () => {
+      appMessage.success(t('assistantCopied'))
+      queryClient.invalidateQueries({
+        queryKey: ['assistants']
+      })
+    }
+  })
+
+  const deleteAssistantMutation = useMutation({
+    mutationFn: deleteAssistant,
+    onSuccess: () => {
+      appMessage.success(t('assistantDeleted'))
+      queryClient.invalidateQueries({
+        queryKey: ['assistants']
+      })
+      setCurrentAssistantId(enabledAssistantId)
+      setIsEditingManually(false)
     }
   })
 
@@ -123,27 +149,6 @@ export default function Misaki(): React.JSX.Element {
     }
   })
 
-  const copyAssistantMutation = useMutation({
-    mutationFn: copyAssistant,
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ['assistants']
-      })
-      appMessage.success(t('assistantCopied'))
-    }
-  })
-
-  const deleteAssistantMutation = useMutation({
-    mutationFn: deleteAssistant,
-    onSuccess: () => {
-      appMessage.success(t('assistantDeleted'))
-      queryClient.invalidateQueries({
-        queryKey: ['assistants']
-      })
-      setCurrentAssistantId(enabledAssistantId)
-    }
-  })
-
   const { data: modelsData } = useQuery({
     queryKey: ['models'],
     queryFn: listModels
@@ -161,18 +166,18 @@ export default function Misaki(): React.JSX.Element {
     onSuccess: () => {
       appMessage.success(t('assistantEnabled'))
       queryClient.invalidateQueries({ queryKey: ['settings'] })
+      setIsEditingManually(false)
     }
   })
 
   useEffect(() => {
-    if (!currentAssistantId) {
-      form.resetFields()
-      setIsEditing(true)
-    } else {
-      setIsEditing(false)
+    if (isEditing) {
       setIsShopOpen(false)
+      form.resetFields()
+    } else if (!currentAssistantId) {
+      setCurrentAssistantId(enabledAssistantId)
     }
-  }, [currentAssistantId])
+  }, [isEditing, currentAssistantId])
 
   const genderMap = {
     0: t('unknown'),
@@ -223,7 +228,7 @@ export default function Misaki(): React.JSX.Element {
                           variant="filled"
                           shape="circle"
                           icon={<ArrowLeftOutlined />}
-                          onClick={() => setIsShopOpen(!isShopOpen)}
+                          onClick={() => setIsShopOpen(false)}
                         />
                       </Tooltip>
                     </div>
@@ -327,30 +332,27 @@ export default function Misaki(): React.JSX.Element {
                       ...currentAssistant,
                       birthday: currentAssistant?.birthday
                         ? dayjs(currentAssistant.birthday)
-                        : undefined
+                        : undefined,
+                      publicFlag: currentAssistant?.publicFlag ?? false
                     }}
                     onFinish={(values) => {
-                      try {
-                        if (currentAssistantId) {
-                          updateAssistantMutation.mutate({
-                            id: currentAssistantId,
-                            data: {
-                              ...values,
-                              birthday: values.birthday.format('YYYY-MM-DD'),
-                              version: currentAssistant?.version ?? 0
-                            }
-                          })
-                        } else {
-                          createAssistantMutation.mutate({
+                      if (currentAssistantId) {
+                        updateAssistantMutation.mutate({
+                          id: currentAssistantId,
+                          data: {
                             ...values,
-                            birthday: values.birthday.format('YYYY-MM-DD')
-                          })
-                        }
-                      } finally {
-                        setIsEditing(false)
+                            birthday: values.birthday?.format('YYYY-MM-DD'),
+                            version: currentAssistant?.version ?? 0
+                          }
+                        })
+                      } else {
+                        createAssistantMutation.mutate({
+                          ...values,
+                          birthday: values.birthday?.format('YYYY-MM-DD')
+                        })
                       }
                     }}
-                    validateMessages={{ required: t('requiredTemplate') }}
+                    validateMessages={{ required: t('requiredTemplate', { label: '${label}' }) }}
                     variant="filled"
                     className="w-full h-full flex flex-col justify-between select-none"
                   >
@@ -388,7 +390,6 @@ export default function Misaki(): React.JSX.Element {
                                   return
                                 }
                                 deleteAssistantMutation.mutate(currentAssistantId)
-                                setIsEditing(false)
                               }}
                             />
                           </Tooltip>
@@ -405,7 +406,7 @@ export default function Misaki(): React.JSX.Element {
                               variant="filled"
                               shape="circle"
                               icon={<ShopOutlined />}
-                              onClick={() => setIsShopOpen(!isShopOpen)}
+                              onClick={() => setIsShopOpen(true)}
                             />
                           </Tooltip>
                         )}
@@ -422,10 +423,8 @@ export default function Misaki(): React.JSX.Element {
                             shape="circle"
                             icon={<CloseOutlined />}
                             onClick={() => {
-                              if (!currentAssistantId) {
-                                setCurrentAssistantId(enabledAssistantId)
-                              }
-                              setIsEditing(!isEditing)
+                              setCurrentAssistantId(enabledAssistantId)
+                              setIsEditingManually(false)
                             }}
                           />
                         </Tooltip>
@@ -548,10 +547,7 @@ export default function Misaki(): React.JSX.Element {
                       variant="filled"
                       shape="circle"
                       icon={<EditOutlined />}
-                      onClick={() => {
-                        form.resetFields()
-                        setIsEditing(!isEditing)
-                      }}
+                      onClick={() => setIsEditingManually(true)}
                     />
                   </Tooltip>
                   <Tooltip
@@ -597,7 +593,9 @@ export default function Misaki(): React.JSX.Element {
                     key: '2',
                     label: t('birthday'),
                     span: { sm: 2, md: 1 },
-                    children: <span className="truncate">{currentAssistant?.birthday}</span>
+                    children: (
+                      <span className="truncate">{currentAssistant?.birthday || t('none')}</span>
+                    )
                   },
                   {
                     key: '3',

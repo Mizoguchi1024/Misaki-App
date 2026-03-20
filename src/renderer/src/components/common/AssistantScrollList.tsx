@@ -54,6 +54,7 @@ export default function AssistantScrollList(): React.JSX.Element {
 
   useEffect(() => {
     setCurrentAssistantId(enabledAssistantId || '')
+    console.log("enabledAssistantId", enabledAssistantId)
   }, [])
 
   useEffect(() => {

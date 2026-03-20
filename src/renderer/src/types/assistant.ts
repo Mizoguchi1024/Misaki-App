@@ -19,11 +19,11 @@ export type AssistantFrontResponse = {
 
 export type AddAssistantFrontRequest = {
   name: string
-  personality: string
-  detail: string
   gender: number
-  birthday: string
+  birthday?: string
   modelId: string
+  personality?: string
+  detail?: string
   publicFlag: boolean
 }
 
