@@ -19,6 +19,7 @@ export type ChatFrontResponse = {
   id: string
   title: string
   token: number
+  pinnedFlag: boolean
   createTime: string
   updateTime: string
   version: number
@@ -38,7 +39,8 @@ export type ListPromptsFrontRequest = {
   size: number
 }
 
-export type UpdateChatTitleFrontRequest = {
-  title: string
+export type UpdateChatFrontRequest = {
+  title?: string
+  pinnedFlag?: boolean
   version: number
 }

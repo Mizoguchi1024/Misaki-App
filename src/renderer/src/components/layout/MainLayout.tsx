@@ -40,7 +40,7 @@ export default function MainLayout(): React.JSX.Element {
   const navigate = useNavigate()
   const { jwt, rememberMe, reset: resetUserStore } = useUserStore()
   const { getOssBaseUrl, setStaticMessage } = useSettingsStore()
-  const { chatsUI, reset: resetChatStore } = useChatStore()
+  const { reset: resetChatStore } = useChatStore()
   const { reset: resetAssistantStore } = useAssistantStore()
 
   const matches = useMatches() as UIMatch<unknown, { page?: string }>[]
@@ -141,20 +141,20 @@ export default function MainLayout(): React.JSX.Element {
     }
   ]
 
-  const pinnedOrderedChats = chats?.filter((chat) => chatsUI[chat.id]?.pinned) || []
-  const unpinnedChats = chats?.filter((chat) => !chatsUI[chat.id]?.pinned) || []
-  const orderedChats = [...pinnedOrderedChats, ...unpinnedChats]
+  const pinnedChats = chats?.filter((chat) => chat.pinnedFlag) || []
+  const unpinnedChats = chats?.filter((chat) => !chat.pinnedFlag) || []
+  const orderedChats = [...pinnedChats, ...unpinnedChats]
 
   const siderChatItems = orderedChats.map((item) => ({
     key: '/chat/' + item.id,
     label: item.title ? item.title : t('newChat'),
-    icon: chatsUI[item.id]?.pinned ? <PushpinOutlined /> : collapsed ? <MessageOutlined /> : null
+    icon: item.pinnedFlag ? <PushpinOutlined /> : collapsed ? <MessageOutlined /> : null
   }))
 
   const drawerChatItems = orderedChats.map((item) => ({
     key: '/chat/' + item.id,
     label: item.title ? item.title : t('newChat'),
-    icon: chatsUI[item.id]?.pinned ? <PushpinOutlined /> : null
+    icon: item.pinnedFlag ? <PushpinOutlined /> : null
   }))
 
   const siderMenuItems = [...agentItems, ...siderChatItems]

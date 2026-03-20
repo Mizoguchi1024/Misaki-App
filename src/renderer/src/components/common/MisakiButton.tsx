@@ -31,7 +31,7 @@ export default function MisakiButton({
   const { mainColor = '#3142EF', enabledAssistantId } = settingsData?.data ?? {}
 
   const { data: assistantData } = useQuery({
-    queryKey: ['assistant'],
+    queryKey: ['assistants'],
     queryFn: listAssistants,
     enabled: !!jwt
   })

@@ -9,11 +9,17 @@ import {
 import { Actions, Bubble, CodeHighlighter, Mermaid, Prompts, Sender } from '@ant-design/x'
 import XMarkdown, { ComponentProps } from '@ant-design/x-markdown'
 import Latex from '@ant-design/x-markdown/plugins/latex'
-import { createChatTitle, listChats, listMessages, listPrompts } from '@renderer/api/front/chat'
-import { getProfile } from '@renderer/api/front/user'
+import { listAssistants } from '@renderer/api/front/assistant'
+import { createChatTitle, listMessages, listPrompts } from '@renderer/api/front/chat'
+import { listMcpServers } from '@renderer/api/front/mcp'
+import { listModels } from '@renderer/api/front/model'
+import { getProfile, getSettings } from '@renderer/api/front/user'
 import { CodeMap, useChatStore } from '@renderer/store/chatStore'
 import { useMcpStore } from '@renderer/store/mcpStore'
 import { useSettingsStore } from '@renderer/store/settingsStore'
+import { ChatFrontResponse, MessageFrontResponse } from '@renderer/types/chat'
+import { PageResult } from '@renderer/types/result'
+import { InfiniteData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { App, Avatar, Button, Dropdown, Pagination, Skeleton, Space, Typography } from 'antd'
 import clsx from 'clsx'
 import { AnimatePresence, motion, useAnimation } from 'motion/react'
@@ -38,72 +44,137 @@ const TableSkeleton = (): React.JSX.Element => <Skeleton.Node active style={{ wi
 
 export default function Chat(): React.JSX.Element {
   const { t } = useTranslation('chat')
-  const navigate = useNavigate()
   const { message: appMessage } = App.useApp()
+  const navigate = useNavigate()
+  const queryClient = useQueryClient()
   const { id: chatId } = useParams()
   const { getOssBaseUrl } = useSettingsStore()
   const {
-    chatsUI,
+    isStreaming,
     parentId,
     prefix,
+    newMessages,
     setParentId,
-    setChatPrompts,
     sendMessage,
     stopSendMessage,
     setPrefix
   } = useChatStore()
-  const messages = useChatStore((state) => state.messages)
-  const isStreaming = useChatStore((state) => state.isStreaming)
-  const { mcpEnabled, servers, enabledServers, setMcpEnabled } = useMcpStore()
+  const { mcpEnabled, enabledServers, setMcpEnabled } = useMcpStore()
   const [senderValue, setSenderValue] = useState('')
   const [editingId, setEditingId] = useState('')
   const [containerRef, { width: containerWidth }] = useMeasure<HTMLDivElement>()
   const [trackRef, { width: trackWidth }] = useMeasure<HTMLDivElement>()
   const promptsControls = useAnimation()
   const [dragging, setDragging] = useState(false)
-  const enabledAssistant = assistants?.find((assistant) => assistant.id === enabledAssistantId)
-  const enabledAssistantModel = models?.find((model) => model.id === enabledAssistant?.modelId)
-  const [senderAreaRef, { height }] = useMeasure<HTMLDivElement>()
+
+  const [senderAreaRef, { height: senderAreaHeight }] = useMeasure<HTMLDivElement>()
   const scrollRef = useRef<HTMLDivElement>(null)
   const [atBottom, setAtBottom] = useState(false)
   const [showUserFooterId, setShowUserFooterId] = useState('')
 
+  const { data: userData } = useQuery({
+    queryKey: ['user'],
+    queryFn: getProfile
+  })
+  const { username, avatarPath } = userData?.data ?? {}
+
+  const { data: messagesData } = useQuery({
+    queryKey: ['messages', chatId],
+    queryFn: () => listMessages(chatId!),
+    enabled: !isStreaming
+  })
+  const rawMessages = messagesData?.data ?? []
+  const fullMessages = [...rawMessages, ...(isStreaming ? newMessages : [])]
+  const messages = (() => {
+    if (!fullMessages.length) {
+      return []
+    }
+    const map = new Map<string, MessageFrontResponse>()
+    fullMessages.forEach((msg) => {
+      map.set(msg.id, msg)
+    })
+
+    let currentId = parentId || fullMessages[fullMessages.length - 1].id
+    const path: MessageFrontResponse[] = []
+
+    while (currentId) {
+      const msg = map.get(currentId)
+      if (!msg) break
+      path.push(msg)
+      currentId = msg.parentId ?? ''
+    }
+
+    path.reverse()
+    return path
+  })()
+
+  const chat = queryClient
+    .getQueryData<InfiniteData<PageResult<ChatFrontResponse[]>>>(['chats'])
+    ?.pages.flatMap((page) => page.data.list)
+    .find((chat) => chat.id === chatId)
+
+  const { data: settingsData } = useQuery({
+    queryKey: ['settings'],
+    queryFn: getSettings
+  })
+  const { enabledAssistantId = '0', promptsSuggestion = false } = settingsData?.data ?? {}
+
+  const { data: assistantsData } = useQuery({
+    queryKey: ['assistants'],
+    queryFn: listAssistants
+  })
+  const assistants = assistantsData?.data ?? []
+  const enabledAssistant = assistants?.find((assistant) => assistant.id === enabledAssistantId)
+
+  const { data: modelsData } = useQuery({
+    queryKey: ['models'],
+    queryFn: listModels
+  })
+  const models = modelsData?.data ?? []
+  const enabledAssistantModel = models?.find((model) => model.id === enabledAssistant?.modelId)
+
+  const { data: serversData } = useQuery({
+    queryKey: ['mcpServers'],
+    queryFn: listMcpServers
+  })
+  const servers = serversData?.data ?? []
+
+  const createChatTitleMutation = useMutation({
+    mutationFn: createChatTitle,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['chats'] })
+    }
+  })
+
+  const { data: promptsData } = useQuery({
+    queryKey: ['prompts'],
+    queryFn: () =>
+      listPrompts(chatId!, {
+        parentId: parentId!,
+        size: 2
+      }),
+    enabled: promptsSuggestion
+  })
+  const prompts = promptsData?.data ?? []
+
   useEffect(() => {
-    const load = async (): Promise<void> => {
-      try {
-        if (!isStreaming) {
-          const messagesRes = await listMessages(chatId!)
-          setFullMessages(messagesRes.data)
-          setParentId(messagesRes.data[messagesRes.data.length - 1].id)
+    if (!isStreaming) {
+      if (rawMessages.length) {
+        setParentId(rawMessages[rawMessages.length - 1].id)
+      }
 
-          if (messagesRes.data.length >= 2 && !chats?.find((chat) => chat.id === chatId)?.title) {
-            await createChatTitle(chatId!)
-          }
-          const chatRes = await listChats()
-          setChats(chatRes.data)
+      if (messages.length >= 2 && !chat?.title) {
+        createChatTitleMutation.mutate(chatId!)
+      }
 
-          if (promptsSuggestion && parentId && !chatsUI[chatId!]?.prompts?.length) {
-            promptsControls.start({
-              x: 0,
-              y: 0
-            })
-            const promptsRes = await listPrompts(chatId!, {
-              parentId: messagesRes.data[messagesRes.data.length - 1].id,
-              size: 2
-            })
-            setChatPrompts(chatId!, promptsRes.data)
-          }
-          const profileRes = await getProfile()
-          setProfile(profileRes.data)
-        } else {
-          setChatPrompts(chatId!, [])
-        }
-      } catch {
-        return
+      if (promptsSuggestion && parentId) {
+        promptsControls.start({
+          x: 0,
+          y: 0
+        })
       }
     }
-    load()
-  }, [chatId, isStreaming, promptsSuggestion])
+  }, [chatId, rawMessages, promptsSuggestion])
 
   useEffect(() => {
     const load = async (): Promise<void> => {
@@ -119,16 +190,11 @@ export default function Chat(): React.JSX.Element {
   useEffect(() => {
     const el = scrollRef.current
     if (el) {
-      appMessage.info(el.scrollHeight)
-      el.scrollTop = el.scrollHeight
+      requestAnimationFrame(() => {
+        el.scrollTo({ top: el.scrollHeight, behavior: 'auto' })
+      })
     }
-  }, [parentId])
-
-  useEffect(() => {
-    if (fullMessages && fullMessages.length) {
-      setMessagesFromFull(fullMessages)
-    }
-  }, [parentId])
+  }, [messages, senderAreaHeight])
 
   return (
     <div className="relative h-full">
@@ -147,162 +213,164 @@ export default function Chat(): React.JSX.Element {
       >
         <div
           className="pt-12 w-full px-12 md:max-w-2xl lg:max-w-3xl xl:max-w-4xl md:mx-auto md:px-0 ease-in-out duration-250"
-          style={{ paddingBottom: height + 12 }}
+          style={{ paddingBottom: senderAreaHeight + 12 }}
         >
-          {messages &&
-            messages.map((item, index, array) => (
-              <Bubble
-                key={item.id}
-                content={item.content}
-                avatar={
-                  item.type === 'ASSISTANT' ? (
-                    <Avatar
-                      draggable={false}
-                      src={getOssBaseUrl() + enabledAssistantModel?.avatarPath}
-                      icon={<HeartOutlined />}
-                    />
-                  ) : (
-                    <Avatar
-                      draggable={false}
-                      src={getOssBaseUrl() + avatarPath}
-                      icon={<UserOutlined />}
-                    />
-                  )
-                }
-                header={item.type === 'ASSISTANT' ? enabledAssistant?.name || 'Misaki' : username}
-                variant={item.type === 'ASSISTANT' ? 'borderless' : 'filled'}
-                placement={item.type === 'ASSISTANT' ? 'start' : 'end'}
-                contentRender={
-                  item.type === 'ASSISTANT'
-                    ? (content: string) => (
-                        <Typography>
-                          <XMarkdown
-                            content={content}
-                            config={{ extensions: Latex() }}
-                            components={{ code: Code, 'incomplete-table': TableSkeleton }}
-                            streaming={{ hasNextChunk: isStreaming, enableAnimation: true }}
-                            dompurifyConfig={{ ADD_ATTR: ['icon', 'description'] }}
-                            openLinksInNewTab
-                          />
-                        </Typography>
-                      )
-                    : (content: string) => <Typography>{content}</Typography>
-                }
-                editable={item.id === editingId}
-                onEditCancel={() => {
-                  setEditingId('')
-                }}
-                onEditConfirm={(value) => {
-                  setEditingId('')
-                  if (!value.trim()) {
-                    appMessage.warning(t('messageRequired'))
-                    return
-                  }
-                  const index = messages.findIndex((m) => m.id === item.id)
-                  setMessages(messages?.slice(0, index) ?? [])
-                  sendMessage(chatId!, {
-                    parentId: item.parentId ?? undefined,
-                    content: value
-                  })
-                }}
-                footer={
-                  item.type === 'ASSISTANT' ? (
-                    index === array.length - 1 && isStreaming ? null : (
-                      <Actions
-                        fadeInLeft={index === array.length - 1}
-                        items={[
-                          {
-                            key: 'retry',
-                            icon: <RedoOutlined />,
-                            label: t('retry'),
-                            onItemClick: () => {
-                              const userMessage = messages?.find((m) => m.id === item.parentId)
-                              const index = messages.findIndex((m) => m.id === userMessage?.id)
-                              setMessages(messages?.slice(0, index) ?? [])
-                              if (!userMessage?.content) return
-                              sendMessage(chatId!, {
-                                parentId: userMessage.parentId ?? undefined,
-                                content: userMessage.content
-                              })
-                            }
-                          },
-                          {
-                            key: 'copy',
-                            actionRender: () => {
-                              return <Actions.Copy text={item.content} />
-                            }
-                          }
-                        ]}
-                      />
+          {messages.map((item, index, array) => (
+            <Bubble
+              key={item.id}
+              content={item.content}
+              avatar={
+                item.type === 'ASSISTANT' ? (
+                  <Avatar
+                    draggable={false}
+                    src={getOssBaseUrl() + enabledAssistantModel?.avatarPath}
+                    icon={<HeartOutlined />}
+                  />
+                ) : (
+                  <Avatar
+                    draggable={false}
+                    src={getOssBaseUrl() + avatarPath}
+                    icon={<UserOutlined />}
+                  />
+                )
+              }
+              header={item.type === 'ASSISTANT' ? enabledAssistant?.name || 'Misaki' : username}
+              variant={item.type === 'ASSISTANT' ? 'borderless' : 'filled'}
+              placement={item.type === 'ASSISTANT' ? 'start' : 'end'}
+              contentRender={
+                item.type === 'ASSISTANT'
+                  ? (content: string) => (
+                      <Typography>
+                        <XMarkdown
+                          content={content}
+                          config={{ extensions: Latex() }}
+                          components={{ code: Code, 'incomplete-table': TableSkeleton }}
+                          streaming={{ hasNextChunk: isStreaming, enableAnimation: true }}
+                          dompurifyConfig={{ ADD_ATTR: ['icon', 'description'] }}
+                          openLinksInNewTab
+                        />
+                      </Typography>
                     )
-                  ) : (
+                  : (content: string) => <Typography>{content}</Typography>
+              }
+              editable={item.id === editingId}
+              onEditCancel={() => {
+                setEditingId('')
+              }}
+              onEditConfirm={async (value) => {
+                setEditingId('')
+                if (!value.trim()) {
+                  appMessage.warning(t('messageRequired'))
+                  return
+                }
+                setParentId(item.parentId)
+                await sendMessage(chatId!, {
+                  parentId: item.parentId ?? undefined,
+                  content: value
+                })
+                queryClient.invalidateQueries({ queryKey: ['messages'] })
+                queryClient.invalidateQueries({ queryKey: ['user'] })
+                setParentId(fullMessages[fullMessages.length - 1].id)
+              }}
+              footer={
+                item.type === 'ASSISTANT' ? (
+                  index === array.length - 1 && isStreaming ? null : (
                     <Actions
-                      className={clsx(
-                        (fullMessages?.filter((m) => m.parentId === item.parentId).length ?? 0) <=
-                          1 &&
-                          !(showUserFooterId === item.id) &&
-                          'opacity-0',
-                        'ease-in-out duration-250'
-                      )}
+                      fadeInLeft={index === array.length - 1}
                       items={[
-                        ...((fullMessages?.filter((m) => m.parentId === item.parentId).length ??
-                          0) > 1
-                          ? [
-                              {
-                                key: 'pagination',
-                                actionRender: () => (
-                                  <Pagination
-                                    size="small"
-                                    className="select-none"
-                                    simple={{ readOnly: true }}
-                                    current={
-                                      (fullMessages
-                                        ?.filter((m) => m.parentId === item.parentId)
-                                        .findIndex((m) => m.id === item.id) ?? 0) + 1
-                                    }
-                                    onChange={(page) => {
-                                      let current = fullMessages?.filter(
-                                        (x) => x.parentId === item.parentId
-                                      )[page - 1]
-
-                                      while (true) {
-                                        const child = fullMessages?.find(
-                                          (m) => m.parentId === current?.id
-                                        )
-                                        if (!child) break
-                                        current = child
-                                      }
-
-                                      setParentId(current?.id ?? null)
-                                    }}
-                                    total={
-                                      fullMessages?.filter((m) => m.parentId === item.parentId)
-                                        .length
-                                    }
-                                    pageSize={1}
-                                  />
-                                )
-                              }
-                            ]
-                          : []),
                         {
-                          key: 'edit',
-                          icon: <EditOutlined />,
-                          label: t('edit')
+                          key: 'retry',
+                          icon: <RedoOutlined />,
+                          label: t('retry'),
+                          onItemClick: async () => {
+                            const userMessage = messages?.find((m) => m.id === item.parentId)
+                            if (!userMessage) return
+                            setParentId(userMessage?.parentId)
+                            await sendMessage(chatId!, {
+                              parentId: userMessage.parentId ?? undefined,
+                              content: userMessage.content
+                            })
+                            queryClient.invalidateQueries({ queryKey: ['messages'] })
+                            queryClient.invalidateQueries({ queryKey: ['user'] })
+                            setParentId(fullMessages[fullMessages.length - 1].id)
+                          }
+                        },
+                        {
+                          key: 'copy',
+                          actionRender: () => {
+                            return <Actions.Copy text={item.content} />
+                          }
                         }
                       ]}
-                      onClick={({ key }) => setEditingId(key === 'edit' ? item.id : '')}
                     />
                   )
-                }
-                onMouseEnter={() => setShowUserFooterId(item.id)}
-                onMouseLeave={() => setShowUserFooterId('')}
-                classNames={{
-                  avatar: 'select-none',
-                  header: 'opacity-60 select-none'
-                }}
-              />
-            ))}
+                ) : (
+                  <Actions
+                    className={clsx(
+                      (fullMessages?.filter((m) => m.parentId === item.parentId).length ?? 0) <=
+                        1 &&
+                        !(showUserFooterId === item.id) &&
+                        'opacity-0',
+                      'ease-in-out duration-250'
+                    )}
+                    items={[
+                      ...((fullMessages?.filter((m) => m.parentId === item.parentId).length ?? 0) >
+                      1
+                        ? [
+                            {
+                              key: 'pagination',
+                              actionRender: () => (
+                                <Pagination
+                                  size="small"
+                                  className="select-none"
+                                  simple={{ readOnly: true }}
+                                  current={
+                                    (fullMessages
+                                      ?.filter((m) => m.parentId === item.parentId)
+                                      .findIndex((m) => m.id === item.id) ?? 0) + 1
+                                  }
+                                  onChange={(page) => {
+                                    let current = fullMessages?.filter(
+                                      (x) => x.parentId === item.parentId
+                                    )[page - 1]
+
+                                    while (true) {
+                                      const child = fullMessages?.find(
+                                        (m) => m.parentId === current?.id
+                                      )
+                                      if (!child) break
+                                      current = child
+                                    }
+
+                                    setParentId(current?.id ?? null)
+                                  }}
+                                  total={
+                                    fullMessages?.filter((m) => m.parentId === item.parentId).length
+                                  }
+                                  pageSize={1}
+                                />
+                              )
+                            }
+                          ]
+                        : []),
+                      {
+                        key: 'edit',
+                        icon: <EditOutlined />,
+                        label: t('edit')
+                      }
+                    ]}
+                    onClick={({ key }) => setEditingId(key === 'edit' ? item.id : '')}
+                  />
+                )
+              }
+              onMouseEnter={() => setShowUserFooterId(item.id)}
+              onMouseLeave={() => setShowUserFooterId('')}
+              classNames={{
+                avatar: 'select-none',
+                header: 'opacity-60 select-none'
+              }}
+            />
+          ))}
         </div>
       </div>
       <AnimatePresence>
@@ -318,7 +386,7 @@ export default function Chat(): React.JSX.Element {
               icon={<ArrowDownOutlined />}
               shape="circle"
               className="absolute left-1/2 -translate-x-1/2 bg-white/70 dark:bg-white/20 backdrop-blur-xs hover:backdrop-blur-sm ease-in-out duration-500"
-              style={{ bottom: height + 12 }}
+              style={{ bottom: senderAreaHeight + 12 }}
               onClick={() => {
                 const el = scrollRef.current
                 el?.scrollTo({ top: el.scrollHeight, behavior: 'smooth' })
@@ -352,7 +420,7 @@ export default function Chat(): React.JSX.Element {
               <Prompts
                 key={parentId}
                 fadeInLeft
-                items={chatsUI[chatId!]?.prompts?.map((prompt) => ({
+                items={prompts.map((prompt) => ({
                   key: prompt,
                   description: prompt
                 }))}
@@ -460,6 +528,9 @@ export default function Chat(): React.JSX.Element {
             }
             setSenderValue('')
             await sendMessage(chatId!, { parentId: parentId ?? undefined, content: senderValue })
+            queryClient.invalidateQueries({ queryKey: ['messages'] })
+            queryClient.invalidateQueries({ queryKey: ['user'] })
+            setParentId(fullMessages[fullMessages.length - 1].id)
           }}
           onCancel={async () => {
             stopSendMessage()

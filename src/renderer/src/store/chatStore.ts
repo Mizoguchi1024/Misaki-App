@@ -6,15 +6,14 @@ import { useUserStore } from './userStore'
 
 interface ChatState {
   isStreaming: boolean
-  chatsUI: Record<string, { pinned: boolean; prompts: string[] }>
   parentId: string | null
   prefix: string
+  newMessages: MessageFrontResponse[]
 
   setParentId: (parentId: string | null) => void
   setPrefix: (prefix: string) => void
-  setChatPinned: (chatId: string, pinned: boolean) => void
-  setChatPrompts: (chatId: string, prompts: string[]) => void
 
+  setNewMessages: (newMessages: MessageFrontResponse[]) => void
   sendMessage: (chatId: string, data: SendMessageFrontRequest) => Promise<void>
   stopSendMessage: () => void
 
@@ -25,13 +24,10 @@ let currentSendMessageController: AbortController | null = null
 
 const initialState = {
   isStreaming: false,
-  chats: null,
-  chatsUI: {},
-  messages: null,
-  fullMessages: null,
   prompts: null,
   parentId: null,
-  prefix: ''
+  prefix: '',
+  newMessages: []
 }
 
 export const CodeMap = {
@@ -47,69 +43,14 @@ export const useChatStore = create<ChatState>()(
     (set) => ({
       ...initialState,
 
-      setMessagesFromFull: (messageFrontResponse: MessageFrontResponse[]) =>
-        set((state) => {
-          if (!messageFrontResponse.length) {
-            return { messages: [] }
-          }
-
-          // 1. 建立 id -> message 映射
-          const map = new Map<string, MessageFrontResponse>()
-          messageFrontResponse.forEach((msg) => {
-            map.set(msg.id, msg)
-          })
-
-          // 2. 确定起点
-          let currentId = state.parentId || messageFrontResponse[messageFrontResponse.length - 1].id
-
-          const path: MessageFrontResponse[] = []
-
-          // 3. 向上回溯
-          while (currentId) {
-            const msg = map.get(currentId)
-            if (!msg) break
-
-            path.push(msg)
-            currentId = msg.parentId ?? ''
-          }
-
-          // 4. 反转成从根到当前
-          path.reverse()
-
-          return {
-            messages: path,
-            parentId: path.length ? path[path.length - 1].id : ''
-          }
-        }),
       setParentId: (parentId) => set({ parentId }),
-      setChatPinned: (id, pinned) =>
-        set((state) => ({
-          chatsUI: {
-            ...state.chatsUI,
-            [id]: {
-              ...state.chatsUI[id],
-              pinned
-            }
-          }
-        })),
-      setChatPrompts: (id, prompts) =>
-        set((state) => ({
-          chatsUI: {
-            ...state.chatsUI,
-            [id]: {
-              ...state.chatsUI[id],
-              prompts
-            }
-          }
-        })),
       setPrefix: (prefix) => set({ prefix }),
-      reset: () => set(initialState),
       stopSendMessage: () => {
         currentSendMessageController?.abort()
         currentSendMessageController = null
         setTimeout(() => set({ isStreaming: false }), 500)
       },
-
+      setNewMessages: (newMessages) => set({ newMessages }),
       sendMessage: async (chatId, data) => {
         const controller = new AbortController()
         currentSendMessageController?.abort()
@@ -121,27 +62,7 @@ export const useChatStore = create<ChatState>()(
           const now = new Date().toISOString()
           set((state) => ({
             isStreaming: true,
-            messages: [
-              ...(state.messages ?? []),
-              {
-                id: userMessageId,
-                chatId,
-                parentId: state.parentId ?? null,
-                type: 'USER',
-                content: data.content,
-                createTime: now
-              },
-              {
-                id: assistantMessageId,
-                chatId,
-                parentId: userMessageId,
-                type: 'ASSISTANT',
-                content: '',
-                createTime: now
-              }
-            ],
-            fullMessages: [
-              ...(state.fullMessages ?? []),
+            newMessages: [
               {
                 id: userMessageId,
                 chatId,
@@ -206,7 +127,7 @@ export const useChatStore = create<ChatState>()(
               if (content === '[DONE]') return
 
               set((state) => ({
-                messages: state.messages?.map((msg) =>
+                newMessages: state.newMessages?.map((msg) =>
                   msg.id === assistantMessageId ? { ...msg, content: msg.content + content } : msg
                 )
               }))
@@ -224,7 +145,8 @@ export const useChatStore = create<ChatState>()(
             set({ isStreaming: false })
           }
         }
-      }
+      },
+      reset: () => set(initialState)
     }),
 
     { name: 'chat-store' }

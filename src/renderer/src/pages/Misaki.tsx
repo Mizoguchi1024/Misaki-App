@@ -54,10 +54,10 @@ type FieldType = {
   name: string
   gender: number
   birthday?: dayjs.Dayjs
-  personality?: string
-  detail?: string
   modelId: string
   publicFlag: boolean
+  personality?: string
+  detail?: string
 }
 
 export default function Misaki(): React.JSX.Element {

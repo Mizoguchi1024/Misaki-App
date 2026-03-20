@@ -4,14 +4,15 @@ import {
   InfoCircleOutlined,
   PushpinOutlined
 } from '@ant-design/icons'
-import { deleteChat } from '@renderer/api/front/chat'
+import { deleteChat, updateChat } from '@renderer/api/front/chat'
 import { Dropdown, Button, MenuProps, App } from 'antd'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate, useParams } from 'react-router-dom'
 import ChatDetailModal from './ChatDetailModal'
-import { useChatStore } from '@renderer/store/chatStore'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { InfiniteData, useMutation, useQueryClient } from '@tanstack/react-query'
+import { ChatFrontResponse, UpdateChatFrontRequest } from '@renderer/types/chat'
+import { PageResult, Result } from '@renderer/types/result'
 
 export default function ChatDropdown(): React.JSX.Element {
   const { t } = useTranslation('chatDropdown')
@@ -19,8 +20,23 @@ export default function ChatDropdown(): React.JSX.Element {
   const navigate = useNavigate()
   const queryClient = useQueryClient()
   const { id: chatId } = useParams()
-  const { chatsUI, setChatPinned } = useChatStore()
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false)
+
+  const chat = queryClient
+    .getQueryData<InfiniteData<PageResult<ChatFrontResponse[]>>>(['chats'])
+    ?.pages.flatMap((page) => page.data.list)
+    .find((chat) => chat.id === chatId)
+
+  const updateChatTitleMutation = useMutation<
+    Result<void>,
+    Error,
+    { id: string; data: UpdateChatFrontRequest }
+  >({
+    mutationFn: ({ id, data }) => updateChat(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['chats'] })
+    }
+  })
 
   const deleteChatMutation = useMutation({
     mutationFn: deleteChat,
@@ -34,7 +50,7 @@ export default function ChatDropdown(): React.JSX.Element {
   const list: MenuProps['items'] = [
     {
       key: 'pin',
-      label: chatsUI[chatId!]?.pinned ? t('unpin') : t('pin'),
+      label: chat?.pinnedFlag ? t('unpin') : t('pin'),
       icon: <PushpinOutlined />
     },
     {
@@ -56,7 +72,10 @@ export default function ChatDropdown(): React.JSX.Element {
   const onClick: MenuProps['onClick'] = async ({ key }) => {
     switch (key) {
       case 'pin':
-        setChatPinned(chatId!, !chatsUI[chatId!]?.pinned)
+        updateChatTitleMutation.mutate({
+          id: chatId!,
+          data: { pinnedFlag: !chat?.pinnedFlag, version: chat?.version ?? 0 }
+        })
         break
       case 'detail':
         setIsDetailModalOpen(true)

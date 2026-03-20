@@ -3,7 +3,7 @@ import {
   ListPromptsFrontRequest,
   MessageFrontResponse,
   SendMessageFrontRequest,
-  UpdateChatTitleFrontRequest
+  UpdateChatFrontRequest
 } from '@renderer/types/chat'
 import api from '../index'
 import { PageResult, Result } from '@renderer/types/result'
@@ -20,11 +20,8 @@ export const sendMessage = (id: string, data: SendMessageFrontRequest): Promise<
 export const createChatTitle = (id: string): Promise<Result<void>> =>
   api.get<Result<void>>(`/front/chats/${id}/title`).then((res) => res.data)
 
-export const updateChatTitle = (
-  id: string,
-  data: UpdateChatTitleFrontRequest
-): Promise<Result<void>> =>
-  api.put<Result<void>>(`/front/chats/${id}/title`, data).then((res) => res.data)
+export const updateChat = (id: string, data: UpdateChatFrontRequest): Promise<Result<void>> =>
+  api.put<Result<void>>(`/front/chats/${id}`, data).then((res) => res.data)
 
 export const listChats = (
   pageIndex: number,

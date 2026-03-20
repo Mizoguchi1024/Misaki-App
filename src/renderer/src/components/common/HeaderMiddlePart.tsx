@@ -2,11 +2,11 @@ import { Input, InputRef } from 'antd'
 import { useParams } from 'react-router-dom'
 import AssistantScrollList from './AssistantScrollList'
 import { useTranslation } from 'react-i18next'
-import { updateChatTitle } from '@renderer/api/front/chat'
+import { updateChat } from '@renderer/api/front/chat'
 import { useEffect, useRef, useState } from 'react'
 import { InfiniteData, useMutation, useQueryClient } from '@tanstack/react-query'
 import { PageResult, Result } from '@renderer/types/result'
-import { ChatFrontResponse, UpdateChatTitleFrontRequest } from '@renderer/types/chat'
+import { ChatFrontResponse, UpdateChatFrontRequest } from '@renderer/types/chat'
 
 export default function HeaderMiddlePart({ currentPage }): React.JSX.Element {
   const { t } = useTranslation('headerMiddlePart')
@@ -24,9 +24,9 @@ export default function HeaderMiddlePart({ currentPage }): React.JSX.Element {
   const updateChatTitleMutation = useMutation<
     Result<void>,
     Error,
-    { id: string; data: UpdateChatTitleFrontRequest }
+    { id: string; data: UpdateChatFrontRequest }
   >({
-    mutationFn: ({ id, data }) => updateChatTitle(id, data),
+    mutationFn: ({ id, data }) => updateChat(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['chats'] })
     }
