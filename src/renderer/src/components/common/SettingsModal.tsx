@@ -20,7 +20,6 @@ import ImageUpload from './ImageUpload'
 import { UploadResponse } from '@renderer/types/common'
 import { useNavigate } from 'react-router-dom'
 import { deleteAllChats } from '@renderer/api/front/chat'
-import { chatsInfiniteQueryKey } from '@renderer/hooks/useChatsInfiniteQuery'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 export default function SettingsModal({ open, onCancel }): React.JSX.Element {
@@ -59,7 +58,7 @@ export default function SettingsModal({ open, onCancel }): React.JSX.Element {
     mutationFn: deleteAllChats,
     onSuccess: () => {
       appMessage.success(t('allChatsDeleted'))
-      queryClient.invalidateQueries({ queryKey: chatsInfiniteQueryKey })
+      queryClient.resetQueries({ queryKey: ['chats'] })
     }
   })
 

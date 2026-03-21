@@ -1,9 +1,5 @@
 import { Input, InputRef } from 'antd'
-import {
-  chatsInfiniteQueryKey,
-  flattenChats,
-  useChatsInfiniteQuery
-} from '@renderer/hooks/useChatsInfiniteQuery'
+import { flattenChats, useChatsInfiniteQuery } from '@renderer/hooks/useChatsInfiniteQuery'
 import { useParams } from 'react-router-dom'
 import AssistantScrollList from './AssistantScrollList'
 import { useTranslation } from 'react-i18next'
@@ -31,7 +27,7 @@ export default function HeaderMiddlePart({ currentPage }): React.JSX.Element {
   >({
     mutationFn: ({ id, data }) => updateChat(id, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: chatsInfiniteQueryKey })
+      queryClient.resetQueries({ queryKey: ['chats'] })
     }
   })
 

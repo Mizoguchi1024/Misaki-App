@@ -17,7 +17,6 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Result } from '@renderer/types/result'
 import { UpdateAssistantFrontRequest } from '@renderer/types/assistant'
 import { listMcpServers } from '@renderer/api/front/mcp'
-import { chatsInfiniteQueryKey } from '@renderer/hooks/useChatsInfiniteQuery'
 import clsx from 'clsx'
 
 export default function Home(): React.JSX.Element {
@@ -87,7 +86,7 @@ export default function Home(): React.JSX.Element {
   const createChatMutation = useMutation({
     mutationFn: createChat,
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: chatsInfiniteQueryKey })
+      queryClient.resetQueries({ queryKey: ['chats'] })
       sendMessage(data.data.id, {
         content: senderValue,
         prefix: prefix || undefined,

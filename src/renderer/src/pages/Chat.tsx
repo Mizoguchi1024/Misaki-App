@@ -11,11 +11,7 @@ import XMarkdown, { ComponentProps } from '@ant-design/x-markdown'
 import Latex from '@ant-design/x-markdown/plugins/latex'
 import { listAssistants } from '@renderer/api/front/assistant'
 import { createChatTitle, listMessages, listPrompts } from '@renderer/api/front/chat'
-import {
-  chatsInfiniteQueryKey,
-  flattenChats,
-  useChatsInfiniteQuery
-} from '@renderer/hooks/useChatsInfiniteQuery'
+import { flattenChats, useChatsInfiniteQuery } from '@renderer/hooks/useChatsInfiniteQuery'
 import { listMcpServers } from '@renderer/api/front/mcp'
 import { listModels } from '@renderer/api/front/model'
 import { getProfile, getSettings } from '@renderer/api/front/user'
@@ -114,7 +110,7 @@ export default function Chat(): React.JSX.Element {
     mutationFn: ({ id, data }) => sendMessage(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['messages'] })
-      queryClient.invalidateQueries({ queryKey: ['chats'] })
+      queryClient.resetQueries({ queryKey: ['chats'] })
       queryClient.invalidateQueries({ queryKey: ['user'] })
     }
   })
@@ -151,7 +147,7 @@ export default function Chat(): React.JSX.Element {
   const createChatTitleMutation = useMutation({
     mutationFn: createChatTitle,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: chatsInfiniteQueryKey })
+      queryClient.resetQueries({ queryKey: ['chats'] })
     }
   })
 

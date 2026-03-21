@@ -5,14 +5,13 @@ import { PageResult } from '@renderer/types/result'
 import { InfiniteData, useInfiniteQuery, UseInfiniteQueryResult } from '@tanstack/react-query'
 
 export const chatsPageSize = 15
-export const chatsInfiniteQueryKey = ['chats', 'infinite'] as const
 
 export function useChatsInfiniteQuery(): UseInfiniteQueryResult<
   InfiniteData<PageResult<ChatFrontResponse[]>, unknown>,
   Error
 > {
   return useInfiniteQuery({
-    queryKey: chatsInfiniteQueryKey,
+    queryKey: ['chats'],
     queryFn: ({ pageParam = 1 }): Promise<PageResult<ChatFrontResponse[]>> => {
       return listChats(pageParam, chatsPageSize)
     },

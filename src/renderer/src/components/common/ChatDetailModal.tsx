@@ -1,5 +1,4 @@
 import { ChatFrontResponse } from '@renderer/types/chat'
-import { chatsInfiniteQueryKey } from '@renderer/hooks/useChatsInfiniteQuery'
 import { PageResult } from '@renderer/types/result'
 import { InfiniteData, useQueryClient } from '@tanstack/react-query'
 import { Descriptions, Modal } from 'antd'
@@ -12,7 +11,7 @@ export default function ChatDetailModal({ open, onCancel }): React.JSX.Element {
   const queryClient = useQueryClient()
 
   const chat = queryClient
-    .getQueryData<InfiniteData<PageResult<ChatFrontResponse[]>>>(chatsInfiniteQueryKey)
+    .getQueryData<InfiniteData<PageResult<ChatFrontResponse[]>>>(['chats'])
     ?.pages.flatMap((page) => page.data.list)
     .find((chat) => chat.id === chatId)
 

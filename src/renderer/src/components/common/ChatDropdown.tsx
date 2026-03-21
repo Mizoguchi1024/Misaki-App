@@ -5,11 +5,7 @@ import {
   PushpinOutlined
 } from '@ant-design/icons'
 import { deleteChat, updateChat } from '@renderer/api/front/chat'
-import {
-  chatsInfiniteQueryKey,
-  flattenChats,
-  useChatsInfiniteQuery
-} from '@renderer/hooks/useChatsInfiniteQuery'
+import { flattenChats, useChatsInfiniteQuery } from '@renderer/hooks/useChatsInfiniteQuery'
 import { Dropdown, Button, MenuProps, App } from 'antd'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -37,7 +33,7 @@ export default function ChatDropdown(): React.JSX.Element {
   >({
     mutationFn: ({ id, data }) => updateChat(id, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: chatsInfiniteQueryKey })
+      queryClient.resetQueries({ queryKey: ['chats'] })
     }
   })
 
@@ -45,7 +41,7 @@ export default function ChatDropdown(): React.JSX.Element {
     mutationFn: deleteChat,
     onSuccess: () => {
       appMessage.success(t('chatDeleted'))
-      queryClient.invalidateQueries({ queryKey: chatsInfiniteQueryKey })
+      queryClient.resetQueries({ queryKey: ['chats'] })
       navigate('/', { viewTransition: true })
     }
   })
