@@ -169,7 +169,7 @@ export default function Chat(): React.JSX.Element {
   useEffect(() => {
     const load = (): void => {
       if (!isStreaming) {
-        if (rawMessages.length >= 2 && !chat?.title) {
+        if (!chat?.title) {
           createChatTitleMutation.mutate(chatId!)
         }
 

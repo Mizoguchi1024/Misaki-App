@@ -5,25 +5,17 @@ import { RouterProvider } from 'react-router-dom'
 import { router } from './router'
 import './i18n'
 import App from './App'
-import { QueryClient } from '@tanstack/react-query'
 import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client'
-import { createAsyncStoragePersister } from '@tanstack/query-async-storage-persister'
+import { useUserStore } from './store/userStore'
+import { clearPersistedQueryCache, queryClient, queryPersister } from './queryClient'
 
-export const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      gcTime: 1000 * 60 * 60 * 24 // 24小时
-    }
-  }
-})
-
-const persister = createAsyncStoragePersister({
-  storage: window.localStorage
-})
+if (!useUserStore.getState().rememberMe) {
+  clearPersistedQueryCache()
+}
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <PersistQueryClientProvider client={queryClient} persistOptions={{ persister }}>
+    <PersistQueryClientProvider client={queryClient} persistOptions={{ persister: queryPersister }}>
       <App>
         <RouterProvider router={router} />
       </App>

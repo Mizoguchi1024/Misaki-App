@@ -12,13 +12,11 @@ import Icon, {
 } from '@ant-design/icons'
 import { useUserStore } from '@renderer/store/userStore'
 import { useTranslation } from 'react-i18next'
-import { useChatStore } from '@renderer/store/chatStore'
 import HeaderRightPart from '../common/HeaderRightPart'
 import MisakiButton from '../common/MisakiButton'
 import HeaderMiddlePart from '../common/HeaderMiddlePart'
 import { checkIn, getProfile, getSettings } from '@renderer/api/front/user'
 import { useSettingsStore } from '@renderer/store/settingsStore'
-import { useAssistantStore } from '@renderer/store/assistantStore'
 import clsx from 'clsx'
 import dayjs from 'dayjs'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
@@ -34,10 +32,8 @@ export default function MainLayout(): React.JSX.Element {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
   const location = useLocation()
   const navigate = useNavigate()
-  const { jwt, rememberMe, reset: resetUserStore } = useUserStore()
+  const { jwt } = useUserStore()
   const { getOssBaseUrl, setStaticMessage } = useSettingsStore()
-  const { reset: resetChatStore } = useChatStore()
-  const { reset: resetAssistantStore } = useAssistantStore()
 
   const matches = useMatches() as UIMatch<unknown, { page?: string }>[]
   const currentPage = matches.at(-1)?.handle?.page
@@ -71,13 +67,6 @@ export default function MainLayout(): React.JSX.Element {
 
   useEffect(() => {
     setStaticMessage(appMessage)
-
-    if (jwt && !rememberMe) {
-      resetUserStore()
-      resetChatStore()
-      resetAssistantStore()
-      queryClient.removeQueries()
-    }
   }, [])
 
   useEffect(() => {
