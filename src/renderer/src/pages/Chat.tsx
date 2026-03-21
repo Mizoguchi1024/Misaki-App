@@ -11,15 +11,19 @@ import XMarkdown, { ComponentProps } from '@ant-design/x-markdown'
 import Latex from '@ant-design/x-markdown/plugins/latex'
 import { listAssistants } from '@renderer/api/front/assistant'
 import { createChatTitle, listMessages, listPrompts } from '@renderer/api/front/chat'
+import {
+  chatsInfiniteQueryKey,
+  flattenChats,
+  useChatsInfiniteQuery
+} from '@renderer/hooks/useChatsInfiniteQuery'
 import { listMcpServers } from '@renderer/api/front/mcp'
 import { listModels } from '@renderer/api/front/model'
 import { getProfile, getSettings } from '@renderer/api/front/user'
 import { CodeMap, useChatStore } from '@renderer/store/chatStore'
 import { useMcpStore } from '@renderer/store/mcpStore'
 import { useSettingsStore } from '@renderer/store/settingsStore'
-import { ChatFrontResponse, MessageFrontResponse } from '@renderer/types/chat'
-import { PageResult } from '@renderer/types/result'
-import { InfiniteData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { MessageFrontResponse, SendMessageFrontRequest } from '@renderer/types/chat'
 import { App, Avatar, Button, Dropdown, Pagination, Skeleton, Space, Typography } from 'antd'
 import clsx from 'clsx'
 import { AnimatePresence, motion, useAnimation } from 'motion/react'
@@ -49,16 +53,8 @@ export default function Chat(): React.JSX.Element {
   const queryClient = useQueryClient()
   const { id: chatId } = useParams()
   const { getOssBaseUrl } = useSettingsStore()
-  const {
-    isStreaming,
-    parentId,
-    prefix,
-    newMessages,
-    setParentId,
-    sendMessage,
-    stopSendMessage,
-    setPrefix
-  } = useChatStore()
+  const { isStreaming, prefix, newMessages, sendMessage, stopSendMessage, setPrefix } =
+    useChatStore()
   const { mcpEnabled, enabledServers, setMcpEnabled } = useMcpStore()
   const [senderValue, setSenderValue] = useState('')
   const [editingId, setEditingId] = useState('')
@@ -66,7 +62,6 @@ export default function Chat(): React.JSX.Element {
   const [trackRef, { width: trackWidth }] = useMeasure<HTMLDivElement>()
   const promptsControls = useAnimation()
   const [dragging, setDragging] = useState(false)
-
   const [senderAreaRef, { height: senderAreaHeight }] = useMeasure<HTMLDivElement>()
   const scrollRef = useRef<HTMLDivElement>(null)
   const [atBottom, setAtBottom] = useState(false)
@@ -85,6 +80,8 @@ export default function Chat(): React.JSX.Element {
   })
   const rawMessages = messagesData?.data ?? []
   const fullMessages = [...rawMessages, ...(isStreaming ? newMessages : [])]
+  const [parentIdManually, setParentIdManually] = useState('')
+  const parentId = parentIdManually || fullMessages.at(-1)?.id || ''
   const messages = (() => {
     if (!fullMessages.length) {
       return []
@@ -94,7 +91,7 @@ export default function Chat(): React.JSX.Element {
       map.set(msg.id, msg)
     })
 
-    let currentId = parentId || fullMessages[fullMessages.length - 1].id
+    let currentId = parentId
     const path: MessageFrontResponse[] = []
 
     while (currentId) {
@@ -108,10 +105,21 @@ export default function Chat(): React.JSX.Element {
     return path
   })()
 
-  const chat = queryClient
-    .getQueryData<InfiniteData<PageResult<ChatFrontResponse[]>>>(['chats'])
-    ?.pages.flatMap((page) => page.data.list)
-    .find((chat) => chat.id === chatId)
+  const sendMessageMutation = useMutation<
+    void,
+    Error,
+    { id: string; data: SendMessageFrontRequest }
+  >({
+    mutationFn: ({ id, data }) => sendMessage(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['messages'] })
+      queryClient.invalidateQueries({ queryKey: ['chats'] })
+      queryClient.invalidateQueries({ queryKey: ['user'] })
+    }
+  })
+
+  const { data: chatsData } = useChatsInfiniteQuery()
+  const chat = flattenChats(chatsData?.pages).find((item) => item.id === chatId)
 
   const { data: settingsData } = useQuery({
     queryKey: ['settings'],
@@ -142,7 +150,7 @@ export default function Chat(): React.JSX.Element {
   const createChatTitleMutation = useMutation({
     mutationFn: createChatTitle,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['chats'] })
+      queryClient.invalidateQueries({ queryKey: chatsInfiniteQueryKey })
     }
   })
 
@@ -158,26 +166,28 @@ export default function Chat(): React.JSX.Element {
   const prompts = promptsData?.data ?? []
 
   useEffect(() => {
-    if (!isStreaming) {
-      if (rawMessages.length) {
-        setParentId(rawMessages[rawMessages.length - 1].id)
-      }
+    const load = (): void => {
+      if (!isStreaming) {
+        if (rawMessages.length >= 2 && !chat?.title) {
+          createChatTitleMutation.mutate(chatId!)
+        }
 
-      if (messages.length >= 2 && !chat?.title) {
-        createChatTitleMutation.mutate(chatId!)
-      }
-
-      if (promptsSuggestion && parentId) {
-        promptsControls.start({
-          x: 0,
-          y: 0
-        })
+        if (promptsSuggestion && parentId) {
+          promptsControls.start({
+            x: 0,
+            y: 0
+          })
+        }
+      } else {
+        setParentIdManually('')
       }
     }
-  }, [chatId, rawMessages, promptsSuggestion])
+    load()
+  }, [chatId, isStreaming, promptsSuggestion])
 
   useEffect(() => {
     const load = async (): Promise<void> => {
+      setParentIdManually('')
       setSenderValue('')
       promptsControls.start({
         x: 0,
@@ -194,7 +204,7 @@ export default function Chat(): React.JSX.Element {
         el.scrollTo({ top: el.scrollHeight, behavior: 'auto' })
       })
     }
-  }, [messages, senderAreaHeight])
+  }, [chatId, fullMessages.length])
 
   return (
     <div className="relative h-full">
@@ -263,14 +273,19 @@ export default function Chat(): React.JSX.Element {
                   appMessage.warning(t('messageRequired'))
                   return
                 }
-                setParentId(item.parentId)
-                await sendMessage(chatId!, {
-                  parentId: item.parentId ?? undefined,
-                  content: value
+                sendMessageMutation.mutate({
+                  id: chatId!,
+                  data: {
+                    parentId: item.parentId ?? undefined,
+                    content: value,
+                    prefix: prefix || undefined,
+                    tools: mcpEnabled
+                      ? servers
+                          ?.filter((server) => enabledServers.includes(server.name))
+                          .flatMap((server) => server.tools.map((tool) => tool.name))
+                      : undefined
+                  }
                 })
-                queryClient.invalidateQueries({ queryKey: ['messages'] })
-                queryClient.invalidateQueries({ queryKey: ['user'] })
-                setParentId(fullMessages[fullMessages.length - 1].id)
               }}
               footer={
                 item.type === 'ASSISTANT' ? (
@@ -285,14 +300,19 @@ export default function Chat(): React.JSX.Element {
                           onItemClick: async () => {
                             const userMessage = messages?.find((m) => m.id === item.parentId)
                             if (!userMessage) return
-                            setParentId(userMessage?.parentId)
-                            await sendMessage(chatId!, {
-                              parentId: userMessage.parentId ?? undefined,
-                              content: userMessage.content
+                            sendMessageMutation.mutate({
+                              id: chatId!,
+                              data: {
+                                parentId: userMessage.parentId ?? undefined,
+                                content: userMessage.content,
+                                prefix: prefix || undefined,
+                                tools: mcpEnabled
+                                  ? servers
+                                      ?.filter((server) => enabledServers.includes(server.name))
+                                      .flatMap((server) => server.tools.map((tool) => tool.name))
+                                  : undefined
+                              }
                             })
-                            queryClient.invalidateQueries({ queryKey: ['messages'] })
-                            queryClient.invalidateQueries({ queryKey: ['user'] })
-                            setParentId(fullMessages[fullMessages.length - 1].id)
                           }
                         },
                         {
@@ -341,8 +361,7 @@ export default function Chat(): React.JSX.Element {
                                       if (!child) break
                                       current = child
                                     }
-
-                                    setParentId(current?.id ?? null)
+                                    setParentIdManually(current?.id ?? null)
                                   }}
                                   total={
                                     fullMessages?.filter((m) => m.parentId === item.parentId).length
@@ -527,10 +546,19 @@ export default function Chat(): React.JSX.Element {
               return
             }
             setSenderValue('')
-            await sendMessage(chatId!, { parentId: parentId ?? undefined, content: senderValue })
-            queryClient.invalidateQueries({ queryKey: ['messages'] })
-            queryClient.invalidateQueries({ queryKey: ['user'] })
-            setParentId(fullMessages[fullMessages.length - 1].id)
+            sendMessageMutation.mutate({
+              id: chatId!,
+              data: {
+                parentId: parentId ?? undefined,
+                content: senderValue,
+                prefix: prefix || undefined,
+                tools: mcpEnabled
+                  ? servers
+                      ?.filter((server) => enabledServers.includes(server.name))
+                      .flatMap((server) => server.tools.map((tool) => tool.name))
+                  : undefined
+              }
+            })
           }}
           onCancel={async () => {
             stopSendMessage()

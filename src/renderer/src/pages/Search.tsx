@@ -1,18 +1,21 @@
-import { CloseOutlined, LoadingOutlined, MessageOutlined, SearchOutlined } from '@ant-design/icons'
+import {
+  CloseOutlined,
+  LoadingOutlined,
+  MessageOutlined,
+  PushpinOutlined,
+  SearchOutlined
+} from '@ant-design/icons'
 import { Sender } from '@ant-design/x'
-import { listChats, searchChats } from '@renderer/api/front/chat'
+import { searchChats } from '@renderer/api/front/chat'
 import EmptyState from '@renderer/components/common/EmptyState'
+import { flattenChats, useChatsInfiniteQuery } from '@renderer/hooks/useChatsInfiniteQuery'
 import { Card, Skeleton, Space, Spin } from 'antd'
 import clsx from 'clsx'
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
-import { keepPreviousData, useInfiniteQuery, useQuery } from '@tanstack/react-query'
+import { keepPreviousData, useQuery } from '@tanstack/react-query'
 import { getSettings } from '@renderer/api/front/user'
-import { PageResult } from '@renderer/types/result'
-import { ChatFrontResponse } from '@renderer/types/chat'
-
-const chatsPageSize = 15
 
 export default function Search(): React.JSX.Element {
   const { t } = useTranslation('search')
@@ -27,20 +30,8 @@ export default function Search(): React.JSX.Element {
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage
-  } = useInfiniteQuery({
-    queryKey: ['chats'],
-    queryFn: ({ pageParam = 1 }): Promise<PageResult<ChatFrontResponse[]>> => {
-      return listChats(pageParam, chatsPageSize)
-    },
-    initialPageParam: 1,
-    getNextPageParam: (lastPage: PageResult<ChatFrontResponse[]>) => {
-      const { pageIndex, total } = lastPage.data
-      return +pageIndex * chatsPageSize < +total ? +pageIndex + 1 : undefined
-    },
-    refetchOnMount: false,
-    refetchOnWindowFocus: false
-  })
-  const chats = chatsData?.pages.flatMap((page) => page.data.list) ?? []
+  } = useChatsInfiniteQuery()
+  const chats = flattenChats(chatsData?.pages)
 
   const { data: resultsData, isFetching } = useQuery({
     queryKey: ['chats', keyword],
@@ -98,7 +89,13 @@ export default function Search(): React.JSX.Element {
                 >
                   <Skeleton loading={isFetching} active paragraph={{ rows: 1 }}>
                     <Card.Meta
-                      avatar={<MessageOutlined className="text-2xl" />}
+                      avatar={
+                        item.pinnedFlag ? (
+                          <PushpinOutlined className="text-2xl" />
+                        ) : (
+                          <MessageOutlined className="text-2xl" />
+                        )
+                      }
                       title={item.title || t('newChat')}
                       description={item.updateTime}
                       classNames={{
@@ -130,7 +127,13 @@ export default function Search(): React.JSX.Element {
                 )}
               >
                 <Card.Meta
-                  avatar={<MessageOutlined className="text-2xl" />}
+                  avatar={
+                    item.pinnedFlag ? (
+                      <PushpinOutlined className="text-2xl" />
+                    ) : (
+                      <MessageOutlined className="text-2xl" />
+                    )
+                  }
                   title={item.title || t('newChat')}
                   description={item.updateTime}
                   classNames={{

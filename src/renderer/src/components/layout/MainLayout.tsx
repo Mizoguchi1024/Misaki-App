@@ -16,19 +16,15 @@ import { useChatStore } from '@renderer/store/chatStore'
 import HeaderRightPart from '../common/HeaderRightPart'
 import MisakiButton from '../common/MisakiButton'
 import HeaderMiddlePart from '../common/HeaderMiddlePart'
-import { listChats } from '@renderer/api/front/chat'
 import { checkIn, getProfile, getSettings } from '@renderer/api/front/user'
 import { useSettingsStore } from '@renderer/store/settingsStore'
 import { useAssistantStore } from '@renderer/store/assistantStore'
 import clsx from 'clsx'
 import dayjs from 'dayjs'
-import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { PageResult } from '@renderer/types/result'
-import { ChatFrontResponse } from '@renderer/types/chat'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { flattenChats, useChatsInfiniteQuery } from '@renderer/hooks/useChatsInfiniteQuery'
 
 const { Header, Content, Sider } = Layout
-
-const chatsPageSize = 15
 
 export default function MainLayout(): React.JSX.Element {
   const { t } = useTranslation('mainLayout')
@@ -98,21 +94,8 @@ export default function MainLayout(): React.JSX.Element {
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage
-  } = useInfiniteQuery({
-    queryKey: ['chats'],
-    queryFn: ({ pageParam = 1 }): Promise<PageResult<ChatFrontResponse[]>> => {
-      return listChats(pageParam, chatsPageSize)
-    },
-    enabled: !!jwt,
-    initialPageParam: 1,
-    getNextPageParam: (lastPage: PageResult<ChatFrontResponse[]>) => {
-      const { pageIndex, total } = lastPage.data
-      return +pageIndex * chatsPageSize < +total ? +pageIndex + 1 : undefined
-    },
-    refetchOnMount: false,
-    refetchOnWindowFocus: false
-  })
-  const chats = chatsData?.pages.flatMap((page) => page.data.list) ?? []
+  } = useChatsInfiniteQuery()
+  const chats = flattenChats(chatsData?.pages)
 
   useEffect(() => {
     if (!jwt) {

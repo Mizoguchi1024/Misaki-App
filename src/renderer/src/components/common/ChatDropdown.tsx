@@ -5,14 +5,19 @@ import {
   PushpinOutlined
 } from '@ant-design/icons'
 import { deleteChat, updateChat } from '@renderer/api/front/chat'
+import {
+  chatsInfiniteQueryKey,
+  flattenChats,
+  useChatsInfiniteQuery
+} from '@renderer/hooks/useChatsInfiniteQuery'
 import { Dropdown, Button, MenuProps, App } from 'antd'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate, useParams } from 'react-router-dom'
 import ChatDetailModal from './ChatDetailModal'
-import { InfiniteData, useMutation, useQueryClient } from '@tanstack/react-query'
-import { ChatFrontResponse, UpdateChatFrontRequest } from '@renderer/types/chat'
-import { PageResult, Result } from '@renderer/types/result'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { UpdateChatFrontRequest } from '@renderer/types/chat'
+import { Result } from '@renderer/types/result'
 
 export default function ChatDropdown(): React.JSX.Element {
   const { t } = useTranslation('chatDropdown')
@@ -22,10 +27,8 @@ export default function ChatDropdown(): React.JSX.Element {
   const { id: chatId } = useParams()
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false)
 
-  const chat = queryClient
-    .getQueryData<InfiniteData<PageResult<ChatFrontResponse[]>>>(['chats'])
-    ?.pages.flatMap((page) => page.data.list)
-    .find((chat) => chat.id === chatId)
+  const { data: chatsData } = useChatsInfiniteQuery()
+  const chat = flattenChats(chatsData?.pages).find((item) => item.id === chatId)
 
   const updateChatTitleMutation = useMutation<
     Result<void>,
@@ -34,7 +37,7 @@ export default function ChatDropdown(): React.JSX.Element {
   >({
     mutationFn: ({ id, data }) => updateChat(id, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['chats'] })
+      queryClient.invalidateQueries({ queryKey: chatsInfiniteQueryKey })
     }
   })
 
@@ -42,7 +45,7 @@ export default function ChatDropdown(): React.JSX.Element {
     mutationFn: deleteChat,
     onSuccess: () => {
       appMessage.success(t('chatDeleted'))
-      queryClient.invalidateQueries({ queryKey: ['chats'] })
+      queryClient.invalidateQueries({ queryKey: chatsInfiniteQueryKey })
       navigate('/', { viewTransition: true })
     }
   })

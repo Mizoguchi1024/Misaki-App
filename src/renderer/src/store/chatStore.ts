@@ -6,11 +6,9 @@ import { useUserStore } from './userStore'
 
 interface ChatState {
   isStreaming: boolean
-  parentId: string | null
   prefix: string
   newMessages: MessageFrontResponse[]
 
-  setParentId: (parentId: string | null) => void
   setPrefix: (prefix: string) => void
 
   setNewMessages: (newMessages: MessageFrontResponse[]) => void
@@ -25,7 +23,6 @@ let currentSendMessageController: AbortController | null = null
 const initialState = {
   isStreaming: false,
   prompts: null,
-  parentId: null,
   prefix: '',
   newMessages: []
 }
@@ -43,7 +40,6 @@ export const useChatStore = create<ChatState>()(
     (set) => ({
       ...initialState,
 
-      setParentId: (parentId) => set({ parentId }),
       setPrefix: (prefix) => set({ prefix }),
       stopSendMessage: () => {
         currentSendMessageController?.abort()
@@ -60,13 +56,13 @@ export const useChatStore = create<ChatState>()(
           const userMessageId = crypto.randomUUID()
           const assistantMessageId = crypto.randomUUID()
           const now = new Date().toISOString()
-          set((state) => ({
+          set(() => ({
             isStreaming: true,
             newMessages: [
               {
                 id: userMessageId,
                 chatId,
-                parentId: state.parentId ?? null,
+                parentId: data.parentId ?? null,
                 type: 'USER',
                 content: data.content,
                 createTime: now

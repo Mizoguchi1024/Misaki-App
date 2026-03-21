@@ -4,6 +4,7 @@ import { useUserStore } from '@renderer/store/userStore'
 import { useSettingsStore } from '@renderer/store/settingsStore'
 import { useChatStore } from '@renderer/store/chatStore'
 import { useAssistantStore } from '@renderer/store/assistantStore'
+import { queryClient } from '@renderer/main'
 
 const api = axios.create({
   timeout: 5000
@@ -30,6 +31,7 @@ api.interceptors.response.use(
           useUserStore.getState().reset()
           useChatStore.getState().reset()
           useAssistantStore.getState().reset()
+          queryClient.removeQueries()
         }
       }
       useSettingsStore

@@ -1,12 +1,17 @@
 import { Input, InputRef } from 'antd'
+import {
+  chatsInfiniteQueryKey,
+  flattenChats,
+  useChatsInfiniteQuery
+} from '@renderer/hooks/useChatsInfiniteQuery'
 import { useParams } from 'react-router-dom'
 import AssistantScrollList from './AssistantScrollList'
 import { useTranslation } from 'react-i18next'
 import { updateChat } from '@renderer/api/front/chat'
 import { useEffect, useRef, useState } from 'react'
-import { InfiniteData, useMutation, useQueryClient } from '@tanstack/react-query'
-import { PageResult, Result } from '@renderer/types/result'
-import { ChatFrontResponse, UpdateChatFrontRequest } from '@renderer/types/chat'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { Result } from '@renderer/types/result'
+import { UpdateChatFrontRequest } from '@renderer/types/chat'
 
 export default function HeaderMiddlePart({ currentPage }): React.JSX.Element {
   const { t } = useTranslation('headerMiddlePart')
@@ -14,10 +19,8 @@ export default function HeaderMiddlePart({ currentPage }): React.JSX.Element {
   const chatTitleInputRef = useRef<InputRef>(null)
   const queryClient = useQueryClient()
 
-  const chat = queryClient
-    .getQueryData<InfiniteData<PageResult<ChatFrontResponse[]>>>(['chats'])
-    ?.pages.flatMap((page) => page.data.list)
-    .find((chat) => chat.id === chatId)
+  const { data: chatsData } = useChatsInfiniteQuery()
+  const chat = flattenChats(chatsData?.pages).find((item) => item.id === chatId)
 
   const [chatTitleInput, setChatTitleInput] = useState(chat?.title || t('newChat'))
 
@@ -28,7 +31,7 @@ export default function HeaderMiddlePart({ currentPage }): React.JSX.Element {
   >({
     mutationFn: ({ id, data }) => updateChat(id, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['chats'] })
+      queryClient.invalidateQueries({ queryKey: chatsInfiniteQueryKey })
     }
   })
 
