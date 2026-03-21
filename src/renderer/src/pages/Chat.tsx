@@ -109,6 +109,7 @@ export default function Chat(): React.JSX.Element {
   >({
     mutationFn: ({ id, data }) => sendMessage(id, data),
     onSuccess: () => {
+      refetchPrompts()
       queryClient.invalidateQueries({ queryKey: ['messages'] })
       queryClient.resetQueries({ queryKey: ['chats'] })
       queryClient.invalidateQueries({ queryKey: ['user'] })
@@ -151,14 +152,17 @@ export default function Chat(): React.JSX.Element {
     }
   })
 
-  const { data: promptsData } = useQuery({
-    queryKey: ['prompts'],
+  const { data: promptsData, refetch: refetchPrompts } = useQuery({
+    queryKey: ['prompts', chatId],
     queryFn: () =>
       listPrompts(chatId!, {
         parentId: parentId!,
         size: 2
       }),
-    enabled: promptsSuggestion
+    enabled: promptsSuggestion && !!parentId && !isStreaming,
+    staleTime: Infinity,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false
   })
   const prompts = promptsData?.data ?? []
 
@@ -444,7 +448,6 @@ export default function Chat(): React.JSX.Element {
               className="w-max"
             >
               <Prompts
-                key={parentId}
                 fadeInLeft
                 items={prompts.map((prompt) => ({
                   key: prompt,
@@ -547,7 +550,7 @@ export default function Chat(): React.JSX.Element {
           onChange={(value) => {
             setSenderValue(value)
           }}
-          onSubmit={async () => {
+          onSubmit={() => {
             if (senderValue.length > 10000) {
               appMessage.warning(t('messageMaxLength', { max: 10000 }))
               return
@@ -567,7 +570,7 @@ export default function Chat(): React.JSX.Element {
               }
             })
           }}
-          onCancel={async () => {
+          onCancel={() => {
             stopSendMessage()
           }}
           suffix={false}
