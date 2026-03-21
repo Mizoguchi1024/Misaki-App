@@ -33,13 +33,14 @@ export default function ProfileModal({ open, onCancel }): React.JSX.Element {
     }
   })
 
-  const onFinish: FormProps<FieldType>['onFinish'] = (values) => {
-    updateUserMutation.mutate({
+  const onFinish: FormProps<FieldType>['onFinish'] = async (values) => {
+    await updateUserMutation.mutateAsync({
       ...values,
       birthday: values.birthday?.format('YYYY-MM-DD') ?? undefined,
       version: userVersion
     })
     appMessage.success(t('profileSaved'))
+    onCancel()
   }
 
   return (

@@ -17,6 +17,7 @@ export default function FeedbackModal({ open, onCancel }): React.JSX.Element {
   const { t } = useTranslation('feedbackModal')
   const { message: appMessage } = App.useApp()
   const queryClient = useQueryClient()
+  const [form] = Form.useForm<AddFeedbackFrontRequest>()
 
   const { data } = useQuery({
     queryKey: ['feedbacks'],
@@ -27,6 +28,7 @@ export default function FeedbackModal({ open, onCancel }): React.JSX.Element {
   const createFeedbackMutation = useMutation({
     mutationFn: createFeedback,
     onSuccess: () => {
+      form.resetFields()
       appMessage.success(t('feedbackCreated'))
       queryClient.invalidateQueries({ queryKey: ['feedbacks'] })
     }
@@ -62,6 +64,8 @@ export default function FeedbackModal({ open, onCancel }): React.JSX.Element {
       label: t('create'),
       children: (
         <Form
+          form={form}
+          initialValues={{}}
           name="basic"
           autoComplete="off"
           validateTrigger="onSubmit"
@@ -95,7 +99,7 @@ export default function FeedbackModal({ open, onCancel }): React.JSX.Element {
               rules={[{ required: true, message: t('contentRequired') }]}
             >
               <Input.TextArea
-                autoSize={{ minRows: 10, maxRows: 12 }}
+                autoSize={{ minRows: 8, maxRows: 10 }}
                 placeholder={t('content')}
                 showCount
                 maxLength={1000}
@@ -104,12 +108,12 @@ export default function FeedbackModal({ open, onCancel }): React.JSX.Element {
               />
             </Form.Item>
           </div>
-          <div className="flex justify-around">
-            <Button type="default" htmlType="reset">
-              {t('clear')}
-            </Button>
-            <Button type="primary" htmlType="submit">
+          <div className="flex flex-col gap-4">
+            <Button type="primary" htmlType="submit" block>
               {t('submit')}
+            </Button>
+            <Button type="default" htmlType="reset" block>
+              {t('clear')}
             </Button>
           </div>
         </Form>

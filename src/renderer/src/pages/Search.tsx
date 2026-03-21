@@ -22,8 +22,8 @@ export default function Search(): React.JSX.Element {
   const navigate = useNavigate()
   const [searchInputValue, setSearchInputValue] = useState('')
   const [keyword, setKeyword] = useState('')
-  const sentinelRef = useRef(null)
-  const scrollableDivRef = useRef(null)
+  const scrollableDivRef = useRef<HTMLDivElement>(null)
+  const sentinelRef = useRef<HTMLDivElement>(null)
 
   const {
     data: chatsData,
@@ -48,6 +48,11 @@ export default function Search(): React.JSX.Element {
   const backgroundPath = settingsData?.data.backgroundPath
 
   useEffect(() => {
+    const root = scrollableDivRef.current
+    const sentinel = sentinelRef.current
+
+    if (!root || !sentinel) return
+
     const observer = new IntersectionObserver(
       (entries) => {
         const target = entries[0]
@@ -56,20 +61,18 @@ export default function Search(): React.JSX.Element {
         }
       },
       {
-        root: scrollableDivRef.current, // 默认是浏览器视口，如果是局部容器，请传容器的 ref.current
+        root,
         rootMargin: '20px', // 提前 20px 触发，优化体验
         threshold: 0.1 // 哨兵出现 10% 时触发
       }
     )
 
-    if (sentinelRef.current) {
-      observer.observe(sentinelRef.current)
-    }
+    observer.observe(sentinel)
 
     return () => {
-      if (sentinelRef.current) observer.unobserve(sentinelRef.current)
+      observer.disconnect()
     }
-  }, [isFetchingNextPage])
+  }, [fetchNextPage, hasNextPage, isFetchingNextPage])
 
   return (
     <div className="h-full relative">

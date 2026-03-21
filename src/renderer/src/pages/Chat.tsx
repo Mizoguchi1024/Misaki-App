@@ -63,7 +63,8 @@ export default function Chat(): React.JSX.Element {
   const promptsControls = useAnimation()
   const [dragging, setDragging] = useState(false)
   const [senderAreaRef, { height: senderAreaHeight }] = useMeasure<HTMLDivElement>()
-  const scrollRef = useRef<HTMLDivElement>(null)
+  const scrollableDivRef = useRef<HTMLDivElement>(null)
+  const sentinelRef = useRef<HTMLDivElement>(null)
   const [atBottom, setAtBottom] = useState(false)
   const [showUserFooterId, setShowUserFooterId] = useState('')
 
@@ -198,7 +199,7 @@ export default function Chat(): React.JSX.Element {
   }, [chatId])
 
   useEffect(() => {
-    const el = scrollRef.current
+    const el = scrollableDivRef.current
     if (el) {
       requestAnimationFrame(() => {
         el.scrollTo({ top: el.scrollHeight, behavior: 'auto' })
@@ -206,25 +207,34 @@ export default function Chat(): React.JSX.Element {
     }
   }, [chatId, fullMessages.length])
 
+  useEffect(() => {
+    const root = scrollableDivRef.current
+    const sentinel = sentinelRef.current
+
+    if (!root || !sentinel) return
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const target = entries[0]
+        setAtBottom(target.isIntersecting)
+      },
+      {
+        root,
+        threshold: 0.5
+      }
+    )
+
+    observer.observe(sentinel)
+
+    return () => {
+      observer.disconnect()
+    }
+  }, [setAtBottom])
+
   return (
     <div className="relative h-full">
-      <div
-        className="h-full overflow-y-auto scrollbar-style mask-end px-4"
-        ref={scrollRef}
-        onScroll={() => {
-          if (!scrollRef.current) return
-          const { scrollTop, scrollHeight, clientHeight } = scrollRef.current
-          if (scrollTop + clientHeight >= scrollHeight - 8) {
-            setAtBottom(true)
-          } else {
-            setAtBottom(false)
-          }
-        }}
-      >
-        <div
-          className="pt-12 w-full px-12 md:max-w-2xl lg:max-w-3xl xl:max-w-4xl md:mx-auto md:px-0 ease-in-out duration-250"
-          style={{ paddingBottom: senderAreaHeight + 12 }}
-        >
+      <div className="h-full overflow-y-auto scrollbar-style mask-end px-4" ref={scrollableDivRef}>
+        <div className="px-12 pt-12 w-full md:max-w-2xl lg:max-w-3xl xl:max-w-4xl md:mx-auto md:px-0 ease-in-out duration-250">
           {messages.map((item, index, array) => (
             <Bubble
               key={item.id}
@@ -390,6 +400,7 @@ export default function Chat(): React.JSX.Element {
               }}
             />
           ))}
+          <div ref={sentinelRef} style={{ height: senderAreaHeight + 12 }}></div>
         </div>
       </div>
       <AnimatePresence>
@@ -407,7 +418,7 @@ export default function Chat(): React.JSX.Element {
               className="absolute left-1/2 -translate-x-1/2 bg-white/70 dark:bg-white/20 backdrop-blur-xs hover:backdrop-blur-sm ease-in-out duration-500"
               style={{ bottom: senderAreaHeight + 12 }}
               onClick={() => {
-                const el = scrollRef.current
+                const el = scrollableDivRef.current
                 el?.scrollTo({ top: el.scrollHeight, behavior: 'smooth' })
               }}
             ></Button>

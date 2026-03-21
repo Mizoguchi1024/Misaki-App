@@ -124,17 +124,13 @@ export default function MainLayout(): React.JSX.Element {
     }
   ]
 
-  const pinnedChats = chats?.filter((chat) => chat.pinnedFlag) || []
-  const unpinnedChats = chats?.filter((chat) => !chat.pinnedFlag) || []
-  const orderedChats = [...pinnedChats, ...unpinnedChats]
-
-  const siderChatItems = orderedChats.map((item) => ({
+  const siderChatItems = chats.map((item) => ({
     key: '/chat/' + item.id,
     label: item.title ? item.title : t('newChat'),
     icon: item.pinnedFlag ? <PushpinOutlined /> : collapsed ? <MessageOutlined /> : null
   }))
 
-  const drawerChatItems = orderedChats.map((item) => ({
+  const drawerChatItems = chats.map((item) => ({
     key: '/chat/' + item.id,
     label: item.title ? item.title : t('newChat'),
     icon: item.pinnedFlag ? <PushpinOutlined /> : null
@@ -143,9 +139,14 @@ export default function MainLayout(): React.JSX.Element {
   const siderMenuItems = [...agentItems, ...siderChatItems]
   const drawerMenuItems = [...agentItems, ...drawerChatItems]
 
-  const sentinelRef = useRef(null)
-  const scrollableDivRef = useRef(null)
+  const sentinelRef = useRef<HTMLDivElement>(null)
+  const scrollableDivRef = useRef<HTMLDivElement>(null)
   useEffect(() => {
+    const root = scrollableDivRef.current
+    const sentinel = sentinelRef.current
+
+    if (!root || !sentinel) return
+
     const observer = new IntersectionObserver(
       (entries) => {
         const target = entries[0]
@@ -154,20 +155,18 @@ export default function MainLayout(): React.JSX.Element {
         }
       },
       {
-        root: scrollableDivRef.current, // 默认是浏览器视口，如果是局部容器，请传容器的 ref.current
+        root,
         rootMargin: '20px', // 提前 20px 触发，优化体验
         threshold: 0.1 // 哨兵出现 10% 时触发
       }
     )
 
-    if (sentinelRef.current) {
-      observer.observe(sentinelRef.current)
-    }
+    observer.observe(sentinel)
 
     return () => {
-      if (sentinelRef.current) observer.unobserve(sentinelRef.current)
+      observer.disconnect()
     }
-  }, [isFetchingNextPage])
+  }, [fetchNextPage, hasNextPage, isFetchingNextPage])
 
   return (
     <Layout className="h-screen w-screen overflow-hidden relative z-0">
