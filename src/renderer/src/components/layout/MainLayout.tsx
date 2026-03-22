@@ -8,7 +8,9 @@ import Icon, {
   MenuOutlined,
   MessageOutlined,
   PushpinOutlined,
-  SearchOutlined
+  SearchOutlined,
+  ShoppingOutlined,
+  StarOutlined
 } from '@ant-design/icons'
 import { useUserStore } from '@renderer/store/userStore'
 import { useTranslation } from 'react-i18next'
@@ -107,6 +109,16 @@ export default function MainLayout(): React.JSX.Element {
       key: '/mcp',
       label: t('mcp'),
       icon: <Icon component={McpLogo} />
+    },
+    {
+      key: '/shop',
+      label: t('shop'),
+      icon: <ShoppingOutlined />
+    },
+    {
+      key: '/wish',
+      label: t('wish'),
+      icon: <StarOutlined />
     },
     {
       type: 'divider'

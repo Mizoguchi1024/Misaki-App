@@ -10,6 +10,8 @@ import Search from '../pages/Search'
 import Misaki from '../pages/Misaki'
 import NotFound from '../pages/NotFound'
 import Chat from '../pages/Chat'
+import Shop from '@renderer/pages/Shop'
+import Wish from '@renderer/pages/Wish'
 
 export const router = createHashRouter([
   {
@@ -19,7 +21,9 @@ export const router = createHashRouter([
       { path: '/misaki', element: <Misaki />, handle: { page: 'misaki' } },
       { path: '/search', element: <Search />, handle: { page: 'search' } },
       { path: '/mcp', element: <Mcp />, handle: { page: 'mcp' } },
-      { path: '/chat/:id', element: <Chat />, handle: { page: 'chat' } }
+      { path: '/chat/:id', element: <Chat />, handle: { page: 'chat' } },
+      { path: '/shop', element: <Shop />, handle: { page: 'shop' } },
+      { path: '/wish', element: <Wish />, handle: { page: 'wish' } }
     ]
   },
   {

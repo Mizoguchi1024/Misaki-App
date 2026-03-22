@@ -1,0 +1,99 @@
+import { HeartOutlined } from '@ant-design/icons'
+import { buyModel, listModels } from '@renderer/api/front/model'
+import { getProfile } from '@renderer/api/front/user'
+import { buyPuzzle } from '@renderer/api/front/wish'
+import { useSettingsStore } from '@renderer/store/settingsStore'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { App, Avatar, Button, Card } from 'antd'
+import { useTranslation } from 'react-i18next'
+import MisakiLogoSymbol from '@renderer/assets/img/misaki-logo-symbol.svg?react'
+
+export default function Shop(): React.JSX.Element {
+  const { t } = useTranslation('shop')
+  const { message: appMessage } = App.useApp()
+  const queryClient = useQueryClient()
+  const { getOssBaseUrl } = useSettingsStore()
+
+  const { data: userData } = useQuery({
+    queryKey: ['user'],
+    queryFn: getProfile
+  })
+  const { stardust = 0 } = userData?.data ?? {}
+
+  const { data: modelsData } = useQuery({
+    queryKey: ['models'],
+    queryFn: listModels
+  })
+  const models =
+    modelsData?.data
+      .filter((model) => model.onSaleFlag)
+      .sort((a, b) => Number(a.ownedFlag) - Number(b.ownedFlag)) ?? []
+
+  const buyModelMutation = useMutation({
+    mutationFn: buyModel,
+    onSuccess: () => {
+      appMessage.success(t('modelBought'))
+      queryClient.invalidateQueries({ queryKey: ['models'] })
+      queryClient.invalidateQueries({ queryKey: ['user'] })
+    }
+  })
+
+  const buyPuzzleMutation = useMutation({
+    mutationFn: () => buyPuzzle(1, 'stardust'),
+    onSuccess: () => {
+      appMessage.success(t('puzzleBought'))
+      queryClient.invalidateQueries({ queryKey: ['user'] })
+    }
+  })
+
+  return (
+    <div className="px-4 h-full overflow-y-auto scrollbar-style mask-end">
+      <div className="px-12 pt-12 pb-40 w-full md:max-w-2xl md:mx-auto md:px-0 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <Card
+          className="select-none"
+          actions={[
+            <Button key="buy" disabled={stardust < 75} onClick={() => buyPuzzleMutation.mutate()}>
+              {t('buy')}
+            </Button>
+          ]}
+        >
+          <Card.Meta
+            avatar={<Avatar src={<MisakiLogoSymbol />} />}
+            title={t('puzzle')}
+            description={'75 ' + t('stardust')}
+          />
+        </Card>
+        {models.map((model) => (
+          <Card
+            className="select-none"
+            key={model.id}
+            classNames={{
+              body: model.grade === 5 ? 'bg-yellow-500' : 'bg-purple-500'
+            }}
+            actions={[
+              <Button
+                key="buy"
+                disabled={model.ownedFlag || stardust < model.price}
+                onClick={() => buyModelMutation.mutate(model.id)}
+              >
+                {model.ownedFlag ? t('owned') : t('buy')}
+              </Button>
+            ]}
+          >
+            <Card.Meta
+              avatar={
+                <Avatar
+                  src={getOssBaseUrl() + model.avatarPath}
+                  icon={<HeartOutlined />}
+                  draggable={false}
+                />
+              }
+              title={model.name}
+              description={model.price + ' ' + t('stardust')}
+            />
+          </Card>
+        ))}
+      </div>
+    </div>
+  )
+}

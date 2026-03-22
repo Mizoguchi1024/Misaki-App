@@ -1,15 +1,15 @@
+import { LoadingOutlined } from '@ant-design/icons'
+import { getProfile, getSettings } from '@renderer/api/front/user'
 import { useUserStore } from '@renderer/store/userStore'
+import { useQuery } from '@tanstack/react-query'
 import { Spin, Tag } from 'antd'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import EntryModal from './EntryModal'
-import MisakiLogoToken from '@renderer/assets/img/misaki-logo-token.svg?react'
-import { getProfile, getSettings } from '@renderer/api/front/user'
-import { useQuery } from '@tanstack/react-query'
-import { LoadingOutlined } from '@ant-design/icons'
+import MisakiLogoStardust from '@renderer/assets/img/misaki-logo-stardust.svg?react'
 
-export default function TokenTag(): React.JSX.Element {
-  const { t } = useTranslation('tokenTag')
+export default function StardustTag(): React.JSX.Element {
+  const { t } = useTranslation('stardustTag')
   const { jwt } = useUserStore()
   const [isModalOpen, setIsModalOpen] = useState(false)
 
@@ -18,7 +18,7 @@ export default function TokenTag(): React.JSX.Element {
     queryFn: getProfile,
     enabled: !!jwt
   })
-  const { token } = userData?.data ?? {}
+  const { stardust } = userData?.data ?? {}
 
   const { data: settingsData } = useQuery({
     queryKey: ['settings'],
@@ -30,21 +30,19 @@ export default function TokenTag(): React.JSX.Element {
   return (
     <Spin spinning={isLoading} indicator={<LoadingOutlined spin />}>
       <Tag
-        color={token && token <= 1000 ? 'red' : 'default'}
+        color="default"
         variant="filled"
         className="select-none cursor-pointer hidden md:inline"
         onClick={() => setIsModalOpen(true)}
       >
-        {t('token') +
-          ': ' +
-          ((token ?? 0) >= 1000 ? (token! / 1000).toFixed(1).replace(/\.0$/, '') + 'K' : token)}
+        {t('stardust') + ': ' + stardust}
       </Tag>
       <EntryModal
         open={isModalOpen}
         onCancel={() => setIsModalOpen(false)}
-        title={t('token')}
-        amount={token}
-        image={<MisakiLogoToken className="w-24" style={{ color: mainColor }} />}
+        title={t('stardust')}
+        amount={stardust}
+        image={<MisakiLogoStardust className="w-24" style={{ color: mainColor }} />}
         description={t('description')}
       />
     </Spin>

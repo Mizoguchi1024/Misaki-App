@@ -19,6 +19,7 @@ export default function ProfileModal({ open, onCancel }): React.JSX.Element {
   const { t } = useTranslation('profileModal')
   const { message: appMessage } = App.useApp()
   const queryClient = useQueryClient()
+
   const { data: userData } = useQuery({
     queryKey: ['user'],
     queryFn: getProfile

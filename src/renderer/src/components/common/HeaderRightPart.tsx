@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import HelpDropdown from './HelpDropdown'
 import TokenTag from './TokenTag'
+import StardustTag from './StardustTag'
 
 export default function HeaderRightPart({ currentPage }): React.JSX.Element {
   const { t } = useTranslation('headerRightPart')
@@ -65,14 +66,18 @@ export default function HeaderRightPart({ currentPage }): React.JSX.Element {
           </Button>
         </div>
       )
+    case 'shop':
+      return (
+        <div className="flex items-center gap-4">
+          <StardustTag />
+          <UserDropdown />
+        </div>
+      )
     case 'misaki':
       return <UserDropdown />
     default:
       return (
         <div className="flex items-center gap-4">
-          {/* <Button color="primary" variant="filled" icon={<HeartOutlined />}>
-            {t('wish')}
-          </Button> */}
           <TokenTag />
           <UserDropdown />
         </div>

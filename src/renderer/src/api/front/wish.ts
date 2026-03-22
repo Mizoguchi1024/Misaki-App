@@ -4,12 +4,12 @@ import { WishFrontResponse } from '@renderer/types/wish'
 
 export const buyPuzzle = (amount: number, currency: string): Promise<Result<void>> =>
   api
-    .post<Result<void>>('/front/wish/puzzle', { params: { amount, currency } })
+    .post<Result<void>>('/front/wish/puzzles', null, { params: { amount, currency } })
     .then((res) => res.data)
 
 export const gacha = (times: number): Promise<Result<WishFrontResponse[]>> =>
   api
-    .post<Result<WishFrontResponse[]>>('/front/wish/gacha', { params: { times } })
+    .post<Result<WishFrontResponse[]>>('/front/wish/gacha', null, { params: { times } })
     .then((res) => res.data)
 
 export const listWishes = (

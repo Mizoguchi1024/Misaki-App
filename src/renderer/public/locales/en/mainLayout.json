@@ -2,8 +2,8 @@
   "startNewChat": "Chat",
   "searchChats": "Search",
   "mcp": "MCP",
-  "script": "Script",
-  "fileManager": "File",
+  "shop": "Shop",
+  "wish": "Wish",
   "newChat": "New chat",
   "checkInSuccess": "Check-in success, get {{token}} Tokens and {{crystal}} Crystals"
 }

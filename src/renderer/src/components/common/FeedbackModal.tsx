@@ -145,7 +145,7 @@ export default function FeedbackModal({ open, onCancel }): React.JSX.Element {
                     <DeleteOutlined
                       key="delete"
                       className="text-red-500"
-                      onClick={async () => deleteFeedbackMutation.mutate(item.id)}
+                      onClick={() => deleteFeedbackMutation.mutate(item.id)}
                     />
                   ]}
                 >

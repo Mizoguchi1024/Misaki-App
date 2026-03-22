@@ -2,8 +2,8 @@
   "startNewChat": "チャット",
   "searchChats": "検索",
   "mcp": "MCP",
-  "script": "スクリプト",
-  "fileManager": "ファイル",
+  "shop": "ショップ",
+  "wish": "祈り",
   "newChat": "新しいチャット",
   "checkInSuccess": "チェックイン成功、{token} トークンと {crystal} クリスタルを獲得しました"
 }
