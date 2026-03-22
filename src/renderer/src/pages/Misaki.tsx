@@ -91,7 +91,6 @@ export default function Misaki(): React.JSX.Element {
     onSuccess: () => {
       appMessage.success(t('assistantSaved'))
       queryClient.invalidateQueries({ queryKey: ['assistants'] })
-      setCurrentAssistantId(enabledAssistantId)
       setIsEditingManually(false)
     }
   })
@@ -421,8 +420,10 @@ export default function Misaki(): React.JSX.Element {
                             shape="circle"
                             icon={<CloseOutlined />}
                             onClick={() => {
-                              setCurrentAssistantId(enabledAssistantId)
                               setIsEditingManually(false)
+                              if (!currentAssistantId) {
+                                setCurrentAssistantId(enabledAssistantId)
+                              }
                             }}
                           />
                         </Tooltip>

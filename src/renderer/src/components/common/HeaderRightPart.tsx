@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom'
 import HelpDropdown from './HelpDropdown'
 import TokenTag from './TokenTag'
 import StardustTag from './StardustTag'
+import PuzzleTag from './puzzleTag'
 
 export default function HeaderRightPart({ currentPage }): React.JSX.Element {
   const { t } = useTranslation('headerRightPart')
@@ -70,6 +71,7 @@ export default function HeaderRightPart({ currentPage }): React.JSX.Element {
       return (
         <div className="flex items-center gap-4">
           <StardustTag />
+          <PuzzleTag />
           <UserDropdown />
         </div>
       )

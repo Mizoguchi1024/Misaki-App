@@ -1,12 +1,11 @@
-import { HeartOutlined } from '@ant-design/icons'
 import { buyModel, listModels } from '@renderer/api/front/model'
 import { getProfile } from '@renderer/api/front/user'
 import { buyPuzzle } from '@renderer/api/front/wish'
 import { useSettingsStore } from '@renderer/store/settingsStore'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { App, Avatar, Button, Card } from 'antd'
+import { App, Button, Card } from 'antd'
 import { useTranslation } from 'react-i18next'
-import MisakiLogoSymbol from '@renderer/assets/img/misaki-logo-symbol.svg?react'
+import MisakiLogoPuzzle from '@renderer/assets/img/misaki-logo-puzzle.png'
 
 export default function Shop(): React.JSX.Element {
   const { t } = useTranslation('shop')
@@ -48,31 +47,49 @@ export default function Shop(): React.JSX.Element {
 
   return (
     <div className="px-4 h-full overflow-y-auto scrollbar-style mask-end">
-      <div className="px-12 pt-12 pb-40 w-full md:max-w-2xl md:mx-auto md:px-0 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="px-12 pt-12 pb-40 w-full md:max-w-2xl md:mx-auto md:px-0 grid grid-cols-2 lg:grid-cols-3 gap-8">
         <Card
           className="select-none"
+          classNames={{
+            body: 'bg-neutral-300 dark:bg-neutral-700'
+          }}
+          cover={<img src={MisakiLogoPuzzle} draggable={false} className="p-12 aspect-square" />}
           actions={[
-            <Button key="buy" disabled={stardust < 75} onClick={() => buyPuzzleMutation.mutate()}>
+            <Button
+              key="buy"
+              color="default"
+              variant="filled"
+              disabled={stardust < 75}
+              onClick={() => buyPuzzleMutation.mutate()}
+            >
               {t('buy')}
             </Button>
           ]}
         >
-          <Card.Meta
-            avatar={<Avatar src={<MisakiLogoSymbol />} />}
-            title={t('puzzle')}
-            description={'75 ' + t('stardust')}
-          />
+          <Card.Meta title={t('puzzle')} description={'75 ' + t('stardust')} />
         </Card>
         {models.map((model) => (
           <Card
             className="select-none"
             key={model.id}
+            cover={
+              <img
+                src={getOssBaseUrl() + model.avatarPath}
+                draggable={false}
+                className="aspect-square"
+              />
+            }
             classNames={{
-              body: model.grade === 5 ? 'bg-yellow-500' : 'bg-purple-500'
+              body:
+                model.grade === 5
+                  ? 'bg-yellow-400 dark:bg-yellow-700'
+                  : 'bg-purple-400 dark:bg-purple-700'
             }}
             actions={[
               <Button
                 key="buy"
+                color="default"
+                variant="filled"
                 disabled={model.ownedFlag || stardust < model.price}
                 onClick={() => buyModelMutation.mutate(model.id)}
               >
@@ -80,17 +97,7 @@ export default function Shop(): React.JSX.Element {
               </Button>
             ]}
           >
-            <Card.Meta
-              avatar={
-                <Avatar
-                  src={getOssBaseUrl() + model.avatarPath}
-                  icon={<HeartOutlined />}
-                  draggable={false}
-                />
-              }
-              title={model.name}
-              description={model.price + ' ' + t('stardust')}
-            />
+            <Card.Meta title={model.name} description={model.price + ' ' + t('stardust')} />
           </Card>
         ))}
       </div>
