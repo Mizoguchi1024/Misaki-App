@@ -36,18 +36,18 @@ const Live2DCanvas = ({ modelUrl }): React.JSX.Element => {
 
         // 只有在组件还没被销毁时才添加
         if (isMounted) {
-          model.anchor.set(0.5, 0.5)
-          model.x = app.screen.width / 2 - 60
-          model.y = app.screen.height
+          model.anchor.set(0.7, 0.5)
+          model.x = app.screen.width / 2
+          model.y = app.screen.height / 2
 
-          model.scale.set(0.42)
+          model.scale.set(0.2)
 
           app.stage.addChild(model)
 
           // 响应窗口缩放
           app.renderer.on('resize', () => {
-            model.x = app.screen.width / 2 - 60
-            model.y = app.screen.height
+            model.x = app.screen.width / 2
+            model.y = app.screen.height / 2
           })
         }
       } catch (error) {

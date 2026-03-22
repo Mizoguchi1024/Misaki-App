@@ -48,6 +48,12 @@ export default function Search(): React.JSX.Element {
   const backgroundPath = settingsData?.data.backgroundPath
 
   useEffect(() => {
+    if (!searchInputValue) {
+      setKeyword('')
+    }
+  }, [searchInputValue])
+
+  useEffect(() => {
     const root = scrollableDivRef.current
     const sentinel = sentinelRef.current
 
@@ -62,8 +68,7 @@ export default function Search(): React.JSX.Element {
       },
       {
         root,
-        rootMargin: '20px', // 提前 20px 触发，优化体验
-        threshold: 0.1 // 哨兵出现 10% 时触发
+        threshold: 0.5
       }
     )
 
@@ -118,7 +123,7 @@ export default function Search(): React.JSX.Element {
           ref={scrollableDivRef}
           className="px-4 h-full overflow-y-auto scrollbar-style mask-end"
         >
-          <div className="px-12 pt-12 pb-40 w-full md:max-w-2xl md:mx-auto md:px-0">
+          <div className="px-12 pt-12 w-full md:max-w-2xl md:mx-auto md:px-0">
             {chats.map((item) => (
               <Card
                 key={item.id}
@@ -146,12 +151,8 @@ export default function Search(): React.JSX.Element {
               </Card>
             ))}
           </div>
-          <div ref={sentinelRef} className="h-2.5">
-            {isFetchingNextPage && (
-              <div className="text-center">
-                <Spin indicator={<LoadingOutlined spin />} />
-              </div>
-            )}
+          <div ref={sentinelRef} className="h-40 w-full text-center">
+            {isFetchingNextPage && <Spin indicator={<LoadingOutlined spin />} size="large" />}
           </div>
         </div>
       ) : (

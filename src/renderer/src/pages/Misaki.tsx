@@ -154,6 +154,7 @@ export default function Misaki(): React.JSX.Element {
     queryFn: listModels
   })
   const models = modelsData?.data ?? []
+  const currentModel = models.find((model) => model.id === currentAssistant?.modelId)
 
   const { data: settingsData } = useQuery({
     queryKey: ['settings'],
@@ -187,7 +188,7 @@ export default function Misaki(): React.JSX.Element {
 
   return (
     <div className="flex flex-col items-center h-full w-full relative px-12 md:px-0">
-      <Live2DCanvas modelUrl={'./hiyori_free_en/runtime/hiyori_free_t08.model3.json'} />
+      <Live2DCanvas modelUrl={getOssBaseUrl() + currentModel?.path} />
       <GlassBox
         className={clsx(
           isEditing ? 'h-5/6' : 'h-7/24',
@@ -278,10 +279,7 @@ export default function Misaki(): React.JSX.Element {
                           <Card.Meta
                             avatar={
                               <Avatar
-                                src={
-                                  getOssBaseUrl() +
-                                  models?.find((model) => model.id === item.modelId)?.avatarPath
-                                }
+                                src={getOssBaseUrl() + currentModel?.avatarPath}
                                 icon={<HeartOutlined />}
                                 draggable={false}
                               />
@@ -476,7 +474,9 @@ export default function Misaki(): React.JSX.Element {
                     >
                       <Select
                         placeholder={t('model')}
-                        options={models?.map((model) => ({ label: model.name, value: model.id }))}
+                        options={models
+                          ?.filter((model) => model.ownedFlag)
+                          .map((model) => ({ label: model.name, value: model.id }))}
                         className="w-32"
                       />
                     </Form.Item>

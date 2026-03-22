@@ -61,8 +61,20 @@ export default function Chat(): React.JSX.Element {
   const [senderAreaRef, { height: senderAreaHeight }] = useMeasure<HTMLDivElement>()
   const scrollableDivRef = useRef<HTMLDivElement>(null)
   const sentinelRef = useRef<HTMLDivElement>(null)
+  const shouldSnapToBottomRef = useRef(true)
   const [atBottom, setAtBottom] = useState(false)
   const [showUserFooterId, setShowUserFooterId] = useState('')
+
+  const scrollToBottom = (behavior: ScrollBehavior = 'auto'): void => {
+    const el = scrollableDivRef.current
+    if (!el) return
+
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        el.scrollTo({ top: el.scrollHeight, behavior })
+      })
+    })
+  }
 
   const { data: userData } = useQuery({
     queryKey: ['user'],
@@ -188,6 +200,7 @@ export default function Chat(): React.JSX.Element {
 
   useEffect(() => {
     const load = async (): Promise<void> => {
+      shouldSnapToBottomRef.current = true
       setParentIdManually('')
       setSenderValue('')
       promptsControls.start({
@@ -199,13 +212,15 @@ export default function Chat(): React.JSX.Element {
   }, [chatId])
 
   useEffect(() => {
-    const el = scrollableDivRef.current
-    if (el) {
-      requestAnimationFrame(() => {
-        el.scrollTo({ top: el.scrollHeight, behavior: 'auto' })
-      })
+    if (!fullMessages.length) return
+    if (!shouldSnapToBottomRef.current && !atBottom && !isStreaming) return
+
+    scrollToBottom('auto')
+
+    if (senderAreaHeight > 0) {
+      shouldSnapToBottomRef.current = false
     }
-  }, [chatId, fullMessages.length])
+  }, [chatId, fullMessages.length, senderAreaHeight, atBottom, isStreaming])
 
   useEffect(() => {
     const root = scrollableDivRef.current
@@ -418,8 +433,7 @@ export default function Chat(): React.JSX.Element {
               className="absolute left-1/2 -translate-x-1/2 bg-white/70 dark:bg-white/20 backdrop-blur-xs hover:backdrop-blur-sm ease-in-out duration-500"
               style={{ bottom: senderAreaHeight + 12 }}
               onClick={() => {
-                const el = scrollableDivRef.current
-                el?.scrollTo({ top: el.scrollHeight, behavior: 'smooth' })
+                scrollToBottom('smooth')
               }}
             ></Button>
           </motion.div>

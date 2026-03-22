@@ -145,8 +145,7 @@ export default function MainLayout(): React.JSX.Element {
       },
       {
         root,
-        rootMargin: '20px', // 提前 20px 触发，优化体验
-        threshold: 0.1 // 哨兵出现 10% 时触发
+        threshold: 0.1
       }
     )
 
