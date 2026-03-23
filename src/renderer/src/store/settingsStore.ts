@@ -52,7 +52,7 @@ export enum LanguageEnum {
 export const LanguageI18nMap = {
   [LanguageEnum.ZH]: 'zh',
   [LanguageEnum.EN]: 'en',
-  [LanguageEnum.JP]: 'jp'
+  [LanguageEnum.JP]: 'ja'
 }
 
 export const LanguageDayjsMap = {

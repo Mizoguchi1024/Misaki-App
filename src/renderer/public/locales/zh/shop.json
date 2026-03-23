@@ -1,7 +1,9 @@
 {
     "puzzle": "拼图块",
+    "crystal": "回忆残晶",
     "stardust": "星尘",
-    "buy": "购买",
+    "item": "物品",
+    "model": "模型",
     "owned": "已拥有",
     "modelBought": "模型已购买",
     "puzzleBought": "拼图块已购买"

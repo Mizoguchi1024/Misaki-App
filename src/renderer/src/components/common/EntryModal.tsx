@@ -20,7 +20,7 @@ export default function EntryModal({
       destroyOnHidden
       width={300}
       classNames={{
-        title: 'font-serif select-none'
+        title: 'font-serif'
       }}
     >
       <div className="py-2">

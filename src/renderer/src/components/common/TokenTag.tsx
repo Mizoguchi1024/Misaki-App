@@ -3,10 +3,10 @@ import { Spin, Tag } from 'antd'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import EntryModal from './EntryModal'
-import MisakiLogoToken from '@renderer/assets/img/misaki-logo-token.svg?react'
 import { getProfile, getSettings } from '@renderer/api/front/user'
 import { useQuery } from '@tanstack/react-query'
 import { LoadingOutlined } from '@ant-design/icons'
+import MisakiLogoToken from '@renderer/assets/img/misaki-logo-token.svg?react'
 
 export default function TokenTag(): React.JSX.Element {
   const { t } = useTranslation('tokenTag')

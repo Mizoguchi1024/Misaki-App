@@ -5,8 +5,8 @@ import { useTranslation } from 'react-i18next'
 import EntryModal from './EntryModal'
 import { LoadingOutlined } from '@ant-design/icons'
 import { useQuery } from '@tanstack/react-query'
-import { getProfile } from '@renderer/api/front/user'
-import MisakiLogoPuzzle from '@renderer/assets/img/misaki-logo-puzzle.png'
+import { getProfile, getSettings } from '@renderer/api/front/user'
+import MisakiLogoPuzzle from '@renderer/assets/img/misaki-logo-puzzle.svg?react'
 
 export default function PuzzleTag(): React.JSX.Element {
   const { t } = useTranslation('puzzleTag')
@@ -19,6 +19,13 @@ export default function PuzzleTag(): React.JSX.Element {
     enabled: !!jwt
   })
   const { puzzle } = userData?.data ?? {}
+
+  const { data: settingsData } = useQuery({
+    queryKey: ['settings'],
+    queryFn: getSettings,
+    enabled: !!jwt
+  })
+  const { mainColor = '#3142EF' } = settingsData?.data ?? {}
 
   return (
     <Spin spinning={isLoading} indicator={<LoadingOutlined spin />}>
@@ -35,7 +42,7 @@ export default function PuzzleTag(): React.JSX.Element {
         onCancel={() => setIsModalOpen(false)}
         title={t('puzzle')}
         amount={puzzle}
-        image={<img src={MisakiLogoPuzzle} draggable={false} className="w-24 aspect-square" />}
+        image={<MisakiLogoPuzzle className="w-24 aspect-square" style={{ color: mainColor }} />}
         description={t('description')}
       />
     </Spin>

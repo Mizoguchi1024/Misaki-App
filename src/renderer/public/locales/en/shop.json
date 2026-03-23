@@ -1,7 +1,9 @@
 {
     "puzzle": "Puzzle",
+    "crystal": "Crystal",
     "stardust": "Stardust",
-    "buy": "Buy",
+    "item": "Item",
+    "model": "Model",
     "owned": "Owned",
     "modelBought": "Model bought",
     "puzzleBought": "Puzzle bought"

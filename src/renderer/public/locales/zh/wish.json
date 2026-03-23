@@ -7,5 +7,8 @@
     "extra": "活动限定五星角色仅可在UP期间，通过对应祈愿获得。",
     "remainingTime": "剩余时间",
     "history": "历史记录",
-    "wishTimes": "祈愿{{times}}次"
+    "wishTimes": "祈愿 {{times}} 次",
+    "puzzle": "拼图块",
+    "token": "Token",
+    "stardust": "星尘"
 }

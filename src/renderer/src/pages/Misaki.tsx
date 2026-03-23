@@ -294,7 +294,7 @@ export default function Misaki(): React.JSX.Element {
                     </div>
                   )}
                   <Pagination
-                    total={+total}
+                    total={total}
                     current={publicAssistantsPage.pageIndex}
                     pageSize={publicAssistantsPage.pageSize}
                     onChange={(page, pageSize) => {

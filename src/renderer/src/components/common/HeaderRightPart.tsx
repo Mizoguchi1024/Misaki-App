@@ -72,6 +72,7 @@ export default function HeaderRightPart({ currentPage }): React.JSX.Element {
       return (
         <div className="flex items-center gap-4">
           <StardustTag />
+          <CrystalTag />
           <PuzzleTag />
           <UserDropdown />
         </div>

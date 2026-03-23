@@ -19,7 +19,7 @@ export function useChatsInfiniteQuery(): UseInfiniteQueryResult<
     initialPageParam: 1,
     getNextPageParam: (lastPage: PageResult<ChatFrontResponse[]>) => {
       const { pageIndex, total } = lastPage.data
-      return +pageIndex * chatsPageSize < +total ? +pageIndex + 1 : undefined
+      return pageIndex * chatsPageSize < total ? pageIndex + 1 : undefined
     },
     refetchOnMount: false,
     refetchOnWindowFocus: false

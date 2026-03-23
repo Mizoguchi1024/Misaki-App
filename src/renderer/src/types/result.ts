@@ -15,8 +15,8 @@ export type PageResult<T> = {
   message: string
   data: {
     list: T
-    total: string
-    pageIndex: string
-    pageSize: string
+    total: number
+    pageIndex: number
+    pageSize: number
   }
 }

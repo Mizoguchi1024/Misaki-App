@@ -1,23 +1,25 @@
 import { buyModel, listModels } from '@renderer/api/front/model'
-import { getProfile } from '@renderer/api/front/user'
+import { getProfile, getSettings } from '@renderer/api/front/user'
 import { buyPuzzle } from '@renderer/api/front/wish'
 import { useSettingsStore } from '@renderer/store/settingsStore'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { App, Button, Card } from 'antd'
+import { App, Button, Card, Space } from 'antd'
 import { useTranslation } from 'react-i18next'
-import MisakiLogoPuzzle from '@renderer/assets/img/misaki-logo-puzzle.png'
+import MisakiLogoPuzzle from '@renderer/assets/img/misaki-logo-puzzle.svg?react'
+import { useUserStore } from '@renderer/store/userStore'
 
 export default function Shop(): React.JSX.Element {
   const { t } = useTranslation('shop')
   const { message: appMessage } = App.useApp()
   const queryClient = useQueryClient()
+  const { jwt } = useUserStore()
   const { getOssBaseUrl } = useSettingsStore()
 
   const { data: userData } = useQuery({
     queryKey: ['user'],
     queryFn: getProfile
   })
-  const { stardust = 0 } = userData?.data ?? {}
+  const { stardust = 0, crystal = 0 } = userData?.data ?? {}
 
   const { data: modelsData } = useQuery({
     queryKey: ['models'],
@@ -38,12 +40,19 @@ export default function Shop(): React.JSX.Element {
   })
 
   const buyPuzzleMutation = useMutation({
-    mutationFn: () => buyPuzzle(1, 'stardust'),
+    mutationFn: (currency: string) => buyPuzzle(1, currency),
     onSuccess: () => {
       appMessage.success(t('puzzleBought'))
       queryClient.invalidateQueries({ queryKey: ['user'] })
     }
   })
+
+  const { data: settingsData } = useQuery({
+    queryKey: ['settings'],
+    queryFn: getSettings,
+    enabled: !!jwt
+  })
+  const { mainColor = '#3142EF' } = settingsData?.data ?? {}
 
   return (
     <div className="px-4 h-full overflow-y-auto scrollbar-style mask-end">
@@ -53,20 +62,29 @@ export default function Shop(): React.JSX.Element {
           classNames={{
             body: 'bg-neutral-300 dark:bg-neutral-700'
           }}
-          cover={<img src={MisakiLogoPuzzle} draggable={false} className="p-12 aspect-square" />}
+          cover={<MisakiLogoPuzzle className="p-12 aspect-square" style={{ color: mainColor }} />}
           actions={[
-            <Button
-              key="buy"
-              color="default"
-              variant="filled"
-              disabled={stardust < 75}
-              onClick={() => buyPuzzleMutation.mutate()}
-            >
-              {t('buy')}
-            </Button>
+            <Space.Compact key="buy">
+              <Button
+                color="default"
+                variant="filled"
+                disabled={crystal < 160}
+                onClick={() => buyPuzzleMutation.mutate('crystal')}
+              >
+                160 {t('crystal')}
+              </Button>
+              <Button
+                color="default"
+                variant="filled"
+                disabled={stardust < 75}
+                onClick={() => buyPuzzleMutation.mutate('stardust')}
+              >
+                75 {t('stardust')}
+              </Button>
+            </Space.Compact>
           ]}
         >
-          <Card.Meta title={t('puzzle')} description={'75 ' + t('stardust')} />
+          <Card.Meta title={t('puzzle')} description={t('item')} />
         </Card>
         {models.map((model) => (
           <Card
@@ -93,11 +111,11 @@ export default function Shop(): React.JSX.Element {
                 disabled={model.ownedFlag || stardust < model.price}
                 onClick={() => buyModelMutation.mutate(model.id)}
               >
-                {model.ownedFlag ? t('owned') : t('buy')}
+                {model.ownedFlag ? t('owned') : model.price + ' ' + t('stardust')}
               </Button>
             ]}
           >
-            <Card.Meta title={model.name} description={model.price + ' ' + t('stardust')} />
+            <Card.Meta title={model.name} description={t('model')} />
           </Card>
         ))}
       </div>

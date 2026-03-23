@@ -1,7 +1,9 @@
 {
     "puzzle": "パズル",
+    "crystal": "クリスタル",
     "stardust": "スターダスト",
-    "buy": "買う",
+    "item": "アイテム",
+    "model": "モデル",
     "owned": "所持済み",
     "modelBought": "モデルを買いました",
     "puzzleBought": "パズルを買いました"
