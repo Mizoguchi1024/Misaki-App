@@ -1,7 +1,7 @@
 import GachaHistoryModal from '@renderer/components/common/GachaHistoryModal'
 import { useSettingsStore } from '@renderer/store/settingsStore'
 import { WishFrontResponse } from '@renderer/types/wish'
-import { Button, Card, Divider, Modal, Popover, Tag } from 'antd'
+import { Button, Card, Divider, Modal, Popover, Rate, Tag } from 'antd'
 import clsx from 'clsx'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
@@ -12,11 +12,14 @@ import { listModels } from '@renderer/api/front/model'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { gacha } from '@renderer/api/front/wish'
 import { getProfile, getSettings } from '@renderer/api/front/user'
+import GachaDetailModal from '@renderer/components/common/GachaDetailModal'
+import March7th from '@renderer/assets/img/march7th.png'
 
 export default function Wish(): React.JSX.Element {
   const { t } = useTranslation('wish')
   const queryClient = useQueryClient()
   const { borderRadius, getOssBaseUrl } = useSettingsStore()
+  const [isGachaDetailModalOpen, setIsGachaDetailModalOpen] = useState(false)
   const [isGachaHistoryModalOpen, setIsGachaHistoryModalOpen] = useState(false)
   const [isGachaResultModalOpen, setIsGachaResultModalOpen] = useState(false)
   const [gachaResults, setGachaResults] = useState<WishFrontResponse[]>([])
@@ -52,10 +55,10 @@ export default function Wish(): React.JSX.Element {
   return (
     <div className="p-12 h-full w-full flex flex-col gap-8">
       <div
-        className="flex justify-between items-center flex-1 p-10 bg-white dark:bg-neutral-800 rounded-2xl"
+        className="flex justify-between items-center flex-1 p-10 bg-linear-to-l from-pink-200 to-neutral-50 dark:from-pink-200/60 dark:to-neutral-900 rounded-2xl relative overflow-hidden"
         style={{ borderRadius }}
       >
-        <div className="h-full flex flex-col justify-between select-none">
+        <div className="h-full flex flex-col justify-between select-none relative z-10">
           <div>
             <Tag variant="filled" color="pink" className="mb-4">
               {t('characterEventWish')}
@@ -74,11 +77,22 @@ export default function Wish(): React.JSX.Element {
             <p className="text-xl">{dayjs('2026-07-01 12:00:00').fromNow(true)}</p>
           </div>
         </div>
+        <img src={March7th} draggable={false} className="absolute -right-12 h-180 max-w-none" />
+        <div className="absolute bottom-12 right-64 font-serif select-none p-1 text-white text-shadow-xs bg-linear-to-t from-neutral-900/60 via-neutral-900/60 via-80% to-transparent to-80%">
+          <h3 className="text-4xl font-bold mb-2">三月七</h3>
+          <Rate disabled defaultValue={5} />
+          <p className="text-xl">超超超厉害的本姑娘☆</p>
+        </div>
       </div>
       <div className="flex justify-between items-center">
-        <Button variant="filled" color="default" onClick={() => setIsGachaHistoryModalOpen(true)}>
-          {t('history')}
-        </Button>
+        <div className="flex gap-4">
+          <Button variant="filled" color="default" onClick={() => setIsGachaDetailModalOpen(true)}>
+            {t('detail')}
+          </Button>
+          <Button variant="filled" color="default" onClick={() => setIsGachaHistoryModalOpen(true)}>
+            {t('history')}
+          </Button>
+        </div>
         <div className="flex gap-8">
           <Popover
             arrow={false}
@@ -115,6 +129,10 @@ export default function Wish(): React.JSX.Element {
             </Button>
           </Popover>
         </div>
+        <GachaDetailModal
+          open={isGachaDetailModalOpen}
+          onCancel={() => setIsGachaDetailModalOpen(false)}
+        />
         <GachaHistoryModal
           open={isGachaHistoryModalOpen}
           onCancel={() => setIsGachaHistoryModalOpen(false)}

@@ -5,5 +5,5 @@
   "shop": "商店",
   "wish": "祈愿",
   "newChat": "新聊天",
-  "checkInSuccess": "签到成功，获得 {{token}} 个 Token 和 {{crystal}} 个回忆残晶"
+  "checkInSuccess": "签到成功，获得 {{token}} 个Token和 {{crystal}} 个回忆残晶"
 }
