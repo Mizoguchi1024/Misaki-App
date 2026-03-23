@@ -55,6 +55,12 @@ export const LanguageI18nMap = {
   [LanguageEnum.JP]: 'jp'
 }
 
+export const LanguageDayjsMap = {
+  [LanguageEnum.ZH]: 'zh-cn',
+  [LanguageEnum.EN]: 'en',
+  [LanguageEnum.JP]: 'ja'
+}
+
 export const LanguageAntdMap = {
   [LanguageEnum.ZH]: zh_CN,
   [LanguageEnum.EN]: en_US,

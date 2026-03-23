@@ -2,16 +2,24 @@ import { useEffect, useState } from 'react'
 import { App as AntdApp, theme } from 'antd'
 import { StyleProvider } from '@ant-design/cssinjs'
 import { XProvider } from '@ant-design/x'
-import { LanguageAntdMap, LanguageAntdXMap, useSettingsStore } from './store/settingsStore'
+import {
+  LanguageAntdMap,
+  LanguageAntdXMap,
+  LanguageDayjsMap,
+  useSettingsStore
+} from './store/settingsStore'
 import { useQuery } from '@tanstack/react-query'
-import 'dayjs/locale/zh-cn'
 import { getSettings } from './api/front/user'
 import { useUserStore } from './store/userStore'
+import 'dayjs/locale/zh-cn'
+import 'dayjs/locale/ja'
+import dayjs from 'dayjs'
 
 export default function App({ children }: { children?: React.ReactNode }): React.JSX.Element {
   const { jwt } = useUserStore()
   const { appearance, fontSize, borderRadius, language } = useSettingsStore()
   const [isSystemDark, setIsSystemDark] = useState(window.api.getSystemTheme())
+  dayjs.locale(LanguageDayjsMap[language])
 
   const { data: settingsData } = useQuery({
     queryKey: ['settings'],
@@ -46,7 +54,7 @@ export default function App({ children }: { children?: React.ReactNode }): React
           token: {
             fontSize: fontSize,
             colorPrimary: mainColor,
-            borderRadius: borderRadius
+            borderRadius
           },
           components: {
             Menu: {

@@ -5,5 +5,5 @@
   "shop": "ショップ",
   "wish": "祈り",
   "newChat": "新しいチャット",
-  "checkInSuccess": "チェックイン成功、{token} トークンと {crystal} クリスタルを獲得しました"
+  "checkInSuccess": "チェックイン成功、{{token}} トークンと {{crystal}} クリスタルを獲得しました"
 }

@@ -26,7 +26,7 @@ export default function EntryModal({
       <div className="py-2">
         <div
           className="w-full h-24 flex justify-between items-center p-4 bg-neutral-100 dark:bg-neutral-800 overflow-hidden mb-4"
-          style={{ borderRadius: borderRadius }}
+          style={{ borderRadius }}
         >
           <span className="text-xl font-semibold mt-auto">{amount?.toLocaleString()}</span>
           {image}

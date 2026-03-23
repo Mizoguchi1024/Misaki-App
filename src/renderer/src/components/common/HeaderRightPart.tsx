@@ -8,6 +8,7 @@ import HelpDropdown from './HelpDropdown'
 import TokenTag from './TokenTag'
 import StardustTag from './StardustTag'
 import PuzzleTag from './puzzleTag'
+import CrystalTag from './CrystalTag'
 
 export default function HeaderRightPart({ currentPage }): React.JSX.Element {
   const { t } = useTranslation('headerRightPart')
@@ -71,6 +72,14 @@ export default function HeaderRightPart({ currentPage }): React.JSX.Element {
       return (
         <div className="flex items-center gap-4">
           <StardustTag />
+          <PuzzleTag />
+          <UserDropdown />
+        </div>
+      )
+    case 'wish':
+      return (
+        <div className="flex items-center gap-4">
+          <CrystalTag />
           <PuzzleTag />
           <UserDropdown />
         </div>
