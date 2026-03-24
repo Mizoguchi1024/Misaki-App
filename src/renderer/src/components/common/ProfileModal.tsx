@@ -105,9 +105,9 @@ export default function ProfileModal({ open, onCancel }): React.JSX.Element {
           <Form.Item<FieldType> name="occupation" label={t('occupation')}>
             <Input placeholder={t('occupation')} maxLength={20} showCount spellCheck={false} />
           </Form.Item>
-          <Form.Item<FieldType> name="detail" label={t('detail')}>
+          <Form.Item<FieldType> name="details" label={t('details')}>
             <Input.TextArea
-              placeholder={t('detail')}
+              placeholder={t('details')}
               showCount
               maxLength={100}
               spellCheck={false}

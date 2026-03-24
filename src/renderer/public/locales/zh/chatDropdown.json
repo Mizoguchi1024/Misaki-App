@@ -1,7 +1,7 @@
 {
     "pin": "置顶",
     "unpin": "取消",
-    "detail": "详情",
+    "details": "详情",
     "delete": "删除",
     "chatDeleted": "聊天已删除"
 }

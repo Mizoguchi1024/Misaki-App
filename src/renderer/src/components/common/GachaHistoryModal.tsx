@@ -1,6 +1,9 @@
+import { LoadingOutlined } from '@ant-design/icons'
 import { listWishes } from '@renderer/api/front/wish'
+import { WishFrontResponse } from '@renderer/types/wish'
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
-import { Modal, Table } from 'antd'
+import { Modal, Table, TableProps } from 'antd'
+import clsx from 'clsx'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -19,19 +22,32 @@ export default function GachaHistoryModal({ open, onCancel }): React.JSX.Element
   const { total = 0 } = wishesData?.data ?? {}
   const wishes = wishesData?.data.list ?? []
 
-  const columns = [
+  const columns: TableProps<WishFrontResponse>['columns'] = [
     {
-      title: '模型',
-      dataIndex: 'modelId',
-      key: 'modelId'
+      title: t('item'),
+      dataIndex: 'modelName',
+      key: 'modelName',
+      width: 120,
+      render: (value, record) => (
+        <span
+          className={clsx(
+            record.modelGrade === 5 && 'text-yellow-400 dark:text-yellow-700',
+            record.modelGrade === 4 && 'text-purple-400 dark:text-purple-700'
+          )}
+        >
+          {record.hitFlag ? value : t('token')}
+        </span>
+      )
     },
     {
-      title: '数量',
+      title: t('amount'),
       dataIndex: 'amount',
-      key: 'amount'
+      key: 'amount',
+      width: 140,
+      render: (value, record) => value + (record.duplicateFlag && ' ' + t('stardust'))
     },
     {
-      title: '祈愿时间',
+      title: t('createTime'),
       dataIndex: 'createTime',
       key: 'createTime'
     }
@@ -47,9 +63,10 @@ export default function GachaHistoryModal({ open, onCancel }): React.JSX.Element
       destroyOnHidden
       className="select-none"
     >
-      <Table
+      <Table<WishFrontResponse>
+        rowKey="id"
         dataSource={wishes}
-        loading={isFetching}
+        loading={{ spinning: isFetching, indicator: <LoadingOutlined spin /> }}
         columns={columns}
         pagination={{
           current: wishesPage.pageIndex,

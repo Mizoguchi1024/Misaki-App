@@ -53,8 +53,8 @@ export default function ChatDropdown(): React.JSX.Element {
       icon: <PushpinOutlined />
     },
     {
-      key: 'detail',
-      label: t('detail'),
+      key: 'details',
+      label: t('details'),
       icon: <InfoCircleOutlined />
     },
     {
@@ -76,7 +76,7 @@ export default function ChatDropdown(): React.JSX.Element {
           data: { pinnedFlag: !chat?.pinnedFlag, version: chat?.version ?? 0 }
         })
         break
-      case 'detail':
+      case 'details':
         setIsDetailModalOpen(true)
         break
       case 'delete':

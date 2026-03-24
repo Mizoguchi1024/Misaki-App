@@ -3,7 +3,7 @@
   "searchChats": "検索",
   "mcp": "MCP",
   "shop": "ショップ",
-  "wish": "祈り",
+  "wish": "祈願",
   "newChat": "新しいチャット",
   "checkInSuccess": "チェックイン成功、{{token}} トークンと {{crystal}} クリスタルを獲得しました"
 }

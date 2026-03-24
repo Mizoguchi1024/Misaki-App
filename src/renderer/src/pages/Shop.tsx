@@ -3,7 +3,7 @@ import { getProfile, getSettings } from '@renderer/api/front/user'
 import { buyPuzzle } from '@renderer/api/front/wish'
 import { useSettingsStore } from '@renderer/store/settingsStore'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { App, Button, Card, Space } from 'antd'
+import { App, Button, Card } from 'antd'
 import { useTranslation } from 'react-i18next'
 import MisakiLogoPuzzle from '@renderer/assets/img/misaki-logo-puzzle.svg?react'
 import { useUserStore } from '@renderer/store/userStore'
@@ -64,24 +64,33 @@ export default function Shop(): React.JSX.Element {
           }}
           cover={<MisakiLogoPuzzle className="p-12 aspect-square" style={{ color: mainColor }} />}
           actions={[
-            <Space.Compact key="buy">
-              <Button
-                color="default"
-                variant="filled"
-                disabled={crystal < 160}
-                onClick={() => buyPuzzleMutation.mutate('crystal')}
-              >
-                160 {t('crystal')}
-              </Button>
-              <Button
-                color="default"
-                variant="filled"
-                disabled={stardust < 75}
-                onClick={() => buyPuzzleMutation.mutate('stardust')}
-              >
-                75 {t('stardust')}
-              </Button>
-            </Space.Compact>
+            <Button
+              key="buy"
+              type="primary"
+              disabled={crystal < 160}
+              onClick={() => buyPuzzleMutation.mutate('crystal')}
+            >
+              160 {t('crystal')}
+            </Button>
+          ]}
+        >
+          <Card.Meta title={t('puzzle')} description={t('item')} />
+        </Card>
+        <Card
+          className="select-none"
+          classNames={{
+            body: 'bg-neutral-300 dark:bg-neutral-700'
+          }}
+          cover={<MisakiLogoPuzzle className="p-12 aspect-square" style={{ color: mainColor }} />}
+          actions={[
+            <Button
+              key="buy"
+              type="primary"
+              disabled={stardust < 75}
+              onClick={() => buyPuzzleMutation.mutate('stardust')}
+            >
+              75 {t('stardust')}
+            </Button>
           ]}
         >
           <Card.Meta title={t('puzzle')} description={t('item')} />
@@ -106,8 +115,7 @@ export default function Shop(): React.JSX.Element {
             actions={[
               <Button
                 key="buy"
-                color="default"
-                variant="filled"
+                type="primary"
                 disabled={model.ownedFlag || stardust < model.price}
                 onClick={() => buyModelMutation.mutate(model.id)}
               >

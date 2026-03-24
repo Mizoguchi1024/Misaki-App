@@ -499,9 +499,9 @@ export default function Misaki(): React.JSX.Element {
                         spellCheck={false}
                       />
                     </Form.Item>
-                    <Form.Item<FieldType> name="detail" label={t('detail')}>
+                    <Form.Item<FieldType> name="details" label={t('details')}>
                       <Input.TextArea
-                        placeholder={t('detail')}
+                        placeholder={t('details')}
                         showCount
                         maxLength={50}
                         spellCheck={false}
@@ -627,7 +627,7 @@ export default function Misaki(): React.JSX.Element {
                   {
                     key: '6',
                     span: 'filled',
-                    label: t('detail'),
+                    label: t('details'),
                     children: <span>{currentAssistant?.detail || t('none')}</span>
                   }
                 ]}

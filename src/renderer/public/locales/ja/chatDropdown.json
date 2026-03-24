@@ -1,7 +1,7 @@
 {
     "pin": "固定",
     "unpin": "解除",
-    "detail": "詳細",
+    "details": "詳細",
     "delete": "削除",
     "chatDeleted": "チャットを削除しました"
 }
