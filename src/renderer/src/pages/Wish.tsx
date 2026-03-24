@@ -14,6 +14,7 @@ import { gacha } from '@renderer/api/front/wish'
 import { getProfile, getSettings } from '@renderer/api/front/user'
 import GachaDetailModal from '@renderer/components/common/GachaDetailModal'
 import March7th from '@renderer/assets/img/march7th.png'
+import { motion } from 'motion/react'
 
 export default function Wish(): React.JSX.Element {
   const { t } = useTranslation('wish')
@@ -77,11 +78,18 @@ export default function Wish(): React.JSX.Element {
             <p className="text-xl">{dayjs('2026-07-01 12:00:00').fromNow(true)}</p>
           </div>
         </div>
-        <img src={March7th} draggable={false} className="absolute -right-12 h-180 max-w-none" />
+        <motion.img
+          src={March7th}
+          draggable={false}
+          initial={{ x: 24, opacity: 0.6 }}
+          animate={{ x: 0, opacity: 1 }}
+          transition={{ duration: 0.5, ease: 'easeOut' }}
+          className="absolute -right-12 h-180 max-w-none"
+        />
         <div className="absolute bottom-12 right-64 font-serif select-none p-1 text-white text-shadow-xs bg-linear-to-t from-neutral-900/60 via-neutral-900/60 via-80% to-transparent to-80%">
-          <h3 className="text-4xl font-bold mb-2">三月七</h3>
+          <h3 className="text-4xl font-bold mb-2">{t('characterName')}</h3>
           <Rate disabled defaultValue={5} />
-          <p className="text-xl">超超超厉害的本姑娘☆</p>
+          <p className="text-xl">{t('characterTitle')}</p>
         </div>
       </div>
       <div className="flex justify-between items-center">

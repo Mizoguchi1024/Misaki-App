@@ -6,11 +6,12 @@ import { useMcpStore } from '@renderer/store/mcpStore'
 import { useQuery } from '@tanstack/react-query'
 import { Button, Card, Divider, Space, Switch } from 'antd'
 import clsx from 'clsx'
+import { AnimatePresence, motion } from 'motion/react'
 import { useState } from 'react'
 
 export default function Mcp(): React.JSX.Element {
   const { enabledServers, setEnabledServers } = useMcpStore()
-  const [extendedServerName, setExtendedServerName] = useState('')
+  const [currentServerName, setCurrentServerName] = useState('')
 
   const { data: serversData } = useQuery({
     queryKey: ['mcpServers'],
@@ -41,16 +42,16 @@ export default function Mcp(): React.JSX.Element {
                       icon={
                         <RightOutlined
                           className={clsx(
-                            extendedServerName === item.name && 'rotate-90',
+                            currentServerName === item.name && 'rotate-90',
                             'ease-in-out duration-250'
                           )}
                         />
                       }
                       onClick={() => {
-                        if (extendedServerName === item.name) {
-                          setExtendedServerName('')
+                        if (currentServerName === item.name) {
+                          setCurrentServerName('')
                         } else {
-                          setExtendedServerName(item.name)
+                          setCurrentServerName(item.name)
                         }
                       }}
                     />
@@ -78,16 +79,27 @@ export default function Mcp(): React.JSX.Element {
                 body: 'transition-all ease-in-out duration-250'
               }}
             >
-              {extendedServerName === item.name ? (
-                item.tools.map((tool, index) => (
-                  <div key={tool.name}>
-                    <Card.Meta title={tool.name} description={tool.description} />
-                    {index !== item.tools.length - 1 && <Divider />}
-                  </div>
-                ))
-              ) : (
-                <Card.Meta title={item.tools[0].name} description={item.tools[0].description} />
-              )}
+              <Card.Meta title={item.tools[0].name} description={item.tools[0].description} />
+              <AnimatePresence initial={false}>
+                {currentServerName === item.name && item.tools.length > 1 && (
+                  <motion.div
+                    key="more-tools"
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: 'auto', opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.25, ease: 'easeOut' }}
+                    className="overflow-hidden"
+                  >
+                    <Divider />
+                    {item.tools.slice(1).map((tool, index) => (
+                      <div key={tool.name}>
+                        <Card.Meta title={tool.name} description={tool.description} />
+                        {index !== item.tools.slice(1).length - 1 && <Divider />}
+                      </div>
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </Card>
           ))}
         </div>

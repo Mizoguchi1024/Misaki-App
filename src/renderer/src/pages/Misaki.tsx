@@ -202,7 +202,7 @@ export default function Misaki(): React.JSX.Element {
               initial={{ filter: 'blur(10px)', opacity: 0 }}
               animate={{ filter: 'blur(0px)', opacity: 1 }}
               exit={{ filter: 'blur(10px)', opacity: 0 }}
-              transition={{ duration: 0.5 }}
+              transition={{ duration: 0.5, ease: 'easeOut' }}
             >
               {isShopOpen ? (
                 <motion.div
@@ -211,7 +211,7 @@ export default function Misaki(): React.JSX.Element {
                   initial={{ filter: 'blur(10px)', opacity: 0 }}
                   animate={{ filter: 'blur(0px)', opacity: 1 }}
                   exit={{ filter: 'blur(10px)', opacity: 0 }}
-                  transition={{ duration: 0.5 }}
+                  transition={{ duration: 0.5, ease: 'easeOut' }}
                 >
                   <div className="flex items-center justify-between w-full">
                     <span className="text-2xl font-semibold">{t('assistantHub')}</span>
@@ -312,7 +312,7 @@ export default function Misaki(): React.JSX.Element {
                   initial={{ filter: 'blur(10px)', opacity: 0 }}
                   animate={{ filter: 'blur(0px)', opacity: 1 }}
                   exit={{ filter: 'blur(10px)', opacity: 0 }}
-                  transition={{ duration: 0.5 }}
+                  transition={{ duration: 0.5, ease: 'easeOut' }}
                   className="w-full h-full"
                 >
                   <Form
@@ -520,7 +520,7 @@ export default function Misaki(): React.JSX.Element {
               initial={{ filter: 'blur(10px)', opacity: 0 }}
               animate={{ filter: 'blur(0px)', opacity: 1 }}
               exit={{ filter: 'blur(10px)', opacity: 0 }}
-              transition={{ duration: 0.5 }}
+              transition={{ duration: 0.5, ease: 'easeOut' }}
             >
               <div className="flex justify-between w-full mb-4">
                 <Tooltip

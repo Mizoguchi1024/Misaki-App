@@ -425,7 +425,7 @@ export default function Chat(): React.JSX.Element {
             initial={{ filter: 'blur(8px)', opacity: 0 }}
             animate={{ filter: 'blur(0px)', opacity: 1 }}
             exit={{ filter: 'blur(8px)', opacity: 0 }}
-            transition={{ duration: 0.5 }}
+            transition={{ duration: 0.5, ease: 'easeOut' }}
           >
             <Button
               icon={<ArrowDownOutlined />}
