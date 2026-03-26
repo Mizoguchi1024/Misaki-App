@@ -5,6 +5,7 @@
     "emailTypeMessage": "正しいメールアドレス形式を入力してください",
     "password": "パスワード",
     "passwordRequiredMessage": "パスワードを入力してください",
+    "passwordTypeMessage": "パスワードの長さは6-20文字",
     "login": "ログイン",
     "rememberMe": "ログイン状態を保持する",
     "forgotPassword": "パスワードをお忘れ",

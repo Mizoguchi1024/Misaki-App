@@ -5,6 +5,7 @@
     "emailTypeMessage": "Please enter the correct email format",
     "password": "Password",
     "passwordRequiredMessage": "Please enter your password",
+    "passwordTypeMessage": "Password length should be between 6-20 characters",
     "login": "Sign in",
     "rememberMe": "Remember me",
     "forgotPassword": "Forgot password",

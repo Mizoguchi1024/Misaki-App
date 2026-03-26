@@ -127,7 +127,7 @@ export default function Search(): React.JSX.Element {
             {chats.map((item) => (
               <Card
                 key={item.id}
-                onClick={() => navigate(`/chat/${item.id}`, { viewTransition: true })}
+                onMouseUp={() => navigate(`/chat/${item.id}`, { viewTransition: true })}
                 className={clsx(
                   backgroundPath &&
                     'bg-white/20 dark:bg-neutral-800/20 border-white/60 dark:border-white/16 inset-shadow-[0_0_6px_rgba(255,255,255,0.25)] backdrop-blur-xl hover:backdrop-blur-3xl',
