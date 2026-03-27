@@ -172,10 +172,10 @@ export default function Misaki(): React.JSX.Element {
 
   useEffect(() => {
     if (isEditing) {
-      setIsShopOpen(false)
+      setTimeout(() => setIsShopOpen(false))
       form.resetFields()
     }
-  }, [isEditing])
+  }, [isEditing, currentAssistantId])
 
   const genderMap = {
     0: t('unknown'),

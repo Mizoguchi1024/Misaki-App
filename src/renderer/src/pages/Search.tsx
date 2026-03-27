@@ -49,7 +49,7 @@ export default function Search(): React.JSX.Element {
 
   useEffect(() => {
     if (!searchInputValue) {
-      setKeyword('')
+      setTimeout(() => setKeyword(''))
     }
   }, [searchInputValue])
 
