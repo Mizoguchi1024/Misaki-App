@@ -10,7 +10,7 @@ import { Dropdown, Button, MenuProps, App } from 'antd'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate, useParams } from 'react-router-dom'
-import ChatDetailModal from './ChatDetailModal'
+import ChatDetailsModal from './ChatDetailsModal'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { UpdateChatFrontRequest } from '@renderer/types/chat'
 import { Result } from '@renderer/types/result'
@@ -21,7 +21,7 @@ export default function ChatDropdown(): React.JSX.Element {
   const navigate = useNavigate()
   const queryClient = useQueryClient()
   const { id: chatId } = useParams()
-  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false)
+  const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false)
 
   const { data: chatsData } = useChatsInfiniteQuery()
   const chat = flattenChats(chatsData?.pages).find((item) => item.id === chatId)
@@ -77,7 +77,7 @@ export default function ChatDropdown(): React.JSX.Element {
         })
         break
       case 'details':
-        setIsDetailModalOpen(true)
+        setIsDetailsModalOpen(true)
         break
       case 'delete':
         deleteChatMutation.mutate(chatId!)
@@ -102,7 +102,7 @@ export default function ChatDropdown(): React.JSX.Element {
           icon={<EllipsisOutlined />}
         ></Button>
       </Dropdown>
-      <ChatDetailModal open={isDetailModalOpen} onCancel={() => setIsDetailModalOpen(false)} />
+      <ChatDetailsModal open={isDetailsModalOpen} onCancel={() => setIsDetailsModalOpen(false)} />
     </>
   )
 }

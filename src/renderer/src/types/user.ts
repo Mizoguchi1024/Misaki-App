@@ -4,7 +4,7 @@ export type UpdateUserFrontRequest = {
   birthday?: string
   avatarPath?: string
   occupation?: string
-  detail?: string
+  details?: string
   version: number
 }
 
@@ -16,7 +16,7 @@ export type UserFrontResponse = {
   birthday: string
   avatarPath: string
   occupation: string
-  detail: string
+  details: string
   token: number
   crystal: number
   puzzle: number

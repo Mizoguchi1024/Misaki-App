@@ -2,7 +2,7 @@ export type AssistantFrontResponse = {
   id: string
   name: string
   personality: string
-  detail: string
+  details: string
   gender: number
   birthday: string
   avatarPath: string
@@ -23,14 +23,14 @@ export type AddAssistantFrontRequest = {
   birthday?: string
   modelId: string
   personality?: string
-  detail?: string
+  details?: string
   publicFlag: boolean
 }
 
 export type UpdateAssistantFrontRequest = {
   name?: string
   personality?: string
-  detail?: string
+  details?: string
   gender?: number
   birthday?: string
   modelId?: string

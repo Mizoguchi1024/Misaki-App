@@ -57,7 +57,7 @@ type FieldType = {
   modelId: string
   publicFlag: boolean
   personality?: string
-  detail?: string
+  details?: string
 }
 
 export default function Misaki(): React.JSX.Element {
@@ -174,10 +174,8 @@ export default function Misaki(): React.JSX.Element {
     if (isEditing) {
       setIsShopOpen(false)
       form.resetFields()
-    } else if (!currentAssistantId) {
-      setCurrentAssistantId(enabledAssistantId)
     }
-  }, [isEditing, currentAssistantId])
+  }, [isEditing])
 
   const genderMap = {
     0: t('unknown'),
@@ -284,7 +282,7 @@ export default function Misaki(): React.JSX.Element {
                               />
                             }
                             title={item.personality}
-                            description={item.detail || t('noDetail')}
+                            description={item.details || t('noDetails')}
                             classNames={{
                               avatar: 'flex items-center justify-center'
                             }}
@@ -628,7 +626,7 @@ export default function Misaki(): React.JSX.Element {
                     key: '6',
                     span: 'filled',
                     label: t('details'),
-                    children: <span>{currentAssistant?.detail || t('none')}</span>
+                    children: <span>{currentAssistant?.details || t('none')}</span>
                   }
                 ]}
               />

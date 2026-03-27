@@ -30,7 +30,7 @@ export default function SettingsModal({ open, onCancel }): React.JSX.Element {
   const { jwt } = useUserStore()
   const { baseUrl, language, fontSize, appearance, borderRadius, setPartial, resetLocalSettings } =
     useSettingsStore()
-  const [baseUrlInputValue, setBaseUrlInputValue] = useState(baseUrl.replace('http://', ''))
+  const [baseUrlInputValue, setBaseUrlInputValue] = useState(baseUrl.replace('https://', ''))
 
   const { data: settingsData } = useQuery({
     queryKey: ['settings'],
@@ -77,7 +77,7 @@ export default function SettingsModal({ open, onCancel }): React.JSX.Element {
           <div className="flex justify-between items-center min-h-8 flex-none">
             <span>{t('baseUrl')}</span>
             <Space.Compact className="w-2/3">
-              <Space.Addon>http://</Space.Addon>
+              <Space.Addon>https://</Space.Addon>
               <Input
                 value={baseUrlInputValue}
                 allowClear
@@ -87,10 +87,10 @@ export default function SettingsModal({ open, onCancel }): React.JSX.Element {
                   setBaseUrlInputValue(e.target.value)
                 }}
                 onPressEnter={() => {
-                  setPartial({ baseUrl: 'http://' + baseUrlInputValue })
+                  setPartial({ baseUrl: 'https://' + baseUrlInputValue })
                 }}
                 onBlur={() => {
-                  setPartial({ baseUrl: 'http://' + baseUrlInputValue })
+                  setPartial({ baseUrl: 'https://' + baseUrlInputValue })
                 }}
               ></Input>
             </Space.Compact>

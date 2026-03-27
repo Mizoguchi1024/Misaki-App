@@ -28,7 +28,7 @@ interface SettingsState {
 
 const initialState = {
   staticMessage: null,
-  baseUrl: 'http://localhost',
+  baseUrl: 'https://localhost',
   appearance: 0,
   language: 0,
   fontSize: 14,
@@ -36,7 +36,7 @@ const initialState = {
 }
 
 const initialLocalState = {
-  baseUrl: 'http://localhost',
+  baseUrl: 'https://localhost',
   language: 0,
   fontSize: 14,
   appearance: 0,
@@ -83,8 +83,8 @@ export const useSettingsStore = create<SettingsState>()(
     (set, get) => ({
       ...initialState,
 
-      getApiBaseUrl: () => `${get().baseUrl}:8080/api`,
-      getOssBaseUrl: () => `${get().baseUrl}:9000`,
+      getApiBaseUrl: () => `${get().baseUrl}/api`,
+      getOssBaseUrl: () => `${get().baseUrl}/oss`,
       setStaticMessage: (staticMessage) => set({ staticMessage }),
       setPartial: (patch) => set((state) => ({ ...state, ...patch })),
       reset: () => set(initialState),

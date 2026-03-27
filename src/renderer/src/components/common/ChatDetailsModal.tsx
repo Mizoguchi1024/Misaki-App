@@ -5,8 +5,8 @@ import { Descriptions, Modal } from 'antd'
 import { useTranslation } from 'react-i18next'
 import { useParams } from 'react-router-dom'
 
-export default function ChatDetailModal({ open, onCancel }): React.JSX.Element {
-  const { t } = useTranslation('chatDetailModal')
+export default function ChatDetailsModal({ open, onCancel }): React.JSX.Element {
+  const { t } = useTranslation('chatDetailsModal')
   const { id: chatId } = useParams()
   const queryClient = useQueryClient()
 
@@ -17,7 +17,7 @@ export default function ChatDetailModal({ open, onCancel }): React.JSX.Element {
 
   return (
     <Modal
-      title={t('chatDetail')}
+      title={t('chatDetails')}
       centered
       footer={null}
       open={open}

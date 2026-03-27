@@ -12,7 +12,7 @@ type FieldType = {
   birthday: dayjs.Dayjs
   avatarPath: string
   occupation: string
-  detail: string
+  details: string
 }
 
 export default function ProfileModal({ open, onCancel }): React.JSX.Element {

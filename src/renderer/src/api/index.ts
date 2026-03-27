@@ -11,6 +11,7 @@ api.interceptors.request.use((config) => {
   config.baseURL = useSettingsStore.getState().getApiBaseUrl()
   const jwt = useUserStore.getState().jwt
   if (jwt) config.headers.Authorization = `Bearer ${jwt}`
+  config.headers['ngrok-skip-browser-warning'] = 'true'
   config.headers['X-Timestamp'] = Date.now().toString()
   config.headers['X-Nonce'] = crypto.randomUUID()
   return config

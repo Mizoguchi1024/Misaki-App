@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom'
 import HelpDropdown from './HelpDropdown'
 import TokenTag from './TokenTag'
 import StardustTag from './StardustTag'
-import PuzzleTag from './puzzleTag'
+import PuzzleTag from './PuzzleTag'
 import CrystalTag from './CrystalTag'
 
 export default function HeaderRightPart({ currentPage }): React.JSX.Element {
