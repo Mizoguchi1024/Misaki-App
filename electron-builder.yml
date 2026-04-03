@@ -16,6 +16,8 @@ win:
   executableName: Misaki
 nsis:
   artifactName: ${productName}-${version}-setup.${ext}
+  installerIcon: "build/favicon.ico"
+  uninstallerIcon: "build/favicon.ico"
   shortcutName: ${productName}
   uninstallDisplayName: ${productName}
   createDesktopShortcut: always

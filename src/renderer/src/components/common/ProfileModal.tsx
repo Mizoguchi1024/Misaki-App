@@ -34,13 +34,17 @@ export default function ProfileModal({ open, onCancel }): React.JSX.Element {
     }
   })
 
-  const onFinish: FormProps<FieldType>['onFinish'] = async (values) => {
-    await updateUserMutation.mutateAsync({
-      ...values,
-      birthday: values.birthday?.format('YYYY-MM-DD') ?? undefined,
-      version: userVersion
-    })
-    appMessage.success(t('profileSaved'))
+  const onFinish: FormProps<FieldType>['onFinish'] = (values) => {
+    updateUserMutation.mutate(
+      {
+        ...values,
+        birthday: values.birthday?.format('YYYY-MM-DD') ?? undefined,
+        version: userVersion
+      },
+      {
+        onSuccess: () => appMessage.success(t('profileSaved'))
+      }
+    )
     onCancel()
   }
 
@@ -57,9 +61,13 @@ export default function ProfileModal({ open, onCancel }): React.JSX.Element {
       <div className="flex flex-col p-2 items-center justify-between gap-4 h-160 overflow-y-auto scrollbar-style">
         <ImageUpload
           imgPath={user?.avatarPath}
-          onSuccess={async (data: UploadResponse) => {
-            updateUserMutation.mutate({ avatarPath: data.path, version: userVersion })
-            appMessage.success(t('uploadSuccess'))
+          onSuccess={(data: UploadResponse) => {
+            updateUserMutation.mutate(
+              { avatarPath: data.path, version: userVersion },
+              {
+                onSuccess: () => appMessage.success(t('uploadSuccess'))
+              }
+            )
           }}
         />
         <Form

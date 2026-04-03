@@ -17,4 +17,6 @@ export const resetPassword = (data: ResetPasswordRequest): Promise<Result<void>>
   api.post<Result<void>>('/auth/reset-password', data).then((res) => res.data)
 
 export const sendVerifyCode = (email: string, lang: number): Promise<Result<void>> =>
-  api.post<Result<void>>(`/auth/verify/${email}`, { params: { lang } }).then((res) => res.data)
+  api
+    .post<Result<void>>(`/auth/verification/${email}`, null, { params: { lang } })
+    .then((res) => res.data)

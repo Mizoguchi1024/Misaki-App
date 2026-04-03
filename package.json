@@ -16,14 +16,14 @@
     "build": "npm run typecheck && electron-vite build",
     "postinstall": "electron-builder install-app-deps",
     "build:unpack": "npm run build && electron-builder --dir",
-    "build:win": "npm run build && electron-builder --win",
+    "build:win": "npm run build && electron-builder --win --x64",
     "build:mac": "electron-vite build && electron-builder --mac",
     "build:linux": "electron-vite build && electron-builder --linux"
   },
   "dependencies": {
-    "@ant-design/icons": "~6.1.0",
-    "@ant-design/x": "^2.3.0",
-    "@ant-design/x-markdown": "^2.3.0",
+    "@ant-design/icons": "~6.1.1",
+    "@ant-design/x": "^2.5.0",
+    "@ant-design/x-markdown": "^2.5.0",
     "@electron-toolkit/preload": "^3.0.2",
     "@electron-toolkit/utils": "^4.0.0",
     "@tailwindcss/vite": "^4.2.1",
@@ -49,7 +49,7 @@
     "react-use": "^17.6.0",
     "tailwindcss": "^4.2.1",
     "untitled-pixi-live2d-engine": "^1.0.1",
-    "zustand": "^5.0.11"
+    "zustand": "^5.0.12"
   },
   "devDependencies": {
     "@electron-toolkit/eslint-config-prettier": "^3.0.0",

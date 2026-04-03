@@ -490,7 +490,7 @@ export default function Chat(): React.JSX.Element {
             return (
               <div className="flex justify-between">
                 <Space>
-                  <Sender.Switch>{t('think')}</Sender.Switch>
+                  {/* <Sender.Switch>{t('think')}</Sender.Switch> */}
                   <Dropdown
                     placement="top"
                     menu={{

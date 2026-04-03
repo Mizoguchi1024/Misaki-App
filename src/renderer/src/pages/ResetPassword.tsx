@@ -125,7 +125,7 @@ export default function ResetPassword(): React.JSX.Element {
             />
           </Form.Item>
           <Form.Item<ResetPasswordRequest>
-            name="verifyCode"
+            name="verificationCode"
             rules={[
               { required: true, message: t('verifyCodeRequiredMessage') },
               { pattern: /^\d{6}$/, message: t('verifyCodeTypeMessage') }

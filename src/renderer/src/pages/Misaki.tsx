@@ -5,6 +5,7 @@ import {
   DeleteOutlined,
   EditOutlined,
   HeartOutlined,
+  LoadingOutlined,
   LockOutlined,
   PlusOutlined,
   ShopOutlined,
@@ -41,6 +42,7 @@ import {
   Pagination,
   Radio,
   Select,
+  Spin,
   Switch,
   Tooltip
 } from 'antd'
@@ -185,7 +187,13 @@ export default function Misaki(): React.JSX.Element {
 
   return (
     <div className="flex flex-col items-center h-full w-full relative px-12 md:px-0">
-      <Live2DCanvas modelUrl={getOssBaseUrl() + currentModel?.path} />
+      <Spin
+        spinning={!currentModel?.path && !isEditing}
+        indicator={<LoadingOutlined spin />}
+        size="large"
+      >
+        <Live2DCanvas modelUrl={getOssBaseUrl() + currentModel?.path} />
+      </Spin>
       <GlassBox
         className={clsx(
           isEditing ? 'h-5/6' : 'h-7/24',
