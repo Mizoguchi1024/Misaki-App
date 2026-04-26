@@ -284,7 +284,7 @@ export default function Misaki(): React.JSX.Element {
                           <Card.Meta
                             avatar={
                               <Avatar
-                                src={getOssBaseUrl() + currentModel?.avatarPath}
+                                src={getOssBaseUrl() + item.avatarPath}
                                 icon={<HeartOutlined />}
                                 draggable={false}
                               />

@@ -87,10 +87,10 @@ export default function SettingsModal({ open, onCancel }): React.JSX.Element {
                   setBaseUrlInputValue(e.target.value)
                 }}
                 onPressEnter={() => {
-                  setPartial({ baseUrl: 'https://' + baseUrlInputValue })
+                  setPartial({ baseUrl: 'https://' + baseUrlInputValue.trim() })
                 }}
                 onBlur={() => {
-                  setPartial({ baseUrl: 'https://' + baseUrlInputValue })
+                  setPartial({ baseUrl: 'https://' + baseUrlInputValue.trim() })
                 }}
               ></Input>
             </Space.Compact>
