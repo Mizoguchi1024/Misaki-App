@@ -21,18 +21,19 @@
     "build:linux": "electron-vite build && electron-builder --linux"
   },
   "dependencies": {
-    "@ant-design/icons": "~6.1.1",
-    "@ant-design/x": "^2.5.0",
-    "@ant-design/x-markdown": "^2.5.0",
+    "@ant-design/cssinjs": "^2.1.2",
+    "@ant-design/icons": "~6.2.3",
+    "@ant-design/x": "^2.7.0",
+    "@ant-design/x-markdown": "^2.7.0",
     "@electron-toolkit/preload": "^3.0.2",
     "@electron-toolkit/utils": "^4.0.0",
-    "@tailwindcss/vite": "^4.2.1",
+    "@tailwindcss/vite": "^4.3.0",
     "@tanstack/query-async-storage-persister": "^5.90.27",
     "@tanstack/query-persist-client-core": "^5.92.4",
     "@tanstack/react-query": "^5.90.21",
     "@tanstack/react-query-persist-client": "^5.90.27",
-    "antd": "^6.3.1",
-    "axios": "^1.15.2",
+    "antd": "^6.4.2",
+    "axios": "^1.16.1",
     "clsx": "^2.1.1",
     "dayjs": "^1.11.19",
     "electron-updater": "^6.7.3",
@@ -40,16 +41,16 @@
     "i18next": "^25.8.13",
     "i18next-http-backend": "^3.0.2",
     "jwt-decode": "^4.0.0",
-    "motion": "^12.35.2",
+    "motion": "^12.38.0",
     "pixi.js": "^8.16.0",
     "react-highlight-words": "^0.21.0",
     "react-i18next": "^16.5.4",
     "react-infinite-scroll-component": "^6.1.1",
     "react-router-dom": "^7.13.1",
     "react-use": "^17.6.0",
-    "tailwindcss": "^4.2.1",
-    "untitled-pixi-live2d-engine": "^1.0.1",
-    "zustand": "^5.0.12"
+    "tailwindcss": "^4.3.0",
+    "untitled-pixi-live2d-engine": "^1.1.0",
+    "zustand": "^5.0.13"
   },
   "devDependencies": {
     "@electron-toolkit/eslint-config-prettier": "^3.0.0",
@@ -68,11 +69,11 @@
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.5.2",
-    "prettier": "^3.8.1",
-    "react": "^19.2.4",
-    "react-dom": "^19.2.4",
+    "prettier": "^3.8.3",
+    "react": "^19.2.6",
+    "react-dom": "^19.2.6",
     "typescript": "^5.9.3",
-    "vite": "^8.0.10",
+    "vite": "^8.0.13",
     "vite-plugin-svgr": "^4.5.0"
   },
   "pnpm": {
@@ -81,5 +82,5 @@
       "esbuild"
     ]
   },
-  "packageManager": "pnpm@10.32.1+sha512.a706938f0e89ac1456b6563eab4edf1d1faf3368d1191fc5c59790e96dc918e4456ab2e67d613de1043d2e8c81f87303e6b40d4ffeca9df15ef1ad567348f2be"
+  "packageManager": "pnpm@11.1.2+sha512.415a1cc25974731e75455c1468371be74c5aa5fb7621b50d4056d222451609f11412f23fd602e6169f1e060466641f798597e1be961a10688836a67b16569499"
 }
