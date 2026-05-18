@@ -121,7 +121,6 @@ export default function Chat(): React.JSX.Element {
   >({
     mutationFn: ({ id, data }) => sendMessage(id, data),
     onSuccess: () => {
-      refetchPrompts()
       queryClient.invalidateQueries({ queryKey: ['messages'] })
       queryClient.resetQueries({ queryKey: ['chats'] })
       queryClient.invalidateQueries({ queryKey: ['user'] })
@@ -164,14 +163,14 @@ export default function Chat(): React.JSX.Element {
     }
   })
 
-  const { data: promptsData, refetch: refetchPrompts } = useQuery({
-    queryKey: ['prompts', chatId],
+  const { data: promptsData } = useQuery({
+    queryKey: ['prompts', chatId, parentId],
     queryFn: () =>
       listPrompts(chatId!, {
-        parentId: parentId!,
+        parentId,
         size: 2
       }),
-    enabled: promptsSuggestion && !!parentId && !isStreaming,
+    enabled: promptsSuggestion && !!chatId && !!parentId && !isStreaming,
     staleTime: Infinity,
     refetchOnMount: false,
     refetchOnWindowFocus: false
