@@ -130,7 +130,7 @@ export default function Misaki(): React.JSX.Element {
     }
   })
 
-  const { data: publicAssistantsData } = useQuery({
+  const { data: publicAssistantsData, isFetching: isPublicAssistantsFetching } = useQuery({
     queryKey: ['publicAssistants', publicAssistantsPage.pageIndex, publicAssistantsPage.pageSize],
     queryFn: () =>
       listPublicAssistants(publicAssistantsPage.pageIndex, publicAssistantsPage.pageSize)
@@ -241,7 +241,11 @@ export default function Misaki(): React.JSX.Element {
                       </Tooltip>
                     </div>
                   </div>
-                  {publicAssistants.length === 0 ? (
+                  {isPublicAssistantsFetching ? (
+                    <div className="flex flex-1 items-center justify-center">
+                      <Spin indicator={<LoadingOutlined spin />} size="large" />
+                    </div>
+                  ) : publicAssistants.length === 0 ? (
                     <EmptyState className="text-2xl" logoClassName="w-32" />
                   ) : (
                     <div className="grid grid-cols-2 gap-4 w-full">
@@ -286,7 +290,10 @@ export default function Misaki(): React.JSX.Element {
                           <Card.Meta
                             avatar={
                               <Avatar
-                                src={getOssBaseUrl() + item.avatarPath}
+                                src={
+                                  getOssBaseUrl() +
+                                  models.find((model) => model.id === item.modelId)?.avatarPath
+                                }
                                 icon={<HeartOutlined />}
                                 draggable={false}
                               />

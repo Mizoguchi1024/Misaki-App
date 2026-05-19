@@ -9,7 +9,7 @@ import { Sender } from '@ant-design/x'
 import { searchChats } from '@renderer/api/front/chat'
 import EmptyState from '@renderer/components/common/EmptyState'
 import { flattenChats, useChatsInfiniteQuery } from '@renderer/hooks/useChatsInfiniteQuery'
-import { Card, Skeleton, Space, Spin } from 'antd'
+import { Card, Space, Spin } from 'antd'
 import clsx from 'clsx'
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -82,7 +82,11 @@ export default function Search(): React.JSX.Element {
   return (
     <div className="h-full relative">
       {keyword ? (
-        results.length > 0 ? (
+        isFetching ? (
+          <div className="w-full h-full flex items-center justify-center">
+            <Spin indicator={<LoadingOutlined spin />} size="large" />
+          </div>
+        ) : results.length > 0 ? (
           <div className="px-4 h-full overflow-y-auto scrollbar-style mask-end">
             <div className="px-12 pt-12 pb-40 w-full md:max-w-2xl md:mx-auto md:px-0">
               {results.map((item) => (
@@ -95,22 +99,20 @@ export default function Search(): React.JSX.Element {
                     'mb-4 select-none cursor-pointer hover:shadow-xl ease-in-out duration-250 active:scale-96'
                   )}
                 >
-                  <Skeleton loading={isFetching} active paragraph={{ rows: 1 }}>
-                    <Card.Meta
-                      avatar={
-                        item.pinnedFlag ? (
-                          <PushpinOutlined className="text-2xl" />
-                        ) : (
-                          <MessageOutlined className="text-2xl" />
-                        )
-                      }
-                      title={item.title || t('newChat')}
-                      description={item.updateTime}
-                      classNames={{
-                        avatar: 'flex items-center justify-center'
-                      }}
-                    />
-                  </Skeleton>
+                  <Card.Meta
+                    avatar={
+                      item.pinnedFlag ? (
+                        <PushpinOutlined className="text-2xl" />
+                      ) : (
+                        <MessageOutlined className="text-2xl" />
+                      )
+                    }
+                    title={item.title || t('newChat')}
+                    description={item.updateTime}
+                    classNames={{
+                      avatar: 'flex items-center justify-center'
+                    }}
+                  />
                 </Card>
               ))}
             </div>
