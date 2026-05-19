@@ -4,7 +4,7 @@
   "appearance": "外观",
   "account": "账户",
   "chat": "聊天",
-  "baseUrl": "基础地址",
+  "baseUrl": "基础 URL",
   "language": "语言",
   "resetLocalSettings": "重置本地设置",
   "reset": "重置",

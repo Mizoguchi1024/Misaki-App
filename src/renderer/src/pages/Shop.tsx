@@ -7,6 +7,7 @@ import { App, Button, Card } from 'antd'
 import { useTranslation } from 'react-i18next'
 import MisakiLogoPuzzle from '@renderer/assets/img/misaki-logo-puzzle.svg?react'
 import { useUserStore } from '@renderer/store/userStore'
+import clsx from 'clsx'
 
 export default function Shop(): React.JSX.Element {
   const { t } = useTranslation('shop')
@@ -52,15 +53,22 @@ export default function Shop(): React.JSX.Element {
     queryFn: getSettings,
     enabled: !!jwt
   })
-  const { mainColor = '#3142EF' } = settingsData?.data ?? {}
+  const { mainColor = '#3142EF', backgroundPath } = settingsData?.data ?? {}
+
+  const glassCardClass =
+    'bg-white/20 dark:bg-neutral-800/20 border-white/60 dark:border-white/16 inset-shadow-[0_0_6px_rgba(255,255,255,0.25)] backdrop-blur-xl hover:backdrop-blur-3xl'
 
   return (
     <div className="px-4 h-full overflow-y-auto scrollbar-style mask-end">
       <div className="px-12 pt-12 pb-40 w-full md:max-w-2xl md:mx-auto md:px-0 grid grid-cols-2 lg:grid-cols-3 gap-8">
         <Card
-          className="select-none"
+          className={clsx(
+            backgroundPath && glassCardClass,
+            'select-none hover:shadow-xl transition-all ease-in-out duration-250'
+          )}
           classNames={{
-            body: 'bg-neutral-300 dark:bg-neutral-700'
+            body: 'bg-neutral-300 dark:bg-neutral-700',
+            actions: backgroundPath ? 'bg-transparent' : ''
           }}
           cover={<MisakiLogoPuzzle className="p-12 aspect-square" style={{ color: mainColor }} />}
           actions={[
@@ -77,9 +85,13 @@ export default function Shop(): React.JSX.Element {
           <Card.Meta title={t('puzzle')} description={t('item')} />
         </Card>
         <Card
-          className="select-none"
+          className={clsx(
+            backgroundPath && glassCardClass,
+            'select-none hover:shadow-xl transition-all ease-in-out duration-250'
+          )}
           classNames={{
-            body: 'bg-neutral-300 dark:bg-neutral-700'
+            body: 'bg-neutral-300 dark:bg-neutral-700',
+            actions: backgroundPath ? 'bg-transparent' : ''
           }}
           cover={<MisakiLogoPuzzle className="p-12 aspect-square" style={{ color: mainColor }} />}
           actions={[
@@ -97,7 +109,10 @@ export default function Shop(): React.JSX.Element {
         </Card>
         {models.map((model) => (
           <Card
-            className="select-none"
+            className={clsx(
+              backgroundPath && glassCardClass,
+              'select-none hover:shadow-xl transition-all ease-in-out duration-250'
+            )}
             key={model.id}
             cover={
               <img
@@ -110,7 +125,8 @@ export default function Shop(): React.JSX.Element {
               body:
                 model.grade === 5
                   ? 'bg-yellow-400 dark:bg-yellow-700'
-                  : 'bg-purple-400 dark:bg-purple-700'
+                  : 'bg-purple-400 dark:bg-purple-700',
+              actions: backgroundPath ? 'bg-transparent' : ''
             }}
             actions={[
               <Button

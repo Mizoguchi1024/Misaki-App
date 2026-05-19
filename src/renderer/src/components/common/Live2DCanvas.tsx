@@ -2,6 +2,9 @@ import React, { useEffect, useRef } from 'react'
 import * as PIXI from 'pixi.js'
 import { Live2DModel } from 'untitled-pixi-live2d-engine/cubism'
 
+const MODEL_HEIGHT_RATIO = 0.85
+const MODEL_BOTTOM_RATIO = 0.95
+
 type Live2DCanvasProps = {
   modelUrl?: string
   onLoadingChange?: (loading: boolean) => void
@@ -48,19 +51,26 @@ const Live2DCanvas = ({ modelUrl, onLoadingChange }: Live2DCanvasProps): React.J
 
         // 只有在组件还没被销毁时才添加
         if (isMounted) {
-          model.anchor.set(0.7, 0.5)
-          model.x = app.screen.width / 2
-          model.y = app.screen.height / 2
+          const fitModel = (): void => {
+            const bounds = model.getLocalBounds()
 
-          model.scale.set(0.2)
+            if (bounds.width <= 0 || bounds.height <= 0) {
+              return
+            }
+
+            const targetHeight = app.screen.height * MODEL_HEIGHT_RATIO
+            const scale = targetHeight / bounds.height
+
+            model.scale.set(scale)
+            model.pivot.set(bounds.x + bounds.width / 2, bounds.y + bounds.height)
+            model.position.set(app.screen.width / 2, app.screen.height * MODEL_BOTTOM_RATIO)
+          }
 
           app.stage.addChild(model)
+          fitModel()
 
           // 响应窗口缩放
-          app.renderer.on('resize', () => {
-            model.x = app.screen.width / 2
-            model.y = app.screen.height / 2
-          })
+          app.renderer.on('resize', fitModel)
         }
       } catch (error) {
         console.error('Live2D 模型加载失败:', error)
