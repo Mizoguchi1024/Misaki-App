@@ -1,8 +1,8 @@
 {
     "loginAccount": "Misaki にログイン",
-    "email": "メールアドレス",
-    "emailRequiredMessage": "メールアドレスを入力してください",
-    "emailTypeMessage": "正しいメールアドレス形式を入力してください",
+    "email": "メール先",
+    "emailRequiredMessage": "メール先を入力してください",
+    "emailTypeMessage": "正しいメール先を入力してください",
     "password": "パスワード",
     "passwordRequiredMessage": "パスワードを入力してください",
     "passwordTypeMessage": "パスワードの長さは6-20文字",

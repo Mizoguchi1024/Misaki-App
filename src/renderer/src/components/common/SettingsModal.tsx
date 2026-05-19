@@ -21,6 +21,7 @@ import { UploadResponse } from '@renderer/types/common'
 import { useNavigate } from 'react-router-dom'
 import { deleteAllChats } from '@renderer/api/front/chat'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { MoonOutlined, SunOutlined, SyncOutlined, TranslationOutlined } from '@ant-design/icons'
 
 export default function SettingsModal({ open, onCancel }): React.JSX.Element {
   const { t } = useTranslation('settingsModal')
@@ -98,8 +99,8 @@ export default function SettingsModal({ open, onCancel }): React.JSX.Element {
           <div className="flex justify-between items-center min-h-8 flex-none">
             <span>{t('language')}</span>
             <Select
-              className="w-24"
               defaultValue={language}
+              prefix={<TranslationOutlined />}
               options={[
                 { value: 0, label: LanguageMap[0] },
                 { value: 1, label: LanguageMap[1] },
@@ -136,9 +137,9 @@ export default function SettingsModal({ open, onCancel }): React.JSX.Element {
               defaultValue={appearance.toString()}
               shape="round"
               options={[
-                { label: t('auto'), value: '0' },
-                { label: t('light'), value: '1' },
-                { label: t('dark'), value: '2' }
+                { label: t('auto'), value: '0', icon: <SyncOutlined /> },
+                { label: t('light'), value: '1', icon: <SunOutlined /> },
+                { label: t('dark'), value: '2', icon: <MoonOutlined /> }
               ]}
               onChange={(value) => {
                 setPartial({ appearance: Number(value) })
@@ -322,6 +323,7 @@ export default function SettingsModal({ open, onCancel }): React.JSX.Element {
                 <div className="flex justify-between items-center min-h-8 flex-none">
                   <span>{t('ttsAutoplay')}</span>
                   <Switch
+                    disabled
                     checked={ttsAutoplay}
                     onChange={async (checked) =>
                       updateSettingsMutation.mutate({

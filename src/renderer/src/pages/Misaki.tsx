@@ -71,6 +71,7 @@ export default function Misaki(): React.JSX.Element {
   const [isEditingManually, setIsEditingManually] = useState(false)
   const isEditing = !currentAssistantId || isEditingManually
   const [isShopOpen, setIsShopOpen] = useState(false)
+  const [isLive2DLoading, setIsLive2DLoading] = useState(false)
   const [form] = Form.useForm<FieldType>()
   const [publicAssistantsPage, setPublicAssistantsPage] = useState({
     pageIndex: 1,
@@ -156,6 +157,7 @@ export default function Misaki(): React.JSX.Element {
   })
   const models = modelsData?.data ?? []
   const currentModel = models.find((model) => model.id === currentAssistant?.modelId)
+  const currentModelUrl = currentModel?.path ? getOssBaseUrl() + currentModel.path : undefined
 
   const { data: settingsData } = useQuery({
     queryKey: ['settings'],
@@ -188,11 +190,11 @@ export default function Misaki(): React.JSX.Element {
   return (
     <div className="flex flex-col items-center h-full w-full relative px-12 md:px-0">
       <Spin
-        spinning={!currentModel?.path && !isEditing}
+        spinning={!isEditing && (!currentModelUrl || isLive2DLoading)}
         indicator={<LoadingOutlined spin />}
         size="large"
       >
-        <Live2DCanvas modelUrl={getOssBaseUrl() + currentModel?.path} />
+        <Live2DCanvas modelUrl={currentModelUrl} onLoadingChange={setIsLive2DLoading} />
       </Spin>
       <GlassBox
         className={clsx(
