@@ -28,7 +28,7 @@ interface SettingsState {
 
 const initialState = {
   staticMessage: null,
-  baseUrl: 'https://mizoguchimac-mini.tailbf7874.ts.net',
+  baseUrl: 'https://mizoguchi-mac-mini.tailbf7874.ts.net',
   appearance: 0,
   language: 0,
   fontSize: 14,
@@ -36,7 +36,7 @@ const initialState = {
 }
 
 const initialLocalState = {
-  baseUrl: 'https://mizoguchimac-mini.tailbf7874.ts.net',
+  baseUrl: 'https://mizoguchi-mac-mini.tailbf7874.ts.net',
   language: 0,
   fontSize: 14,
   appearance: 0,
